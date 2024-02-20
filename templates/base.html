@@ -1,4 +1,5 @@
 
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -264,7 +265,11 @@
           </div>
         <!-- /top navigation -->
 
-        {% block content %}
+ {% block content %}
+
+        <!-- Dyanamic contents will show here -->
+
+{% endblock content %}
 
         <!-- footer content -->
         <footer>
