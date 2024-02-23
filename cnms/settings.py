@@ -65,7 +65,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
    
    
-    'widget_tweaks'
+    'widget_tweaks',
  
   
     
@@ -80,6 +80,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+   
     
 ]
 
@@ -160,9 +161,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
-
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_URL = 'static/'
+#Location of static files
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'), ]
 # This production code might break development mode, so we check whether we're in DEBUG mode
 if not DEBUG:
     # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
@@ -171,36 +173,3 @@ if not DEBUG:
     # and renames the files with unique names for each version to support long-term caching
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-
-CACHES = {
-'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    },
-'select2': {
-    'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-    'LOCATION': 'select2_cache_table',
-    }
-}
-SELECT2_CACHE_BACKEND: str = 'select2'
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-SELECT2_JS = "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/js/select2.min.js"
-SELECT2_CSS = "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/css/select2.min.css"
-SELECT2_I18N_PATH = "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/js/i18n"
-
-
-
-LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'login'
-
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
-DEFAULT_FROM_EMAIL = "CNMS App"
-EMAIL_HOST_USER = "habtamuwh@gmail.com"
-EMAIL_HOST_PASSWORD = "pste pvwk swde emds"
