@@ -1,0 +1,121 @@
+
+<table class="data table table-striped no-margin">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Team Lead</th>
+        <th>Date</th>
+        <th>Concept Note Ver#</th>
+        <th >Status</th>
+      
+      </tr>
+    </thead>
+    <tbody hx-trigger="load, SubmitApprovalListChanged from:body" >
+      <tr>
+        <td>1</td>
+        <td>
+          <a>Initiator</a>
+          <br />
+          <small>{{ activity.user.email_user }}</small>
+        </td>
+        {% if activitysubmit %}
+        <td>{{activitysubmit.submission_date}}</td>
+        <td>{{activitysubmit.document }}</td>
+        <td>
+          <button type="button" class="btn btn-success btn-sm btn-xs" >{{ activitysubmit.get_submission_status_display}}</button>
+          {% if request.user.id == activity.user.id %}<span type="button" class="glyphicon glyphicon-repeat" aria-hidden="true"  hx-get="{% url 'activity_submit_form' activity.id %}" hx-target="#SubmitList" ></span>{% endif %}
+        
+       
+ </td>
+        
+        {% else %}
+        <td></td>
+        <td></td>
+     
+        <td>
+            <button type="button" class="btn btn-primary btn-sm btn-xs" {% if request.user.id == activity.user.id %} hx-get="{% url 'activity_submit_form' activity.id %}" hx-target="#SubmitList" {% endif %}>Submit Request </button>
+        </td>
+        {% endif%}
+
+
+
+
+    
+</tr>
+            <tr>
+        <td>2</td>
+        <td>
+          <a>Techncial</a>
+          <br />
+          <small>{{ activity.technical_lead.user.email_user }}</small>
+        </td>
+        {% if activitysubmit %}
+        <td>{% if activitysubmit.activitysubmitapproval_t.approval_date|time == activitysubmit.submission_date|time %}{{ activitysubmit.submission_date|timesince }} {% else %} {{activitysubmit.activitysubmitapproval_t.approval_date}} {% endif %}</td>
+   
+
+
+        <td>{{activitysubmit.activitysubmitapproval_t.document }}</td>
+        <td>
+          <button type="button" class="{% if activitysubmit.activitysubmitapproval_t.approval_status == 1 %} btn btn-primary btn-sm btn-xs{% elif activitysubmit.activitysubmitapproval_t.approval_status == 2 %}btn btn-warning btn-sm btn-xs {% elif activitysubmit.activitysubmitapproval_t.approval_status == 3 %}btn btn-success btn-sm btn-xs{% elif activitysubmit.activitysubmitapproval_t.approval_status == 4 %}btn btn-danger btn-sm btn-xs {% else %}btn btn-secondary btn-sm{% endif %}" {% if request.user.id == activity.technical_lead.user.id %} hx-get={% url 'activity_approvalt' activitysubmit.id %} hx-target="#SubmitList"{% endif %}>{% if activitysubmit.activitysubmitapproval_t %} {{ activitysubmit.activitysubmitapproval_t.get_approval_status_display}} {% else %}Pending Submission{% endif %}</button>
+        </td>
+        {% else %}
+        <td></td>
+        <td></td>
+        <td></td>
+    
+        {% endif%}
+
+
+
+
+    
+</tr>
+<tr>
+    <td>3</td>
+    <td>
+      <a>Program</a>
+      <br />
+      <small>{{ activity.program_lead.user.email_user}}</small>
+    </td>
+    {% if activitysubmit %}
+    <td>{% if activitysubmit.activitysubmitapproval_p.approval_date|time == activitysubmit.submission_date|time %}{{ activitysubmit.submission_date|timesince }}{% else %}{{activitysubmit.activitysubmitapproval_p.approval_date}}{% endif %}</td>
+    
+    <td>{{activitysubmit.activitysubmitapproval_p.document}}</td>
+    <td>
+      <button type="button" class="{% if activitysubmit.activitysubmitapproval_p.approval_status == 1 %} btn btn-primary btn-sm btn-xs{% elif activitysubmit.activitysubmitapproval_p.approval_status == 2 %}btn btn-warning btn-sm btn-xs {% elif activitysubmit.activitysubmitapproval_p.approval_status == 3 %}btn btn-success btn-sm btn-xs{% elif activitysubmit.activitysubmitapproval_p.approval_status == 4 %}btn btn-danger btn-sm btn-xs {% else %} btn btn-secondary btn-sm{% endif %}" {% if request.user.id == activity.program_lead.user.id %} hx-get={% url 'activity_approvalp' activitysubmit.id %} hx-target="#SubmitList"  {% endif %}>{% if activitysubmit.activitysubmitapproval_p %}{{ activitysubmit.activitysubmitapproval_p.get_approval_status_display}}{% else %}Pending Submission{%endif%}</button>
+    </td>
+    {% else %}
+    <td></td>
+    <td></td>
+    <td></td>
+
+    {% endif%}
+
+
+
+</tr>
+<tr>
+    <td>4</td>
+    <td>
+      <a>Finance</a>
+      <br />
+      <small>{{ activity.finance_lead.user.email_user }}</small>
+    </td>
+    {% if activitysubmit %}
+    <td> {% if activitysubmit.activitysubmitapproval_f.approval_date|time == activitysubmit.submission_date|time %}{{ activitysubmit.submission_date|timesince }}{% else %}{{activitysubmit.activitysubmitapproval_f.approval_date}}{% endif %}</td>
+    <td>{{activitysubmit.activitysubmitapproval_f.document }}</td>
+    <td>
+      <button type="button" class="{% if activitysubmit.activitysubmitapproval_f.approval_status == 1 %} btn btn-primary btn-sm{% elif activitysubmit.activitysubmitapproval_f.approval_status == 2 %}btn btn-warning btn-sm btn-xs {% elif activitysubmit.activitysubmitapproval_f.approval_status == 3 %}btn btn-success btn-sm btn-xs{% elif activitysubmit.activitysubmitapproval_f.approval_status == 4 %}btn btn-danger btn-sm btn-xs{% else %}btn btn-secondary btn-sm{% endif %}" {% if request.user.id == activity.finance_lead.user.id %} hx-get={% url 'activity_approvalf' activitysubmit.id %} hx-target="#SubmitList" {% endif %}>{% if activitysubmit.activitysubmitapproval_f %}{{ activitysubmit.activitysubmitapproval_f.get_approval_status_display}}{% else %}Pending Submission{%endif%}</button>
+    </td>
+    {% else %}
+    <td></td>
+    <td></td>
+    <td></td>
+
+    {% endif%}
+
+
+
+</tr>
+    </tbody>
+  </table>

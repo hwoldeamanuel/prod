@@ -1,0 +1,41 @@
+
+<table class="table table-striped projects">
+                <thead>
+
+                  <tr>
+                  <th>Username</th>
+                   {% for g in group %}
+                   <th>{{g.name}}</th>
+                   {%endfor%}
+                  <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                
+                     
+                  <tr>
+                
+               
+                  <td>{{ user.email_user}}</td>
+                 
+                  {% for g in group %}
+                    
+                  
+                    <td> <input type="radio" class="checkbox"  "{% for ug in user.groups.all %} {% if ug.name == g.name %}checked{% endif%} {% endfor %}"></td>
+                 
+                 {% endfor %}
+        
+                    
+                      
+                  
+                  
+                        <td>
+
+                    <button class="btn btn-info btn-sm" hx-get="{% url 'user_group_edit' user.id %}" hx-target="#dialog"><i class="fa fa-edit"></i></button>
+
+                  </td>
+                  </tr>
+               
+                  
+                </tbody>
+              </table>

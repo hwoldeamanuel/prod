@@ -1,0 +1,38 @@
+
+{% load static %}
+
+                     <div class="profile_img">
+                        <div id="crop-avatar">
+                          <!-- Current avatar -->
+                          <img class="img-responsive avatar-view" src="{% static 'images/user.png' %}" alt="Avatar" title="Change the avatar">
+                        </div>
+                      </div>
+                      <h5>{{user.full_name}}</h5>
+
+                      <ul class="list-unstyled user_data">
+                        
+                        <li><i class="fa fa-university user-profile-icon"></i> {{user.portfolio}}
+                        </li>
+                        <li>
+                          <i class="fa fa-briefcase user-profile-icon"></i> {{user.job_title}}
+                        </li>
+
+                        <li class="m-top-xs">
+                          <i class="fa fa-external-link user-profile-icon"></i>
+                          <a href="#" target="_blank">{{user.email}}</a>
+                        </li>
+                          <li class="m-top-xs">
+                          <i class="fa fa-phone user-profile-icon"></i> {{user.contact_number}}
+                        </li>
+                        </li>
+                          <li class="m-top-xs">
+                          <i class="fa fa-sitemap user-profile-icon"></i> {{user.reports_to.full_name}}
+                        </li>
+                      </ul>
+
+                      <a class="btn btn-success" hx-get="{% url 'edit_user' pk=user.id %}" hx-target = "#dialog"><i class="fa fa-edit m-right-xs"></i>Edit Profile</a>
+                      <br />
+
+                      <!-- start skills -->
+                      
+               

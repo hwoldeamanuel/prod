@@ -14,8 +14,9 @@ import os
 from pathlib import Path
 import dj_database_url
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-#BASE_DIR = Path(__file__).resolve().parent.parent
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+#BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 import environ
 env = environ.Env()
@@ -29,7 +30,7 @@ environ.Env.read_env()
 SECRET_KEY = 'django-insecure-&3ep*035k@21#4lh)ex_l&=797@9u6af_3!*%$mx_8^p8=(d*^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = 'RENDER' not in os.environ
 
 ALLOWED_HOSTS = ['*']
 
@@ -37,13 +38,32 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'home',
+    'program',
+    'app_admin',
+    'portfolio',
+    
+    'conceptnote',
+   
+    'django_htmx',
+    
+    'django_extensions',
+    'crispy_forms',
+    'django_select2',
+    'django.contrib.humanize',
+    
+    'easyaudit',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'home',
+   
+   
+    'widget_tweaks'
+ 
+  
     
 ]
 
@@ -59,7 +79,7 @@ MIDDLEWARE = [
     
 ]
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 
 ROOT_URLCONF = 'cnms.urls'
 
@@ -133,16 +153,35 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-
-
 STATIC_URL = '/static/'
-#STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
-STATIC_ROOT=os.path.join(BASE_DIR,'staticfiles')
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'home/media')
+if not DEBUG:
+    # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    # Enable the WhiteNoise storage backend, which compresses static files to reduce disk use
+    # and renames the files with unique names for each version to support long-term caching
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+CACHES = {
+'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    },
+'select2': {
+    'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+    'LOCATION': 'select2_cache_table',
+    }
+}
+SELECT2_CACHE_BACKEND: str = 'select2'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SELECT2_JS = "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/js/select2.min.js"
+SELECT2_CSS = "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/css/select2.min.css"
+SELECT2_I18N_PATH = "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/js/i18n"
+
+
+
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'login'

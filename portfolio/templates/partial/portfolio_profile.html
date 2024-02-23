@@ -1,0 +1,42 @@
+
+{% load static %}
+    <div class="col-md-3 col-sm-3  profile_left">
+                      <div class="profile_img">
+                        <div id="crop-avatar">
+                          <!-- Current avatar -->
+                          {% if portfolio.logo %}
+                          <img class="img-responsive avatar-view" src="{{ portfolio.logo.url }}" alt="Avatar" title="Change the avatar">
+                          {% else %}
+                           <img class="img-responsive avatar-view" src="{% static 'images/portfolio.png' %}" alt="Avatar" title="Change the avatar">
+                          {%endif %}
+                        </div>
+                      </div></br>
+                      <h3>{{portfolio.title}}</h3>
+
+                      <ul class="list-unstyled user_data">
+                      <li>
+                          <i class="fa fa-briefcase user-profile-icon"></i> {{ portfolio.type}}
+                        </li>
+                        <li>
+                          <i class="fa fa-check user-profile-icon"></i> {{ portfolio.category}}
+                        </li>
+                         <li>
+                          <i class="fa fa-bullhorn user-profile-icon"></i> {{ portfolio.start_date}}
+                        </li>
+                        <li class="m-top-xs">
+                          <i class="fa fa-external-link user-profile-icon"></i>
+                          <a href="{{portfolio.address_url}}" target="_blank">{{portfolio.address_url}}</a>
+                        </li>
+                        <li>
+                         <p>{{portfolio.description}}</p>
+                        </li>
+                       
+                      </ul>
+
+                      <button class="btn btn-success" hx-get="{% url 'edit_portfolio' portfolio.pk %}" hx-target="#dialog"><i class="fa fa-edit m-right-xs"></i>Edit Profile</button>
+                      <br />
+
+                      <!-- start skills -->
+                      
+
+                    </div>

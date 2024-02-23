@@ -1,0 +1,43 @@
+{% load static %}
+
+{% for user in users %}
+         <div class="col-md-4 col-sm-4  profile_details">
+                        <div class="well profile_view">
+                          <div class="col-sm-12">
+                            <h4 class="brief"><i>{{user.portfolio }}</i></h4>
+                            <div class="left col-sm-7">
+                              <h6>{{user.full_name }} </h6>
+                              <p><strong>Position: </strong> {{user.job_title}} </p>
+                              <ul class="list-unstyled">
+                                <li><i class="fa fa-external-link"></i>{{user.email}}</li>
+                                <li><i class="fa fa-phone"></i>:{{user.contact_number}}  </li>
+                              </ul>
+                            </div>
+                            <div class="right col-sm-5 text-center">
+                              <img src="{% static 'images/user.png' %}" alt="" class="img-circle img-fluid">
+                            </div>
+                          </div>
+                          <div class=" bottom text-center">
+                            <div class=" col-sm-6 emphasis">
+                              <p class="ratings">
+                              
+                                
+                                <a href="#"> <input type="checkbox" {% if user.is_active %}checked{% endif %} value=""> Active</a>
+                              </p>
+                           
+                                 <p class="ratings">
+                              
+                                
+                                <a href="#"> <input type="checkbox" {% if user.is_superuser  %}checked{% endif %} value=""> Admin</a>
+                              </p>
+                            </div>
+                            <div class=" col-sm-6 emphasis">
+                              
+                              <a class="btn btn-primary btn-sm" href="{% url 'user_detail' user.id %}" >
+                                <i class="fa fa-user"> </i> View Profile
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      {% endfor %}

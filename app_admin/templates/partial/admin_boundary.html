@@ -1,0 +1,40 @@
+
+          <style>
+    th {
+      text-align: center;
+
+    }
+    </style>
+<table class="table table-striped ">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Region ID</th>
+                    <th>Region Name</th>
+                    <th>Zone ID</th>
+                    <th>Zone Name</th>
+                    <th>Woreda ID</th>
+                    <th>Woreda Name</th>
+                    <th >Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for woredas in woreda %}
+                <tr> <td> {{ forloop.counter}}</td>
+                    <td>{{woredas.zone.region.id }}</td>
+                    <td>{{woredas.zone.region.name }}</td>
+                    <td>{{woredas.zone.id }}</td>
+                    <td>{{woredas.zone.name }}</td>
+                    <td> {{ woredas.id}} </td>
+                    <td> {{ woredas.name}}   </td>
+                    
+                   <td>
+                     <button class="btn btn-info btn-sm" hx-get="{% url 'edit_woreda' woredas.id %}" hx-target="#dialog"><i class="fa fa-edit"></i> Woreda</button>
+                  
+                     <button class="btn btn-info btn-sm" hx-get="{% url 'edit_zone' woredas.zone.id %}" hx-target="#dialog"><i class="fa fa-edit"></i> Zone</button>
+                  </td>
+                    
+                </tr>
+                {% endfor %}
+                </tbody>
+                </table>

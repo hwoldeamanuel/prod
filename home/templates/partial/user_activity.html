@@ -1,0 +1,78 @@
+  <canvas id="myChart" width="400" height="160"></canvas>
+
+  {% block content_page_js %}
+<script>
+var MONTHS = [{% for activity in all_request %} "{{ activity.datetime__date|date:'M-d'}}", {% endfor %}];
+var randomScalingFactor = function() {
+      return Math.round(Math.random() * 100 * (Math.random() > 0.5 ? -1 : 1));
+    };
+var randomColorFactor = function() {
+      return Math.round(Math.random() * 255);
+    };
+var randomColor = function(opacity) {
+      return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',' + (opacity || '1') + ')';
+    };
+
+var ctx = document.getElementById("myChart").getContext("2d");
+var myChart = new Chart(ctx, {
+    type: 'line',
+    
+    
+     data: {
+        labels: [{% for activity in all_request %} "{{ activity.datetime__date|date:'M-d'}}", {% endfor %}],
+        datasets: [{
+          label: "ALL Event",
+          data: [{% for activity in all_request %} {{ activity.id_count }}, {% endfor %}],
+          backgroundColor:'rgba(38, 185, 154, .6)',
+          borderColor:'rgba(38, 185, 154, 1)',
+          borderWidth: 1
+        }, {
+          label: "LogIn Event",
+          data: [{% for activity in all_request %} {{ activity.count_login }}, {% endfor %}],
+          backgroundColor: 'rgba(155, 185, 230, .8)',
+          borderColor:'rgba(38, 185, 154, 1)',
+          borderWidth: 1
+        },   ]
+      },
+    options: {
+                    
+       
+                    title:{
+                        display:true,
+                        text:'Chart.js Line Chart - Skip Points'
+                    },
+                    tooltips: {
+                        mode: 'label',
+                    },
+                    hover: {
+                        mode: 'label'
+                    },
+            scales: {
+                yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: '# activity'
+                        },
+                    }],
+                xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Days'
+                        }
+                    }],
+            }
+    },
+  
+
+});
+ 
+var myChartData = new Chart(ctx, config);
+defaults.global.legend.display = true;
+defaults.global.legend.align = "start";
+defaults.global.legend.position = "bottom";
+defaults.global.legend.labels.padding = 30;
+defaults.global.legend.labels.boxWidth = 15;
+</script>
+{% endblock%}
