@@ -16,7 +16,7 @@
         <td>
           <a>Initiator</a>
           <br />
-          <small>{{ icn.user.email_user }}</small>
+          <small>{{ icn.user }}</small>
         </td>
         {% if icnsubmit %}
         <td>{{icnsubmit.submission_date}}</td>
@@ -47,7 +47,7 @@
         <td>
           <a>Techncial</a>
           <br />
-          <small>{{ icn.technical_lead.user.email_user }}</small>
+          <small>{{ icn.technical_lead.user }}</small>
         </td>
         {% if icnsubmit %}
         <td>{% if icnsubmit.icnsubmitapproval_t.approval_date|time == icnsubmit.submission_date|time %}{{ icnsubmit.submission_date|timesince }} {% else %} {{icnsubmit.icnsubmitapproval_t.approval_date}} {% endif %}</td>
@@ -73,7 +73,7 @@
     <td>
       <a>Program</a>
       <br />
-      <small>{{ icn.program_lead.user.email_user}}</small>
+      <small>{{ icn.program_lead.user}}</small>
     </td>
     {% if icnsubmit %}
     <td>{% if icnsubmit.icnsubmitapproval_p.approval_date|time == icnsubmit.submission_date|time %}{{ icnsubmit.submission_date|timesince }}{% else %}{{icnsubmit.icnsubmitapproval_p.approval_date}}{% endif %}</td>
@@ -97,7 +97,7 @@
     <td>
       <a>Finance</a>
       <br />
-      <small>{{ icn.finance_lead.user.email_user }}</small>
+      <small>{{ icn.finance_lead.user }}</small>
     </td>
     {% if icnsubmit %}
     <td> {% if icnsubmit.icnsubmitapproval_f.approval_date|time == icnsubmit.submission_date|time %}{{ icnsubmit.submission_date|timesince }}{% else %}{{icnsubmit.icnsubmitapproval_f.approval_date}}{% endif %}</td>
