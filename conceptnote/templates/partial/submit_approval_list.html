@@ -8,7 +8,7 @@
                               <p class="month">{{ list.submission_date|date:"M" }}</p>
                             </div>
                             <div class="message_wrapper">
-                              <h4 class="heading">{{list.icn.user.email_user }}</h4>
+                              <h4 class="heading">{{list.icn.user }}</h4>
                               <blockquote class="message"> {{list.submission_note }}</blockquote>
                               <br />
                               <p class="url">
@@ -19,14 +19,14 @@
                           </li>
 
                           <li>
-                             <img src="{% static 'images/user.png' %}" class="avatar" alt="Avatar">
+                             <img src="{% static 'images/user.png' %}" class="avatar" alt="Avatar" >
                             <div class="message_date">  {% if list.icnsubmitapproval_t.approval_date|time != list.submission_date|time %}
                               <h3 class="date text-error">{{ list.icnsubmitapproval_t.approval_date|date:"d" }}</h3>
                               <p class="month">{{ list.icnsubmitapproval_t.approval_date|date:"M" }}</p> {% endif %}
                             </div>
                             <div class="message_wrapper">
-                              <h4 class="heading">{{ list.icnsubmitapproval_t.user.user.email_user}}</h4>
-                              <blockquote class="message">{{list.icnsubmitapproval_t.approval_note}}</blockquote>
+                              <h4 class="heading">{{ list.icnsubmitapproval_t.user.user}}</h4>
+                             {% if list.icnsubmitapproval_t.approval_note %} <blockquote class="message">{{list.icnsubmitapproval_t.approval_note}}</blockquote> {% endif %}
                               <br />
                               <p class="url">
                                 <span class="fs1" aria-hidden="true" data-icon=""></span>
@@ -41,8 +41,8 @@
                               <p class="month">{{ list.icnsubmitapproval_p.approval_date|date:"M" }}</p>{% endif %}
                             </div>
                             <div class="message_wrapper">
-                              <h4 class="heading">{{ list.icnsubmitapproval_p.user.user.email_user }}</h4>
-                              <blockquote class="message">{{list.icnsubmitapproval_p.approval_note}}</blockquote>
+                              <h4 class="heading">{{ list.icnsubmitapproval_p.user.user }}</h4>
+                              {% if list.icnsubmitapproval_p.approval_note %} <blockquote class="message">{{list.icnsubmitapproval_p.approval_note}}</blockquote> {% endif %}
                               <br />
                               <p class="url">
                                 <span class="fs1" aria-hidden="true" data-icon=""></span>
@@ -57,8 +57,8 @@
                               <p class="month">{{ list.icnsubmitapproval_f.approval_date|date:"M" }}</p>{% endif %}
                             </div>
                             <div class="message_wrapper">
-                              <h4 class="heading">{{ list.icnsubmitapproval_f.user.user.email_user }}</h4>
-                              <blockquote class="message">{{list.icnsubmitapproval_f.approval_note}}</blockquote>
+                              <h4 class="heading">{{ list.icnsubmitapproval_f.user.user }}</h4>
+                             {% if list.icnsubmitapproval_f.approval_note %} <blockquote class="message">{{list.icnsubmitapproval_f.approval_note}}</blockquote> {% endif%}
                               <br />
                               <p class="url">
                                 <span class="fs1" aria-hidden="true" data-icon=""></span>
