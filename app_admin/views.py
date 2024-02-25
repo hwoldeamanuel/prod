@@ -278,7 +278,7 @@ class RegisterView(FormView):
   
 def admin_list(request):
     
-    woreda = Woreda.objects.all().order_by('id')[:10]
+    woreda = Woreda.objects.all().order_by('id')
     
     context = {'woreda':woreda}
     return render(request, 'partial/admin_boundary.html', context)
