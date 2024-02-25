@@ -21,8 +21,8 @@ urlpatterns = [
     path('downloada/<int:id>/', views.downloada, name='downloada'),
     path('delete_icn/<int:pk>/', views.icn_delete, name='icn_delete'),
     
-    #path('iregion/', views.iregion, name='iregion'),
-    #path('iregion/izones/', views.izones, name='izones'),
+    path('iregion/', views.iregion, name='iregion'),
+    path('iregion/izones/', views.izones, name='izones'),
     path('iregion/<int:id>/', views.iregion, name='iregion'),
     path('iregion/izones/', views.izones, name='izones'),
     path('iregion/izones/iworedas/', views.iworedas, name='iworedas'),

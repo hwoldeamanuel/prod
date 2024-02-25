@@ -10,7 +10,7 @@
     <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.region.id_for_label }}">Region <span class="required">*</span>
     </label>
     <div class="col-md-8 col-sm-8">
-      {%  render_field form.region class+="form-control form-control-sm required" hx-get="/conceptnote/iregion/izones" hx-target="#id_zone" hx-swap="innerHTML" %}
+      {%  render_field form.region class+="form-control form-control-sm required" hx-get="/conceptnote/iregion/izones/" hx-target="#id_zone" hx-swap="innerHTML" %}
       <div class="invalid-feedback">{{ form.region.errors|first }}</div>
     </div>
   </div>
@@ -18,7 +18,7 @@
     <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.zone.id_for_label }}">Zone <span class="required">*</span>
     </label>
     <div class="col-md-8 col-sm-8">
-      {%  render_field form.zone class+="form-control form-control-sm required"  hx-get="/conceptnote/iregion/izones/iworedas" hx-target="#id_woreda" hx-swap="innerHTML" %}
+      {%  render_field form.zone class+="form-control form-control-sm required"  hx-get="/conceptnote/iregion/izones/iworedas/" hx-target="#id_woreda" hx-swap="innerHTML" %}
       <div class="invalid-feedback">{{ form.zone.errors|first }}</div>
     </div>
   </div>
