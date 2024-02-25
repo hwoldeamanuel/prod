@@ -7,14 +7,14 @@
                           <img class="img-responsive avatar-view" src="{% static 'images/user.png' %}" alt="Avatar" title="Change the avatar">
                         </div>
                       </div>
-                      <h5>{{user.full_name}}</h5>
+                      <h5>{{user.profile.full_name }}</h5>
 
                       <ul class="list-unstyled user_data">
                         
-                        <li><i class="fa fa-university user-profile-icon"></i> {{user.portfolio}}
+                        <li><i class="fa fa-university user-profile-icon"></i> {{user.profile.portfolio}}
                         </li>
                         <li>
-                          <i class="fa fa-briefcase user-profile-icon"></i> {{user.job_title}}
+                          <i class="fa fa-briefcase user-profile-icon"></i> {{user.profile.job_title}}
                         </li>
 
                         <li class="m-top-xs">
@@ -22,15 +22,15 @@
                           <a href="#" target="_blank">{{user.email}}</a>
                         </li>
                           <li class="m-top-xs">
-                          <i class="fa fa-phone user-profile-icon"></i> {{user.contact_number}}
+                          <i class="fa fa-phone user-profile-icon"></i> {{user.profile.contact_number}}
                         </li>
                          </li>
                           <li class="m-top-xs">
-                          <i class="fa fa-sitemap user-profile-icon"></i> {{user.reports_to.full_name}}
+                          <i class="fa fa-sitemap user-profile-icon"></i> {{user.profile.reports_to}}
                         </li>
                       </ul>
 
-                      <a class="btn btn-success" hx-get="{% url 'add_profile' user.id %}" hx-target = "#dialog"><i class="fa fa-edit m-right-xs"></i>Edit Profile</a>
+                      <a class="btn btn-success" hx-get="{% url 'add_profile' %}" hx-target = "#dialog"><i class="fa fa-edit m-right-xs"></i>Edit Profile</a>
                       <br />
 
                       <!-- start skills -->

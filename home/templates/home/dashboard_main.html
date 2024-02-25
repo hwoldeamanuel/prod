@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content_page_css %}
-{% endblock%}
 
-{% block content %}
+{% endblock%}
 {% load static %}
+{% block content %}
  <!-- page content -->
         <div class="right_col" role="main">
           <!-- top tiles -->
           <div class="row" style="display: inline-block;" >
           <div class="tile_count">
-                <div class="col-md-2 col-sm-4  tile_stats_count">
+          <div class="col-md-2 col-sm-4  tile_stats_count">
               <span class="count_top"><i class="fa fa-university"></i> Portfolio</span>
               <div class="count green">{{ total_portfolio }}</div>
               <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> From last Week</span>
@@ -64,7 +64,7 @@
 
                 <div class="col-md-9 col-sm-9 ">
                      <div style="width: 100%">
-                        <canvas id="canvas" width="400" height="160"></canvas>
+                       <canvas id="myChart" width="400" height="160"></canvas>
                       </div>
                    
                 </div>
@@ -694,43 +694,36 @@
 {% endblock%}
 {% block content_page_js %}
 <script>
- 
 
-  var barChartData = {
-      labels: [{% for user in program_users %} "{{user.title }}",{% endfor %}],
-      datasets: [{
-          label: 'Program Users',
-          backgroundColor: "rgba(38, 185, 154)",
-          data: [{% for user in program_users %} {{user.num_user }},{% endfor %}]
-      }, ]
-
-  };
-  window.onload = function() {
-      var ctx = document.getElementById("canvas").getContext("2d");
-      window.myBar = new Chart(ctx, {
-          type: 'bar',
-          data: barChartData,
-          options: {
-              title:{
-                  display:true,
-                  text:"Program Users - Stack bar"
-              },
-              tooltips: {
-                  mode: 'label'
-              },
-              responsive: true,
-              scales: {
-                  xAxes: [{
-                      stacked: true,
-                  }],
-                  yAxes: [{
-                      stacked: true
-                  }]
-              }
-          }
-      });
-  };
-
-
+var ctx = document.getElementById("myChart").getContext("2d");;
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    
+    
+    data: {
+        labels: [{% for user in program_users %} "{{user|truncatechars:5 }}",{% endfor %}],
+        datasets: [{
+            label:'# of program users',
+            
+            data: [{% for user in program_users %} {{user.num_user }},{% endfor %}],
+            backgroundColor: [{% for user in program_users %} 'rgba(38, 185, 154, 1)',{% endfor %}
+                
+            ],
+            borderColor: [{% for user in program_users %} 'rgba(38, 185, 154, 1)',{% endfor %}
+                
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:false
+                }
+            }]
+        }
+    }
+});
 </script>
 {% endblock %}

@@ -7,6 +7,7 @@
   </div>
   <div class="modal-body">
    <div class="item form-group">
+  
                             <label class="col-form-label col-md-2 col-sm-2 label-align" for="first-name">First Name:<span class="required"></span>
                             </label>
                             <div class="col-md-8 col-sm-8 ">
@@ -27,11 +28,11 @@
                         
                         </div>
        <div class="item form-group">
-                            <label class="col-form-label col-md-2 col-sm-2 label-align" for="first-name">Email:<span class="required"></span>
+                            <label class="col-form-label col-md-2 col-sm-2 label-align" for="first-name">Portfolio:<span class="required"></span>
                             </label>
                             <div class="col-md-8 col-sm-8 ">
                                 
-                                    {% render_field form.email class+="form-control form-control-sm" %}
+                                    {% render_field form.portfolio class+="form-control form-control-sm" %}
                                     <div class="invalid-feedback">{{ form.email.errors|first }}</div>
                             </div>
                         

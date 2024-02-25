@@ -27,13 +27,15 @@ from collections import defaultdict
 from itertools import chain
 from django.contrib.auth.models import Group, Permission
 
-  
+
+@login_required(login_url='login') 
 def user_setting(request):
     users = User.objects.all().order_by('-id')
     context = {'users': users}
     return render(request, 'users_all.html', context)
 
-  
+
+@login_required(login_url='login')  
 def user_group(request, id):
      user = get_object_or_404(User, id=id)
      group = Group.objects.all().order_by('id')
@@ -42,7 +44,8 @@ def user_group(request, id):
 
      return render(request, 'partial/user_group.html', context)
 
-  
+
+@login_required(login_url='login')  
 def group_list(request):
      
      groups = Group.objects.all().order_by('id')
@@ -52,7 +55,8 @@ def group_list(request):
      return render(request, 'partial/group_list.html', context)
 
 
-  
+
+@login_required(login_url='login') 
 def user_group_edit(request, id):
     user = get_object_or_404(User, id=id)
 
@@ -76,7 +80,8 @@ def user_group_edit(request, id):
         'user': user,
     })
 
-  
+
+@login_required(login_url='login') 
 def add_group(request):
     
     form = GroupAddForm()
@@ -104,7 +109,8 @@ def add_group(request):
     })
 
 
-  
+
+@login_required(login_url='login') 
 def group_edit(request, id):
     group = get_object_or_404(Group, id=id)
 
@@ -128,13 +134,17 @@ def group_edit(request, id):
         'group': group,
     })
 
+
+@login_required(login_url='login')
 def group_setting(request):
     groups = Group.objects.all().order_by('id')
      
     context = {'groups':groups,}
 
     return render(request, 'group_setting.html', context)
-    
+
+
+@login_required(login_url='login')   
 def group_delete(request, id):
     group = get_object_or_404(Group, pk=id)
    
@@ -147,7 +157,9 @@ def group_delete(request, id):
                 "showMessage": f"{group.name} deleted."
             })
         })
-  
+
+
+@login_required(login_url='login') 
 def admin_boundary(request):
     country = Country.objects.all().order_by('-id')
     region = Region.objects.all().order_by('-id')
@@ -157,7 +169,8 @@ def admin_boundary(request):
     context = {'country': country, 'region': region, 'zone': zone, 'woreda':woreda}
     return render(request, 'admin_boundary.html', context)
 
-  
+
+@login_required(login_url='login') 
 def project_type(request):
     type = Portfolio_Type.objects.all().order_by('-id')
     category = Portfolio_Category.objects.all().order_by('-id')
@@ -166,12 +179,15 @@ def project_type(request):
     context = {'type': type, 'category': category }
     return render(request, 'project_type.html', context)
 
-  
+
+@login_required(login_url='login')  
 def users_list(request):
     users = User.objects.all().order_by('id')
     context = {'users': users}
     return render(request, 'partial/user_list.html', context)
 
+
+@login_required(login_url='login')
 def users_filter(request):
     query = request.GET.get('search', '')
     
@@ -187,6 +203,7 @@ def users_filter(request):
     return render(request, 'partial/user_list.html', context)
 
 
+@login_required(login_url='login')
 def groups_filter(request):
     query = request.GET.get('search', '')
     
@@ -202,28 +219,38 @@ def groups_filter(request):
     return render(request, 'partial/group_list.html', context)
 
 
-  
+
+@login_required(login_url='login') 
 def edit_user(request, pk):
-    user = get_object_or_404(User, pk=pk)
-    if request.method == "POST":
-        form = UserForm(request.POST, instance=user, userid=user.id)
-        if form.is_valid():
-            form.save()
+    user =User.objects.get(pk=pk)
+    if request.method == 'POST':
+        user_form = CustomUserChangeForm(request.POST, instance=user)
+        profile_form = UserForm(request.POST, request.FILES, instance=user.profile)
+
+        if user_form.is_valid and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            
             return HttpResponse(
                 status=204,
                 headers={
                     'HX-Trigger': json.dumps({
-                        "UserProfileChanged": None,
-                        "showMessage": f"{user.first_name} updated."
+                        "UserprofileChanged": None,
+                        "showMessage": f"{user.email} updated."
                     })
-                }
-            )
+                })
+        else:
+            user_form = CustomUserChangeForm( instance=user)
+            profile_form = UserForm(instance=user.profile)
+            
     else:
-        form = UserForm(instance=user, userid=user.id)
-    return render(request, 'partial/user_form.html', {
-        'form': form,
-        'user': user,
+       
+        user_form = CustomUserChangeForm( instance=user)
+        profile_form = UserForm(instance=user.profile)
+    return render(request, 'partial/account_user_form.html', {
+        'profile_form':profile_form, 'user_form':user_form
     })
+
 
     
 

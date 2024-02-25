@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'program',
     'app_admin',
     'portfolio',
+    'user',
     
     'conceptnote',
    
@@ -173,7 +174,9 @@ if not DEBUG:
     # and renames the files with unique names for each version to support long-term caching
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-LOGIN_REDIRECT_URL = 'home'
+
+
+LOGIN_REDIRECT_URL = 'user'
 LOGOUT_REDIRECT_URL = 'login'
 
 

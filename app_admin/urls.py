@@ -7,7 +7,7 @@ from . import views
 urlpatterns = [
    
     path('', views.user_setting, name='user_setting'),
-    path('users/', views.user_setting, name='user_setting'),
+    path('account/', views.user_setting, name='user_setting'),
     path('boundaries/', views.admin_boundary, name='admin_boundary'),
     path('project_types/', views.project_type, name='project_type'),
     path('users_list/', views.users_list, name='users_list'),
@@ -28,10 +28,10 @@ urlpatterns = [
     path('add_type/', views.add_type, name='add_type'),
     path('add_category/', views.add_category, name='add_category'),
     path('type_filter/', views.type_filter, name='type_filter'),
-    path('users/<int:id>/', views.user_detail, name='user_detail'),
-    path('users/profile/<int:id>/', views.user_detail_profile, name='user_detail_profile'),
-    path('user_group/<int:id>/', views.user_group, name='user_group'),
-    path('user_group_edit/<int:id>/', views.user_group_edit, name='user_group_edit'),
+    path('account/<int:id>/', views.user_detail, name='user_detail'),
+    path('account/profile/<int:id>/', views.user_detail_profile, name='user_detail_profile'),
+    path('group/<int:id>/', views.user_group, name='user_group'),
+    path('account_group_edit/<int:id>/', views.user_group_edit, name='user_group_edit'),
     path('group_edit/<int:id>/', views.group_edit, name='group_edit'),
     path('group_add/', views.add_group, name='add_group'),
     path('group_list/', views.group_list, name='group_list'),
