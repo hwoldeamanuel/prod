@@ -38,5 +38,9 @@ urlpatterns = [
     path('group_delete/<int:id>/', views.group_delete, name='group_delete'),
     path('groups/', views.group_setting, name='group_setting'),
     path('groups_filter/', views.groups_filter, name='groups_filter'),
-    
+    path('user_roles/<int:id>/', views.user_roles, name='user_roles'),
+    path('update_user_program_roles/<int:id>/', views.update_user_program_roles, name='update_user_program_roles'),
+    path('add_user_program_role/<int:id>/', views.add_user_program_role, name='add_user_program_role'),
+    path('remove_user_program_role/<int:pk>/', views.remove_user_program_role, name='remove_user_program_role'),
+
 ]

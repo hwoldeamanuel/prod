@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+from django.http import QueryDict
 # Create your views here.
 from django.contrib.auth.decorators import login_required
 from itertools import chain
@@ -14,7 +14,7 @@ from .forms import UserForm, WoredaForm,ZoneForm, TypeForm, CategoryForm, Woreda
 from django.shortcuts import render
 from django.contrib.auth.views import LoginView
 from django.views.generic import FormView
-from .forms import CustomUserChangeForm, CustomUserCreationForm
+from .forms import CustomUserChangeForm, CustomUserCreationForm, UserRoleFormE, UserProgramRoleForm
 from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.views import PasswordResetView
@@ -26,6 +26,7 @@ from easyaudit.models import RequestEvent,LoginEvent
 from collections import defaultdict
 from itertools import chain
 from django.contrib.auth.models import Group, Permission
+from program.models import Program,UserRoles
 
 
 @login_required(login_url='login') 
@@ -225,7 +226,7 @@ def edit_user(request, pk):
     user =User.objects.get(pk=pk)
     if request.method == 'POST':
         user_form = CustomUserChangeForm(request.POST, instance=user)
-        profile_form = UserForm(request.POST, request.FILES, instance=user.profile)
+        profile_form = UserForm(request.POST, request.FILES, instance=user.profile, user=user)
 
         if user_form.is_valid and profile_form.is_valid():
             user_form.save()
@@ -241,19 +242,18 @@ def edit_user(request, pk):
                 })
         else:
             user_form = CustomUserChangeForm( instance=user)
-            profile_form = UserForm(instance=user.profile)
+            profile_form = UserForm(instance=user.profile, user=user)
             
     else:
        
         user_form = CustomUserChangeForm( instance=user)
-        profile_form = UserForm(instance=user.profile)
+        profile_form = UserForm(instance=user.profile, user=user)
     return render(request, 'partial/account_user_form.html', {
         'profile_form':profile_form, 'user_form':user_form
     })
 
 
     
-
 
   
 
@@ -587,3 +587,74 @@ def user_detail_profile(request, id):
     return render(request, 'user_setting_profile.html', context)
 
 
+def user_roles(request, id):
+    user = get_object_or_404(User, pk=id)
+    program_users = UserRoles.objects.filter(user=user)
+    return render(request, 'partial/user_role_program.html', {
+        'program_users': program_users,
+    })
+
+def update_user_program_roles(request, id):
+    
+    user_role = UserRoles.objects.get(pk=id)
+    program = get_object_or_404(Program,id=user_role.program_id)
+    if request.method == "PUT":
+        user_role = UserRoles.objects.get(pk=id)
+        data = QueryDict(request.body).dict()
+        form = UserRoleFormE(data, instance=user_role, program=program)
+        if form.is_valid():
+            instance = form.save()
+            return HttpResponse(
+                status=204,
+                headers={
+                    'HX-Trigger': json.dumps({
+                        "UserProgramListChanged": None,
+                        "showMessage": f"{instance.user } updated."
+                    })
+                })
+        
+        form = UserRoleFormE(instance=user_role, program=program) 
+        context = {'form': form}
+        return render(request, 'partial/edit_user_program_role.html', context)
+    
+    else:
+        form = UserRoleFormE(instance=user_role, program=program)
+        return render(request, 'partial/edit_user_program_role.html', {
+        'form': form,
+        'user_role': user_role,
+    })
+
+def add_user_program_role(request, id):
+    user = User.objects.filter(id=id)
+    if request.method == "POST":
+        form = UserProgramRoleForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.user = User.objects.get(pk=id)
+            instance.save()
+            return HttpResponse(
+                status=204,
+                headers={
+                    'HX-Trigger': json.dumps({
+                        "UserProgramListChanged": None,
+                        "showMessage": f"{instance.user} updated."
+                    })
+                })
+    else:
+        form = UserProgramRoleForm(user=user)
+    return render(request, 'partial/user_program_role.html', {
+        'form': form,
+        
+    })
+
+def remove_user_program_role(request, pk):
+    user_role = get_object_or_404(UserRoles, pk=pk)
+    user_role.delete()
+    return HttpResponse(
+        status=204,
+        headers={
+            'HX-Trigger': json.dumps({
+                "UserProgramListChanged": None,
+                "showMessage": f"{user_role.user} deleted."
+            })
+        })

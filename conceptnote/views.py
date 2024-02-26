@@ -22,6 +22,7 @@ from django.forms.models import modelformset_factory
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from django.db.models import Max, Avg,Sum,Count
+
 # Create your views here.
  
 def conceptnotes(request):

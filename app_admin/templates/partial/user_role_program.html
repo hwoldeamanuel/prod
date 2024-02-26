@@ -1,0 +1,38 @@
+
+
+<table class="table table-sm table-striped projects">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Program</th>
+ 
+        <th>Initiator </th>
+        <th >Techncial</th>
+        <th>Program</th>
+        <th>Finance</th>
+        <th class="vertical-align-mid">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+       
+     {% for program in program_users %}
+     <tr>
+       <td>{{ forloop.counter}}</td>
+       <td>{{ program.program }}</td>
+    
+       <td><input type="radio" class="checkbox" {% if program.is_pcn_initiator %}checked{% endif %} value=""></td>
+       <td><input type="radio" {% if program.is_pcn_technical_approver %}checked{% endif %} value=""></td>
+       <td><input type="radio" {% if program.is_pcn_program_approver %}checked{% endif %} value=""> </td>
+       <td><input type="radio" {% if program.is_pcn_finance_approver %}checked{% endif %} value="" ></td>
+       <td><button class="btn btn-info btn-sm btn-xs" hx-get="{% url 'update_user_program_roles' program.id %}"   hx-target="#dialog" class="btn btn-primary"><i class="fa fa-edit"></i></button></td>
+     </tr>
+     {% endfor %}
+ 
+    </tbody>
+  </table>
+ 
+    <!-- Placeholder for the modal -->
+   
+
+    <!-- Empty toast to show the message -->
+  

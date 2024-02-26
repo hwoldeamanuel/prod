@@ -39,9 +39,16 @@
           <section class="login_content">
  {% load widget_tweaks %}
                                         {% with WIDGET_ERROR_CLASS='is-invalid' %}
-            <form method="POST" action="{% url 'register' %}" autocomplete="off">
+            <form method="POST"  autocomplete="off">
 {% csrf_token %}
               <h1>Register Form</h1>
+                              <div class="form-label-group">
+                                               
+                                                        {% render_field form.username class="form-control" placeholder="username" %}
+                                                        {{ form.username.errors|first }}
+                                                       
+                                                    </div>
+                      <div class="form-label-group">
                 <div class="form-label-group">
                                                
                                                         {% render_field form.email class="form-control" placeholder="email" %}
@@ -61,6 +68,13 @@
                                                         
                                                     </div>
               <div>
+                           {% if form.non_field_errors %}
+    <ul>
+        {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
                 <button type="submit" class="btn btn-secondary"> Submit</button>
                 <a class="reset_pass" href="#">Lost your password?</a>
               </div>

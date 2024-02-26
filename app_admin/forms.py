@@ -7,6 +7,7 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from user.models import Profile
+from program.models import Program, UserRoles
 
 class CustomUserCreationForm(UserCreationForm):
     username = forms.CharField(max_length=100,
@@ -38,12 +39,12 @@ class CustomUserChangeForm(UserChangeForm):
 
 class UserForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        userid = kwargs.pop('userid', None)
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
       
-        if userid:
-            self.fields['reports_to'].queryset = User.objects.all().exclude(id=userid)
-            self.fields['reports_to'].initial=User.objects.all().exclude(id=userid).first()
+        if user:
+            self.fields['reports_to'].queryset = User.objects.all().exclude(id=user.id)
+            self.fields['reports_to'].initial=User.objects.all().exclude(id=user.id).first()
     
         
     
@@ -142,3 +143,34 @@ class GroupAddForm(forms.ModelForm):
     class Meta:
         model = Group
         fields=['name','permissions']
+
+class UserRoleFormE(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        program = kwargs.pop('program', None)
+        super().__init__(*args, **kwargs)
+        
+        if program:
+            self.fields['program'].queryset = Program.objects.filter(title=program)
+    
+    class Meta:
+        model = UserRoles
+        fields=['program','is_pcn_initiator', 'is_pcn_technical_approver', 'is_pcn_program_approver','is_pcn_finance_approver']
+
+
+class UserProgramRoleForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        
+        if user:
+            
+            self.fields['program'].queryset = Program.objects.exclude(users_role__in=user)
+            Program.objects.exclude(users_role__in=user)
+        else:
+           
+            self.fields['program'].queryset = Program.objects.all()
+        
+            
+    class Meta:
+        model = UserRoles
+        fields=['program','is_pcn_initiator', 'is_pcn_technical_approver', 'is_pcn_program_approver','is_pcn_finance_approver']

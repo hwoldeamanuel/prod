@@ -25,7 +25,7 @@ from collections import defaultdict
 from itertools import chain
 from django import template
 from easyaudit.models import CRUDEvent, RequestEvent, LoginEvent
-
+from .forms import LoginForm
 
 
 
@@ -103,7 +103,9 @@ def activity_filter(request):
 
   
 class Login(LoginView):
+    
     template_name = 'user/registration/login.html'
+    
 
 class RegisterView(FormView):
     form_class = CustomUserCreationForm
@@ -142,7 +144,7 @@ def add_profile(request):
     user =User.objects.get(pk=request.user.id)
     if request.method == 'POST':
         user_form = CustomUserChangeForm(request.POST, instance=user)
-        profile_form = ProfileForm(request.POST, request.FILES, instance=user.profile)
+        profile_form = ProfileForm(request.POST, request.FILES, instance=user.profile, user=request.user)
 
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
@@ -157,16 +159,16 @@ def add_profile(request):
                 })
         else:
             user_form = CustomUserChangeForm(instance=user)
-            profile_form = ProfileForm(instance=user.profile)
+            profile_form = ProfileForm(instance=user.profile, user=request.user)
             
     else:
-        profile_form = ProfileForm(instance=user.profile)
+        profile_form = ProfileForm(instance=user.profile, user=request.user)
         user_form = CustomUserChangeForm(instance=user)
         return render(request, 'user/profile_form.html', {
         'profile_form': profile_form, 'user_form':user_form
     })
     return render(request, 'user/profile_form.html', {
-         'user_form' :CustomUserChangeForm(instance=user),'profile_form': ProfileForm()})
+         'user_form' :CustomUserChangeForm(instance=user),'profile_form': ProfileForm(user=request.user)})
 
 @login_required(login_url='login')
 def user_profile(request): 

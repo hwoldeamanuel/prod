@@ -4,13 +4,13 @@
          <div class="col-md-4 col-sm-4  profile_details">
                         <div class="well profile_view">
                           <div class="col-sm-12">
-                            <h4 class="brief"><i>{{user.portfolio }}</i></h4>
+                            <h4 class="brief"><i>{{user.profile.portfolio }}</i></h4>
                             <div class="left col-sm-7">
-                              <h6>{{user.full_name }} </h6>
-                              <p><strong>Position: </strong> {{user.job_title}} </p>
+                              <h6>{{user.profile.full_name }} </h6>
+                              <p><strong>Position: </strong> {{user.profile.job_title}} </p>
                               <ul class="list-unstyled">
                                 <li><i class="fa fa-external-link"></i>{{user.email}}</li>
-                                <li><i class="fa fa-phone"></i>:{{user.contact_number}}  </li>
+                                <li><i class="fa fa-phone"></i>:{{user.profile.contact_number}}  </li>
                               </ul>
                             </div>
                             <div class="right col-sm-5 text-center">
