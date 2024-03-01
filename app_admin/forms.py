@@ -55,7 +55,7 @@ class UserForm(forms.ModelForm):
      
      
 class WoredaForm(forms.ModelForm):  
-    region = forms.ChoiceField(choices=[(region.id, region.name) for region in Region.objects.all()], initial='', required=False)
+   
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
@@ -72,13 +72,20 @@ class WoredaForm(forms.ModelForm):
     
     class Meta:
         model = Woreda
-        fields="__all__"
+        fields=['name',]
     
 class WoredaFormE(forms.ModelForm): 
+      
       class Meta:
         model = Woreda
-        fields="__all__"
+        fields=['name']
 
+class ZoneFormE(forms.ModelForm): 
+      
+      class Meta:
+        model = Woreda
+        fields=['name']
+        
 class RegionForm(forms.ModelForm): 
       class Meta:
         model = Region
@@ -91,7 +98,7 @@ class ZoneForm(forms.ModelForm):
         self.fields['region'].queryset = Region.objects.all()
     class Meta:
         model = Zone
-        fields="__all__"           
+        fields=['region','name',]           
       # invalid input from the client; ignore and fallback to empty City queryset
         
 

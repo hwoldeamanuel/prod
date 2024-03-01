@@ -1,5 +1,7 @@
 
 {% load static %}
+{% if user.profile %}
+
 
                      <div class="profile_img">
                         <div id="crop-avatar">
@@ -32,7 +34,8 @@
 
                       <a class="btn btn-success" hx-get="{% url 'add_profile' %}" hx-target = "#dialog"><i class="fa fa-edit m-right-xs"></i>Edit Profile</a>
                       <br />
-
-                      <!-- start skills -->
-                      
-               
+{% else %}
+        <a class="btn btn-success" hx-get="{% url 'newuserprofile' %}" hx-target = "#dialog"><i class="fa fa-edit m-right-xs"></i>Add Profile</a>
+                      <br />               <!-- start skills -->
+                     
+{% endif %}

@@ -25,8 +25,8 @@ from collections import defaultdict
 from itertools import chain
 from django import template
 from easyaudit.models import CRUDEvent, RequestEvent, LoginEvent
-from .forms import LoginForm
-
+from .forms import LoginForm, ProfileFormAdd
+from .models import Profile
 
 
  
@@ -162,7 +162,10 @@ def add_profile(request):
             profile_form = ProfileForm(instance=user.profile, user=request.user)
             
     else:
+       
         profile_form = ProfileForm(instance=user.profile, user=request.user)
+       
+            
         user_form = CustomUserChangeForm(instance=user)
         return render(request, 'user/profile_form.html', {
         'profile_form': profile_form, 'user_form':user_form
@@ -197,3 +200,27 @@ def change_password(request):
     })
 def change_success(request):
     return render(request, 'user/partial/password_change_success.html')
+
+@login_required(login_url='login')
+def newuserprofile(request): 
+    user =User.objects.get(pk=request.user.id)
+    if request.method == 'POST':
+       
+        profile_form = ProfileFormAdd(request.POST)
+
+        if profile_form.is_valid():
+            instance = profile_form.save(commit=False)
+            instance.user = user
+            instance.save()
+            return HttpResponse(
+                status=204,
+                headers={
+                    'HX-Trigger': json.dumps({
+                        "UserprofileChanged": None,
+                        "showMessage": f"{user.email} updated."
+                    })
+                })
+    
+    profile_form = ProfileFormAdd(request.POST, user=user)
+    context = {'profile_form':profile_form}
+    return render(request, 'user/partial/profile_form_new.html', context)

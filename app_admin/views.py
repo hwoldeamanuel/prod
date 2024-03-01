@@ -14,13 +14,13 @@ from .forms import UserForm, WoredaForm,ZoneForm, TypeForm, CategoryForm, Woreda
 from django.shortcuts import render
 from django.contrib.auth.views import LoginView
 from django.views.generic import FormView
-from .forms import CustomUserChangeForm, CustomUserCreationForm, UserRoleFormE, UserProgramRoleForm
+from .forms import CustomUserChangeForm, CustomUserCreationForm, UserRoleFormE, UserProgramRoleForm, ZoneFormE
 from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.views import PasswordResetView
 # Create your views here.
 from django.contrib.auth.decorators import login_required
-
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Sum, Count
 from easyaudit.models import RequestEvent,LoginEvent
 from collections import defaultdict
@@ -165,8 +165,19 @@ def admin_boundary(request):
     country = Country.objects.all().order_by('-id')
     region = Region.objects.all().order_by('-id')
     zone = Zone.objects.all().order_by('-id')
-    woreda = Woreda.objects.all().order_by('-id')
+    woreda_list = Woreda.objects.all().order_by('-id')
     
+    page = request.GET.get('page', 1)
+
+    paginator = Paginator(woreda_list, 10)
+    try:
+        woreda = paginator.page(page)
+    except PageNotAnInteger:
+        woreda = paginator.page(1)
+    except EmptyPage:
+        woreda = paginator.page(paginator.num_pages)
+
+  
     context = {'country': country, 'region': region, 'zone': zone, 'woreda':woreda}
     return render(request, 'admin_boundary.html', context)
 
@@ -278,8 +289,19 @@ class RegisterView(FormView):
   
 def admin_list(request):
     
-    woreda = Woreda.objects.all().order_by('id')
+    woreda_list = Woreda.objects.all().order_by('id')
     
+    page = request.GET.get('page', 1)
+
+    paginator = Paginator(woreda_list, 50)
+    try:
+        woreda = paginator.page(page)
+    except PageNotAnInteger:
+        woreda = paginator.page(1)
+    except EmptyPage:
+        woreda = paginator.page(paginator.num_pages)
+
+  
     context = {'woreda':woreda}
     return render(request, 'partial/admin_boundary.html', context)
 
@@ -294,10 +316,22 @@ def admin_filter(request):
         qs2 = Woreda.objects.distinct().filter(zone__name__icontains=query)
         qs3 = Woreda.objects.distinct().filter(zone__region__name__icontains=query)
         
-        woreda = qs1.union(qs2, qs3).order_by('id')
+        woreda_list = qs1.union(qs2, qs3).order_by('id')
+        
         
     else:
-        woreda = all_woredas
+       woreda_list = all_woredas
+
+        
+    page = request.GET.get('page', 1)
+
+    paginator = Paginator(woreda_list, 50)
+    try:
+        woreda = paginator.page(page)
+    except PageNotAnInteger:
+        woreda = paginator.page(1)
+    except EmptyPage:
+        woreda = paginator.page(paginator.num_pages)
 
     context = {'woreda': woreda}
     return render(request, 'partial/admin_boundary.html', context)
@@ -306,7 +340,7 @@ def admin_filter(request):
 def edit_woreda(request, id):
     woreda = get_object_or_404(Woreda, id=id)
     if request.method == "POST":
-        form = WoredaForm(request.POST, instance=woreda)
+        form = WoredaFormE(request.POST, instance=woreda)
         if form.is_valid():
             form.save()
             return HttpResponse(
@@ -319,7 +353,7 @@ def edit_woreda(request, id):
                 }
             )
     else:
-        form = WoredaForm(instance=woreda)
+        form = WoredaFormE(instance=woreda)
     return render(request, 'partial/woreda_form.html', {
         'form': form,
         'woreda': woreda,
@@ -330,7 +364,7 @@ def edit_woreda(request, id):
 def edit_zone(request, id):
     zone = get_object_or_404(Zone, id=id)
     if request.method == "POST":
-        form = ZoneForm(request.POST, instance=zone)
+        form = ZoneFormE(request.POST, instance=zone)
         if form.is_valid():
             form.save()
             return HttpResponse(
@@ -343,7 +377,7 @@ def edit_zone(request, id):
                 }
             )
     else:
-        form = ZoneForm(instance=zone)
+        form = ZoneFormE(instance=zone)
     return render(request, 'partial/Zone_form.html', {
         'form': form,
         'zone': zone,
@@ -373,7 +407,7 @@ def add_woreda(request):
             )
     else:
         form = WoredaForm()
-    return render(request, 'partial/woreda_form.html', {
+    return render(request, 'partial/woreda_form_new.html', {
         'form': form,
     })
 
@@ -426,11 +460,14 @@ def add_zone(request):
                 }
             )
     else:
-        form = ZoneForm()
-    return render(request, 'partial/zone_form.html', {
-        'form': form,
-    })
-
+        form = ZoneForm(request.POST)
+        return render(request, 'partial/zone_form_new.html', {
+            'form': form,
+        })
+   
+    return render(request, 'partial/zone_form_new.html', {
+            'form': form,
+        })
   
 def type_list(request):
     

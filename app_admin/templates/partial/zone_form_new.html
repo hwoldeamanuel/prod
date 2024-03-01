@@ -8,7 +8,7 @@
   <div class="modal-body">
     <div class="mb-3">
       <label for="{{ form.region.id_for_label }}" class="form-label">Region</label>
-      <input type="text" class="form-control" disabled="disabled" placeholder="{{zone.region.name}}">
+     {% render_field form.region class="form-control form-control-sm" autocomplete="off" %}
       <div class="invalid-feedback">{{ form.region.errors|first }}</div>
     </div>
     <div class="mb-3">

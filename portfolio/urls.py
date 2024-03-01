@@ -12,7 +12,7 @@ urlpatterns = [
     path('portfolios/', views.portfolios, name='portfolios'),
     path('portfolio/<int:pk>/', views.portfolio_detail, name='portfolio_detail'),
     path('program/edit/<int:id>/', views.edit_portfolio, name='edit_portfolio'),
-
+    path('mychartq/<int:id>/', views.mychartq, name='mychartq'),
 
     path('pregion/<int:id>/', views.pregion, name='pregion'),
     path('pregion/pzones/', views.pzones, name='pzones'),

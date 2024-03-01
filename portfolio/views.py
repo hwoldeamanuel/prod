@@ -14,6 +14,11 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from .forms import PortfolioForm, FieldOfficeForm
 from .models import Portfolio, FieldOffice
+from easyaudit.models import LoginEvent, RequestEvent, CRUDEvent
+from collections import defaultdict
+from collections import defaultdict
+from itertools import chain
+from conceptnote.models import Icn, Activity
 
 @login_required(login_url='login')
 def portfolios(request):
@@ -21,6 +26,23 @@ def portfolios(request):
     context = {'portfolios': portfolios}
     return render(request, 'portfolios.html', context)
 
+def mychartq(request, id):
+    qs1 = Icn.objects.filter(ilead_agency_id = id).values('created__date').annotate(icn_count=Count('id', distinct=True))
+    qs2 = Activity.objects.filter(alead_agency_id = id).values('created__date').annotate(activity_count=Count('id', distinct=True))
+  
+
+
+
+
+    collector = defaultdict(dict)
+
+    for collectible in chain(qs1, qs2):
+        collector[collectible['created__date']].update(collectible.items())
+
+    all_request = list(collector.values())
+
+    context = {'all_request':all_request,}
+    return render(request, 'partial/mychart.html', context)
 
 @login_required(login_url='login')
 def portfolios_list(request):

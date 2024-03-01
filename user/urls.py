@@ -20,7 +20,8 @@ urlpatterns = [
     path('profile', views.userprofile, name='userprofile'),
     path('add_profile/', views.add_profile, name='add_profile'),
     path('user_profile/', views.user_profile, name='user_profile'),
-   
+    path('newuserprofile/', views.newuserprofile, name='newuserprofile'),
+
     path('activity_filter/', views.activity_filter, name='activity_filter'),
     path('user_activity/', views.user_activity, name='user_activity'),
 

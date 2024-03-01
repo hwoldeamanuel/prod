@@ -50,6 +50,8 @@ class Icn(models.Model):
         if Impact.objects.filter(icn_id=self).exists():
             qs = Impact.objects.filter(icn_id=self).annotate(Count('indicators', distinct=True))
             num = qs[0].indicators__count
+        else:
+            num = 0
        
         
         return num

@@ -37,7 +37,25 @@ class ProfileForm(forms.ModelForm):
             'reports_to',
             ]
 
-
+class ProfileFormAdd(forms.ModelForm):
+     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+      
+        if user:
+            self.fields['reports_to'].queryset = User.objects.all().exclude(id=user.id)
+            self.fields['reports_to'].initial=User.objects.all().exclude(id=user.id).first()
+     
+     class Meta:
+        model = Profile
+        fields=['first_name',
+            'last_name',
+            'portfolio',
+            'contact_number',
+            'job_title',
+            'portfolio',
+            'reports_to',
+            ]
 class LoginForm(AuthenticationForm):
     error_messages = {
         "invalid_login": "Ah, ah, ah. You didn't say the magic word!",
