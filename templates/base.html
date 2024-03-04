@@ -85,6 +85,15 @@
                     <ul class="nav child_menu" style="{% if 'conceptnote' in request.path %}display: block; {%endif %}">
                       <li class="{% if 'intervention' in request.path %}current-page{%endif %}"><a href="{% url 'icns' %}">Intervention</a></li>
                      <li class="{% if 'activity' in request.path %}current-page{%endif %}"><a href="{% url 'activities' %}">Activity</a></li>
+                     <li class="{% if 'report' in request.path %}active{%endif %}"><a>Report<span class="fa fa-chevron-down"></span></a>
+                          <ul class="nav child_menu" style="{% if 'report' in request.path %}display: block; {%endif %}">
+                            <li class="sub_menu{% if 'report/intervention' in request.path %}active{%endif %}"><a href="level2.html">Intervention</a>
+                            </li>
+                            <li class="sub_menu{% if 'report/activity' in request.path %}active{%endif %}"><a href="#level2_1">Activity</a>
+                            </li>
+                           
+                          </ul>
+                        </li>
                     </ul>
                   </li>
                    <li class="{% if 'user' in request.path %}active{%endif %}"><a><i class="fa fa-user"></i> User Account <span class="fa fa-chevron-down"></span></a>
@@ -94,7 +103,6 @@
                     </ul>
                   </li>
                    
-              
                  
                 
                 </ul>
@@ -114,6 +122,7 @@
                           
                   
                 </ul>
+                
               </div>
 
             </div>
@@ -151,7 +160,7 @@
                       <img src="{% static 'images/user.png' %}" alt="">{{request.user }}
                     </a>
                     <div class="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
-                      <a class="dropdown-item"  href="#"> Profile</a>
+                      <a class="dropdown-item"  href="{% url 'user' %}"> Profile</a>
                         
                     <a class="dropdown-item"  href="javascript:;">Help</a>
                       <a class="dropdown-item"  href="{% url 'logout' %}"><i class="fa fa-sign-out pull-left">Log out</i></a>

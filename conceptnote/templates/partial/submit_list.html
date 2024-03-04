@@ -33,7 +33,7 @@
         <td></td>
      
         <td>
-            <button type="button" class="btn btn-primary btn-sm btn-xs" {% if request.user.id == icn.user.id %} hx-get="{% url 'icn_submit_form' icn.id %}" hx-target="#SubmitList" {% endif %}>Submit Request </button>
+            <button type="button" class="btn btn-primary btn-sm btn-xs" {% if request.user.id == icn.user.id %} hx-get="{% url 'icn_submit_form' icn.id %}" hx-target="#SubmitList" {% endif %}>Pending Submission </button>
         </td>
         {% endif%}
 
@@ -47,7 +47,7 @@
         <td>
           <a>Techncial</a>
           <br />
-          <small>{{ icn.technical_lead.user }}</small>
+          <small>{{ icn.technical_lead }}</small>
         </td>
         {% if icnsubmit %}
         <td>{% if icnsubmit.icnsubmitapproval_t.approval_date|time == icnsubmit.submission_date|time %}{{ icnsubmit.submission_date|timesince }} {% else %} {{icnsubmit.icnsubmitapproval_t.approval_date}} {% endif %}</td>
@@ -73,7 +73,7 @@
     <td>
       <a>Program</a>
       <br />
-      <small>{{ icn.program_lead.user}}</small>
+      <small>{{ icn.program_lead }}</small>
     </td>
     {% if icnsubmit %}
     <td>{% if icnsubmit.icnsubmitapproval_p.approval_date|time == icnsubmit.submission_date|time %}{{ icnsubmit.submission_date|timesince }}{% else %}{{icnsubmit.icnsubmitapproval_p.approval_date}}{% endif %}</td>
@@ -97,7 +97,7 @@
     <td>
       <a>Finance</a>
       <br />
-      <small>{{ icn.finance_lead.user }}</small>
+      <small>{{ icn.finance_lead }}</small>
     </td>
     {% if icnsubmit %}
     <td> {% if icnsubmit.icnsubmitapproval_f.approval_date|time == icnsubmit.submission_date|time %}{{ icnsubmit.submission_date|timesince }}{% else %}{{icnsubmit.icnsubmitapproval_f.approval_date}}{% endif %}</td>

@@ -10,7 +10,7 @@
         <th >Techncial</th>
         <th>Program</th>
         <th>Finance</th>
-        <th class="vertical-align-mid">Action</th>
+        <th class="vertical-align-mid"></th>
       </tr>
     </thead>
     <tbody>
@@ -18,7 +18,7 @@
      {% for user in users %}
      <tr>
        <td>{{ forloop.counter}}</td>
-       <td>{{ user.user }}</td>
+       <td>{{user.user}}</br><small>{{ user.user.profile.portfolio  }}</small></td>
     
        <td><input type="radio" class="checkbox" {% if user.is_pcn_initiator %}checked{% endif %} value=""></td>
        <td><input type="radio" {% if user.is_pcn_technical_approver %}checked{% endif %} value=""></td>

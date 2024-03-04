@@ -24,6 +24,8 @@ urlpatterns = [
 
     path('activity_filter/', views.activity_filter, name='activity_filter'),
     path('user_activity/', views.user_activity, name='user_activity'),
+    path('user_program_roles/', views.user_program_roles, name='user_program_roles'),
+    path('user_conceptnotes/', views.user_conceptnotes, name='user_conceptnotes'),
 
     path('password-reset-confirm/<uidb64>/<token>/',
          auth_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm.html'),

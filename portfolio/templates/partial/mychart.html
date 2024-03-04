@@ -1,45 +1,48 @@
-  <canvas id="myChart" width="400" height="160"></canvas>
 
-  {% block content_page_js %}
+  <div id="container" style="width: 100%;"  >
+      <canvas id="canvas" height="240" width="679" style="width: 503px; height: 251px;"></canvas>
+    </div>
+{% block content_page_js %}
+
 <script>
-var MONTHS = [{% for activity in all_request %} "{{ activity.datetime__date|date:'M-d'}}", {% endfor %}];
-var randomScalingFactor = function() {
-      return Math.round(Math.random() * 100 * (Math.random() > 0.5 ? -1 : 1));
-    };
-var randomColorFactor = function() {
-      return Math.round(Math.random() * 255);
-    };
-var randomColor = function(opacity) {
-      return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',' + (opacity || '1') + ')';
-    };
 
-var ctx = document.getElementById("myChart").getContext("2d");
+
+var ctx = document.getElementById("canvas").getContext("2d");
 var myChart = new Chart(ctx, {
-    type: 'line',
+    type: 'bar',
     
     
      data: {
-        labels: [{% for activity in all_request %} "{{ activity.created__date|date:'M-d'}}", {% endfor %}],
+        labels: [{% for cn in all_request %} "{{ cn.m|date:'M-Y' }}", {% endfor %}],
         datasets: [{
-          label: "Intervention CN",
-          data: [{% for activity in all_request %} {{ activity.icn_count }}, {% endfor %}],
-          backgroundColor:'rgba(38, 185, 154, .6)',
-          borderColor:'rgba(38, 185, 154, 1)',
-          borderWidth: 1
-        }, {
-          label: "Activity CN",
-          data: [{% for activity in all_request %} {{ activity.activity_count }}, {% endfor %}],
-          backgroundColor: 'rgba(155, 185, 230, .8)',
-          borderColor:'rgba(38, 185, 154, 1)',
-          borderWidth: 1
-        },   ]
+          label: "Intervention",
+          data: [{% for cn in all_request %} {{ cn.icn_count }}, {% endfor %}],
+           backgroundColor: "rgba(38, 185, 154, 1)",
+                
+            
+            borderColor: "rgba(38, 185, 154, 1)",
+                
+            
+            borderWidth: 1
+        },
+        {
+          label: "Activity",
+          data: [{% for cn in all_request %} {{ cn.activity_count }}, {% endfor %}],
+           backgroundColor:  "rgba(35, 57, 93, 1)",
+                
+                       borderColor: "rgba(35, 57, 93, 1)",
+                
+            
+            borderWidth: 1
+        }, 
+        ]
       },
     options: {
-                    
-       
+             
+         
                     title:{
-                        display:true,
-                        text:'Chart.js Line Chart - Skip Points'
+                        display:false,
+                        text:'Chart.js Bar Chart - Skip Points'
                     },
                     tooltips: {
                         mode: 'label',
@@ -48,18 +51,22 @@ var myChart = new Chart(ctx, {
                         mode: 'label'
                     },
             scales: {
-                yAxes: [{
-                        display: true,
-                        scaleLabel: {
+               
+            yAxes: [{
+            scaleLabel: {
                             display: true,
-                            labelString: '# Concept Note'
+                            labelString: '# conceptnote'
                         },
-                    }],
+                ticks: {
+                    beginAtZero:true
+                }
+            }],
+     
                 xAxes: [{
                         display: true,
                         scaleLabel: {
                             display: true,
-                            labelString: 'Days'
+                            labelString: 'Month'
                         }
                     }],
             }
@@ -67,12 +74,34 @@ var myChart = new Chart(ctx, {
   
 
 });
- 
-var myChartData = new Chart(ctx, config);
-defaults.global.legend.display = true;
-defaults.global.legend.align = "start";
-defaults.global.legend.position = "bottom";
-defaults.global.legend.labels.padding = 30;
-defaults.global.legend.labels.boxWidth = 15;
+
+  window.onload = function() {
+   var ctx = document.getElementById("canvas").getContext("2d");
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    
+    
+     data:data,
+          options: {
+              // Elements options apply to all of the options unless overridden in a dataset
+              // In this case, we are setting the border of each bar to be 2px wide and green
+              elements: {
+                  rectangle: {
+                      borderWidth: 2,
+                      borderColor: 'rgb(0, 255, 0)',
+                      borderSkipped: 'bottom'
+                  }
+              },
+              responsive: true,
+              legend: {
+                  position: 'top',
+              },
+              title: {
+                  display: true,
+                  text: 'Chart.js Bar Chart'
+              }
+          }
+      });
+     };
 </script>
 {% endblock%}

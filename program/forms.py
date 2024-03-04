@@ -205,11 +205,9 @@ class ProgramForm(forms.ModelForm):
             self.fields[field].required = True 
 
         self.fields['description'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'placeholder':'description'   }    )    
-        self.fields['portfolio'].queryset = Portfolio.objects.all().order_by('id')
-        self.fields['portfolio'].initial = Portfolio.objects.all().order_by('id').first()
-        if portfolio:
-            self.fields['portfolio'].queryset = Portfolio.objects.all().order_by('id')
-            self.fields['portfolio'].initial = Portfolio.objects.all().order_by('id').last()
+        self.fields['portfolio'].queryset = Portfolio.objects.filter(id=1)
+        self.fields['portfolio'].initial = Portfolio.objects.filter(id=1).first()
+        
             
     class Meta:
         model = Program
@@ -289,9 +287,15 @@ class UserRoleForm(forms.ModelForm):
 
 class UserRoleFormE(forms.ModelForm):
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         
-        self.fields['user'].queryset = User.objects.all()
+        if user:
+            id = user.pk
+            self.fields['user'].queryset = User.objects.filter(id=id)
+            self.fields['user'].initial = User.objects.filter(id=id).first()
+        
+        self.fields['user'].required = True 
         
             
     class Meta:

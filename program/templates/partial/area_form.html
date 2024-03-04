@@ -11,7 +11,7 @@
                             </label>
                             <div class="col-md-8 col-sm-8 ">
       
-       {% render_field form.region class="form-control form-control-sm" autocomplete="off"  hx-get="/program/region/zones" hx-target="#id_zone" hx-swap="innerHTML" %}
+       {% render_field form.region class="form-control form-control-sm" autocomplete="off"  hx-get="/program/region/zones/" hx-target="#id_zone" hx-swap="innerHTML" %}
       <div class="invalid-feedback">{{ form.region.errors|first }}</div>
     </div>
     </div>
@@ -20,7 +20,7 @@
                             </label>
                             <div class="col-md-8 col-sm-8 ">
       
-      {% render_field form.zone class="form-control form-control-sm" autocomplete="off"  hx-get="/program/region/zones/woredas" hx-target="#id_woreda" hx-swap="innerHTML" %}
+      {% render_field form.zone class="form-control form-control-sm" autocomplete="off"  hx-get="/program/region/zones/woredas/" hx-target="#id_woreda" hx-swap="innerHTML" %}
       <div class="invalid-feedback">{{ form.zone.errors|first }}</div>
     </div>
     </div>

@@ -1,0 +1,42 @@
+
+
+
+
+<table class="table table-sm table-striped projects">
+    <thead>
+      <tr>
+       <th>Program </th>
+        <th>Type</th>
+  <th>Title</th>
+        
+        <th >Submission</th>
+        <th>Approval</th>
+      
+       
+      </tr>
+    </thead>
+    <tbody>
+    {% if conceptnotes %}   
+     {% for cn in conceptnotes %}
+     <tr>
+        <td>{% if cn.get_name == "Activity" %}{{ cn.icn.program }} {% else %} {{cn.program}}{% endif %}</td>
+      
+       <td>{{ cn.get_name }}</td>
+       <td>{% if cn.get_name == "Intervention" %} <a href="{% url 'icn_detail' cn.id %}">{{ cn.title }}{% elif cn.get_name == "Activity" %}<a href="{% url 'activity_detail' cn.id %}">{{cn.title}} {% endif %} </a></td>
+      <td>
+                      <span class="badge {% if cn.status == True %}badge bg-green {% else %} badge bg-red {% endif %}">{{ cn.get_status_display}}</span>
+                   </td>
+       <td>
+                      <span class="badge {% if 'Rejected' in cn.approval_status %} bg-red {% elif 'Approved' in cn.approval_status %} bg-green {% else %} bg-warning {% endif %}">{% if cn.approval_status %} {{ cn.approval_status}} {% else %} Pending Submission {% endif %}</span>
+                    </td>
+       
+     {% endfor %}
+ {% endif %}
+    </tbody>
+  </table>
+
+    <!-- Placeholder for the modal -->
+   
+
+    <!-- Empty toast to show the message -->
+  

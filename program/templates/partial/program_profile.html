@@ -1,0 +1,32 @@
+   <section class="panel">
+
+                        <div class="x_title">
+                          <h2>Program Description</h2>
+                          <div class="clearfix"></div>
+                        </div>
+                        <div class="panel-body">
+                          <h3 class="green"><i class="fa fa-archive"></i> {{program.title}}</h3>
+<p>{{ program.working_title}}</p>
+                          <p>{{ program.description }}</p>
+                        
+
+                          <div class="project_detail">
+                           <p class="title"> Donor</p>
+                            <p>{{program.donor}}</p>
+                            <p class="title"> Fund Code</p>
+                            <p>{{program.fund_code}}</p>
+                            <p class="title">Start Date</p>
+                            <p>{{program.start_date}}</p>
+                            <p class="title">End Date</p>
+                            <p>{{program.end_date}}</p>
+                      
+                    <p class="title">Duration</p>
+                  <div class="progress progress_sm">
+                        <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="{{ program.get_date_diff }}"></div>
+                      </div>
+                
+                    </div>
+
+                          
+                          
+                      </section>

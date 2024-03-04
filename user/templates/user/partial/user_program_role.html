@@ -1,0 +1,38 @@
+
+
+<table class="table table-sm table-striped projects">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Program</th>
+ 
+        <th>Initiator </th>
+        <th >Techncial</th>
+        <th>Program</th>
+        <th>Finance</th>
+       
+      </tr>
+    </thead>
+    <tbody>
+    {% if program_users %}   
+     {% for program in program_users %}
+     <tr>
+       <td>{{ forloop.counter}}</td>
+       <td>{{ program.program }}</td>
+    
+       <td><input type="radio" class="checkbox" {% if program.is_pcn_initiator %}checked{% endif %} value=""></td>
+       <td><input type="radio" {% if program.is_pcn_technical_approver %}checked{% endif %} value=""></td>
+       <td><input type="radio" {% if program.is_pcn_program_approver %}checked{% endif %} value=""> </td>
+       <td><input type="radio" {% if program.is_pcn_finance_approver %}checked{% endif %} value="" ></td>
+       
+     </tr>
+     {% endfor %}
+ {% endif %}
+    </tbody>
+  </table>
+
+    <!-- Placeholder for the modal -->
+   
+
+    <!-- Empty toast to show the message -->
+  

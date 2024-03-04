@@ -34,7 +34,7 @@ from collections import defaultdict
 from itertools import chain
 from django import template
 from easyaudit.models import RequestEvent, CRUDEvent, LoginEvent
-
+from conceptnote.models import Icn, Activity
 
 
 @login_required(login_url='login')
@@ -42,11 +42,11 @@ def home(request):
   total_program  =  Program.objects.count
   total_portfolio  =  Portfolio.objects.count
   total_user  =  User.objects.count
-  #total_icn = Icn.objects.count
-  #total_activity = Activity.objects.count
+  total_icn = Icn.objects.count
+  total_activity = Activity.objects.count
   program_users = Program.objects.annotate(num_user=Count("users_role")).order_by('-num_user')[:12]
   total_woreda = ImplementationArea.objects.count
-  context = {'program_users':program_users, 'total_program': total_program, 'total_portfolio':total_portfolio, 'total_user':total_user,  'total_woreda':total_woreda}
+  context = {'program_users':program_users, 'total_program': total_program, 'total_portfolio':total_portfolio, 'total_user':total_user,  'total_woreda':total_woreda, 'total_icn':total_icn, 'total_activity':total_activity}
   return render(request, 'home/dashboard_main.html', context)
 
 
@@ -56,12 +56,12 @@ def dashboard(request):
   total_program  =  Program.objects.count
   total_portfolio  =  Portfolio.objects.count
   total_user  =  User.objects.count
- # total_icn = Icn.objects.count
-  #total_activity = Activity.objects.count
+  total_icn = Icn.objects.count
+  total_activity = Activity.objects.count
   
   
   total_woreda = ImplementationArea.objects.count
-  context = {'total_program': total_program, 'total_portfolio':total_portfolio, 'total_user':total_user,  'total_woreda':total_woreda}
+  context = {'total_program': total_program, 'total_portfolio':total_portfolio, 'total_user':total_user,  'total_woreda':total_woreda, 'total_icn':total_icn, 'total_activity':total_activity}
   return render(request, 'home/dashboard2 copy.html', context)
 
 @login_required(login_url='login')

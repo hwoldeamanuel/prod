@@ -63,7 +63,7 @@ def icn_edit(request, id):
         
         form = IcnForm(request.POST, request.FILES, instance=icn, user=request.user) 
         context = {'form':form}
-        return render(request, 'intervention_add.html', context)
+        return render(request, 'intervention_edit.html', context)
             
     elif request.method == "GET" and icn.status == False:    
 
@@ -704,13 +704,13 @@ def activity_edit(request, id):
         
         form = ActivityForm(request.POST,  instance=activity, user=request.user) 
         context = {'form':form}
-        return render(request, 'activity_add.html', context)
+        return render(request, 'activity_edit.html', context)
             
     elif request.method == "GET" and activity.status == False:    
 
         form = ActivityForm(instance=activity,  user=request.user) 
         context = {'form':form}
-        return render(request, 'activity_add.html', context)
+        return render(request, 'activity_edit.html', context)
     else:
         return HttpResponseRedirect(request.path_info)
     
@@ -1183,3 +1183,17 @@ def downloada(request, id):
     response = HttpResponse(document.document, content_type='application/docx')
     response['Content-Disposition'] = f'attachment; filename="{document.document}"'
     return response
+
+def latest_submit_approval_list(request, id):
+    
+    list = IcnSubmit.objects.filter(icn_id = id, submission_status=2).latest('id')
+    context = {'list':list}
+    
+    return render(request, 'partial/recent_submit_approval_list.html', context)
+
+def latest_submit_approval_list_activity(request, id):
+    
+    list = ActivitySubmit.objects.filter(activity_id = id, submission_status=2).latest('id')
+    context = {'list':list}
+    
+    return render(request, 'partial/recent_submit_approval_list_activity.html', context)

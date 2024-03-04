@@ -75,14 +75,12 @@
                             </div>
                             <label class="col-form-label col-md-2 col-sm-2 label-align" for="first-name">Portfolio:
                             </label>
-                            <div class="col-md-3 col-sm-3" hx-trigger="PortfolioListChanged from:body" hx-get="/program/newportfolio" hx-target="#id_portfolio" hx-swap="innerHTML" >
+                            <div class="col-md-3 col-sm-3">
 
                                 {% render_field form.portfolio class="form-control form-control-sm"  %}
                                 <div class="invalid-feedback">{{ form.portfolio.errors|first }}</div>
                                 </div>
-                                <div class="col-md-1 col-sm-1">
-                               <a hx-get="#" hx-target="#dialog"><i class="fa fa-plus"></i> </a>
-                                </div>
+                                
                             
                         </div>
                        

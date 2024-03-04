@@ -1,0 +1,37 @@
+
+
+<table class="table table-sm table-striped projects">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Type</th>
+  <th>Title</th>
+        <th>Initiator </th>
+        <th >Techncial</th>
+        <th>Program</th>
+        <th>Finance</th>
+       
+      </tr>
+    </thead>
+    <tbody>
+    {% if conceptnotes %}   
+     {% for cn in conceptnotes %}
+     <tr>
+       <td>{{ forloop.counter}}</td>
+       <td>{{ cn.get_name }}</td>
+       <td>{% if cn.get_name == "Intervention" %} <a href="{% url 'icn_detail' cn.id %}">{{ cn.title }}{% elif cn.get_name == "Activity" %}<a href="{% url 'activity_detail' cn.id %}">{{cn.title}} {% endif %} </a></td>
+       <td><input type="radio" class="checkbox" {% if cn.user == request.user %}checked{% endif %} value=""></td>
+       <td><input type="radio" {% if request.user.id == cn.technical_lead.user.id %}checked{% endif %} value=""></td>
+       <td><input type="radio" {% if request.user.id == cn.program_lead.user.id %}checked{% endif %} value="" ></td>
+       <td><input type="radio" {% if request.user.id == cn.finance_lead.user.id %}checked{% endif %} value="" ></td>
+     </tr>
+     {% endfor %}
+ {% endif %}
+    </tbody>
+  </table>
+
+    <!-- Placeholder for the modal -->
+   
+
+    <!-- Empty toast to show the message -->
+  

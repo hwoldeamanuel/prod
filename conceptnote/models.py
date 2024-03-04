@@ -55,6 +55,8 @@ class Icn(models.Model):
        
         
         return num
+    def get_name(self):
+        return "Intervention"
     def __str__(self):
         return self.title
   
@@ -321,9 +323,14 @@ class Activity(models.Model):
         if ActivityImpact.objects.filter(activity_id=self).exists():
             qs = ActivityImpact.objects.filter(activity_id=self).annotate(Count('impact', distinct=True))
             num = qs[0].impact__count
-       
-        
+        else:
+            num = 0
         return num
+    
+    def get_name(self):
+        return "Activity"
+        
+       
     def __str__(self):
         return self.title
 

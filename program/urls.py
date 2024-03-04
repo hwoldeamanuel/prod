@@ -11,6 +11,7 @@ urlpatterns = [
     path('new/', views.create_view, name='add_program'),
     path('program/<int:pk>/', views.program_detail, name='program_detail'),
     path('program/edit/<int:id>/', views.edit_view, name='edit_program'),
+    
 ]
 
 htmxpatterns = [
@@ -24,7 +25,9 @@ htmxpatterns = [
     path('region/zones/woredas/', views.woredas, name='woredas'),
     path('delete_area/<int:pk>/', views.delete_area, name='delete_area'),
     
+    path('edit_program_profile/<int:id>/', views.edit_program_profile, name='edit_program_profile'),
     
+    path('program_profile/<int:id>/', views.program_profile, name='program_profile'),
    
 
     path('delete_program/<int:pk>/', views.delete_program, name='delete_program'),

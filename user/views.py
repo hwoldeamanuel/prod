@@ -17,10 +17,11 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
-from program.models import Program
+from program.models import Program, UserRoles
+from conceptnote.models import Icn, Activity
 import json
 from django.db.models import Max, Avg,Sum,Count
-
+from django.db.models import Q
 from collections import defaultdict
 from itertools import chain
 from django import template
@@ -126,7 +127,7 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
                       "if an account exists with the email you entered. You should receive them shortly." \
                       " If you don't receive an email, " \
                       "please make sure you've entered the address you registered with, and check your spam folder."
-    success_url = reverse_lazy('account')
+    success_url = reverse_lazy('user')
     
 
 
@@ -224,3 +225,24 @@ def newuserprofile(request):
     profile_form = ProfileFormAdd(request.POST, user=user)
     context = {'profile_form':profile_form}
     return render(request, 'user/partial/profile_form_new.html', context)
+
+def user_program_roles(request):
+    user = get_object_or_404(User, pk=request.user.id)
+    program_users = UserRoles.objects.filter(user=user)
+    return render(request, 'user/partial/user_program_role.html', {
+        'program_users': program_users,
+    })
+
+
+def user_conceptnotes(request):
+    user = User.objects.filter(username=request.user)
+   
+    userroles = UserRoles.objects.filter(user__in=user)
+    qsi = Icn.objects.filter(Q(user__in=user) | Q(program_lead__in=userroles) | Q(technical_lead__in=userroles)| Q(finance_lead__in=userroles)).only("title", "id","user","program_lead","technical_lead","finance_lead","status","approval_status")
+    qsa = Activity.objects.filter(Q(user__in=user) | Q(program_lead__in=userroles) | Q(technical_lead__in=userroles)| Q(finance_lead__in=userroles)).only("title", "id", "user","program_lead","technical_lead","finance_lead","status","approval_status")
+      
+       
+    conceptnotes = list(chain(qsi, qsa))
+    return render(request, 'user/partial/conceptnotes.html', {
+        'conceptnotes': conceptnotes,
+    })

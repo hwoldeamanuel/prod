@@ -19,6 +19,17 @@ from collections import defaultdict
 from collections import defaultdict
 from itertools import chain
 from conceptnote.models import Icn, Activity
+from django.db import models
+from django.db.models import Func
+from datetime import datetime
+from django.db.models.functions import TruncMonth
+from django.db.models import Q
+from collections import defaultdict
+
+def convertmonth(created):
+    #template = '%(function)s(MONTH from %(expressions)s)'
+    #output_field = models.IntegerField()
+    return created.strftime("%m-%Y")
 
 @login_required(login_url='login')
 def portfolios(request):
@@ -27,22 +38,26 @@ def portfolios(request):
     return render(request, 'portfolios.html', context)
 
 def mychartq(request, id):
-    qs1 = Icn.objects.filter(ilead_agency_id = id).values('created__date').annotate(icn_count=Count('id', distinct=True))
-    qs2 = Activity.objects.filter(alead_agency_id = id).values('created__date').annotate(activity_count=Count('id', distinct=True))
-  
-
+    qs1 = Icn.objects.filter(ilead_agency_id = id).annotate(m=TruncMonth('created')).values("m").annotate(icn_count=Count('id', distinct=True))
+    qs2 = Activity.objects.filter(alead_agency_id = id).annotate(m=TruncMonth('created')).values("m").annotate(activity_count=Count('id', distinct=True))
+ 
 
 
 
     collector = defaultdict(dict)
 
     for collectible in chain(qs1, qs2):
-        collector[collectible['created__date']].update(collectible.items())
+        collector[collectible['m']].update(collectible.items())
 
     all_request = list(collector.values())
 
     context = {'all_request':all_request,}
     return render(request, 'partial/mychart.html', context)
+
+
+
+
+
 
 @login_required(login_url='login')
 def portfolios_list(request):
@@ -135,7 +150,11 @@ def categories(request):
 
 def portfolio_detail(request, pk):
     portfolio = Portfolio.objects.get(pk=pk)
-    context = {'portfolio': portfolio}
+    total_icn  =  Icn.objects.filter(Q(ilead_agency=portfolio.id) | Q(ilead_co_agency=portfolio.id)).count
+    total_acn  =  Activity.objects.filter(Q(alead_agency=portfolio.id) | Q(alead_co_agency=portfolio.id)).count
+    
+    total_program = Icn.objects.filter(Q(ilead_agency=portfolio.id) | Q(ilead_co_agency=portfolio.id)).values('program__title').distinct().count()
+    context = {'portfolio': portfolio, 'total_icn':total_icn, 'total_acn':total_acn, 'total_program':total_program}
     return render(request, 'portfolio.html', context)
 
 def pregion(request, id):
@@ -214,3 +233,18 @@ def remove_fieldoffice(request, pk):
                 "showMessage": f"{fieldoffice.woreda} deleted."
             })
         })
+
+def portfolio_conceptnotes(request, id):
+    
+    portfolio = Portfolio.objects.filter(id=id)
+    qsi = Icn.objects.filter(Q(ilead_agency__in=portfolio) | Q(ilead_co_agency__in=portfolio)).only("title", "id","user","program_lead","technical_lead","finance_lead","status","approval_status","created").order_by("-created")
+    qsa = Activity.objects.filter(Q(alead_agency__in=portfolio) | Q(alead_co_agency__in=portfolio)).only("title", "id", "user","program_lead","technical_lead","finance_lead","status","approval_status","created").order_by("-created")
+      
+       
+    conceptnotes = sorted(list(chain(qsi, qsa)), key=lambda instance: instance.created, reverse=True)
+    
+    context = {'conceptnotes': conceptnotes}
+
+    return render(request, 'partial/portfolio_conceptnotes.html', context)
+
+

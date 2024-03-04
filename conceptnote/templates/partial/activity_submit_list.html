@@ -16,7 +16,7 @@
         <td>
           <a>Initiator</a>
           <br />
-          <small>{{ activity.user.email_user }}</small>
+          <small>{{ activity.user }}</small>
         </td>
         {% if activitysubmit %}
         <td>{{activitysubmit.submission_date}}</td>
@@ -33,7 +33,7 @@
         <td></td>
      
         <td>
-            <button type="button" class="btn btn-primary btn-sm btn-xs" {% if request.user.id == activity.user.id %} hx-get="{% url 'activity_submit_form' activity.id %}" hx-target="#SubmitList" {% endif %}>Submit Request </button>
+            <button type="button" class="btn btn-primary btn-sm btn-xs" {% if request.user.id == activity.user.id %} hx-get="{% url 'activity_submit_form' activity.id %}" hx-target="#SubmitList" {% endif %}>Pending Submission </button>
         </td>
         {% endif%}
 
@@ -47,7 +47,7 @@
         <td>
           <a>Techncial</a>
           <br />
-          <small>{{ activity.technical_lead.user.email_user }}</small>
+          <small>{{ activity.technical_lead}}</small>
         </td>
         {% if activitysubmit %}
         <td>{% if activitysubmit.activitysubmitapproval_t.approval_date|time == activitysubmit.submission_date|time %}{{ activitysubmit.submission_date|timesince }} {% else %} {{activitysubmit.activitysubmitapproval_t.approval_date}} {% endif %}</td>
@@ -75,7 +75,7 @@
     <td>
       <a>Program</a>
       <br />
-      <small>{{ activity.program_lead.user.email_user}}</small>
+      <small>{{ activity.program_lead }}</small>
     </td>
     {% if activitysubmit %}
     <td>{% if activitysubmit.activitysubmitapproval_p.approval_date|time == activitysubmit.submission_date|time %}{{ activitysubmit.submission_date|timesince }}{% else %}{{activitysubmit.activitysubmitapproval_p.approval_date}}{% endif %}</td>
@@ -99,7 +99,7 @@
     <td>
       <a>Finance</a>
       <br />
-      <small>{{ activity.finance_lead.user.email_user }}</small>
+      <small>{{ activity.finance_lead }}</small>
     </td>
     {% if activitysubmit %}
     <td> {% if activitysubmit.activitysubmitapproval_f.approval_date|time == activitysubmit.submission_date|time %}{{ activitysubmit.submission_date|timesince }}{% else %}{{activitysubmit.activitysubmitapproval_f.approval_date}}{% endif %}</td>

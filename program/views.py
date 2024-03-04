@@ -14,13 +14,21 @@ from .forms import ProgramForm, AddProgramAreaForm, IndicatorForm, UserRoleForm,
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import Program, ImplementationArea, Indicator, UserRoles
 from django.contrib.auth.models import User
+from conceptnote.models import Icn, Activity
+from django.db.models.functions import TruncMonth
+from django.db.models import Q
+from collections import defaultdict
+from itertools import chain
 
- 
 def program(request):
     programs = Program.objects.all().order_by('-id')
     context = {'programs': programs}
     return render(request, 'programs.html', context)
 
+def program_profile(request, id):
+    program = Program.objects.get(pk=id)
+    context = {'program': program}
+    return render(request, 'partial/program_profile.html', context)
  
 def create_view(request): 
     # dictionary for initial data with  
@@ -38,14 +46,34 @@ def create_view(request):
 
  
 def program_detail(request, pk):
+   
+    qs1 = Icn.objects.filter(program_id = pk).annotate(m=TruncMonth('created')).values("m").annotate(icn_count=Count('id', distinct=True))
+    qs2 = Activity.objects.filter(icn__program_id = pk).annotate(m=TruncMonth('created')).values("m").annotate(activity_count=Count('id', distinct=True))
+ 
+    total_icn  =  Icn.objects.filter(program_id = pk).count
+    total_acn  =  Activity.objects.filter(icn__program_id = pk).count
+    collector = defaultdict(dict)
 
-    context ={}
+    for collectible in chain(qs1, qs2):
+        collector[collectible['m']].update(collectible.items())
+
+    all_request = list(collector.values())
+   
+    qsi = Icn.objects.filter(program_id = pk).only("title", "id","user","program_lead","technical_lead","finance_lead","status","approval_status","created").order_by("-created")
+    qsa = Activity.objects.filter(icn__program_id = pk).only("title", "id", "user","program_lead","technical_lead","finance_lead","status","approval_status","created").order_by("-created")
+      
+       
+    conceptnotes = sorted(list(chain(qsi, qsa)), key=lambda instance: instance.created, reverse=True)
+    
+
+
+   
  
     # add the dictionary during initialization
   
     program = Program.objects.get(pk=pk)
     
-    context = {'program':program }
+    context = {'program':program, 'all_request':all_request, 'total_icn':total_icn, 'total_acn':total_acn, 'conceptnotes': conceptnotes  }
     return render(request, 'program.html', context)
 
 
@@ -70,6 +98,32 @@ def edit_view(request, id):
     context = {'form':form}
     return render(request, 'add_program.html', context)
 
+def edit_program_profile(request, id):
+    program = Program.objects.get(pk=id)
+    if request.method == "POST":
+        form = ProgramForm(request.POST, request.FILES, instance=program)
+        if form.is_valid():
+            instance =form.save()
+            return HttpResponse(
+                status=204,
+                headers={
+                    'HX-Trigger': json.dumps({
+                        "ProgramListChanged": None,
+                        "showMessage": f"{instance.title} updated."
+                    })
+                }
+            )
+        else:
+            form = ProgramForm(instance=program)
+            return render(request, 'partial/program_profile_form.html', {
+            'form': form,
+            'program': program,
+        })
+    form = ProgramForm(instance=program)
+    return render(request, 'partial/program_profile_form.html', {
+            'form': form,
+            'program': program,
+        })
 
          
 def search_results_view(request):
@@ -178,13 +232,13 @@ def edit_user_role(request, uid):
    
     user = User.objects.get(pk=uid)
    
-    form = UserRoleFormE()
+    
    
         
     if request.method == "PUT":
         user = User.objects.get(pk=uid)
         data = QueryDict(request.body).dict()
-        form = UserRoleFormE(data, instance=user)
+        form = UserRoleFormE(data, instance=user, user=user)
         if form.is_valid():
             instance = form.save()
             return HttpResponse(
@@ -196,11 +250,11 @@ def edit_user_role(request, uid):
                     })
                 })
         
-        form = UserRoleFormE(instance=user) 
+        form = UserRoleFormE(instance=user, user=user) 
         context = {'form': form}
         return render(request, 'partial/edit_user_role.html', context)
     
-    form = UserRoleFormE(instance=user) 
+    form = UserRoleFormE(instance=user, user=user) 
     context = {'form':form}
     return render(request, 'partial/edit_user_role.html', context)
 
@@ -317,11 +371,11 @@ def area_list(request, id):
 def update_user_roles(request, id):
     
     user_role = UserRoles.objects.get(pk=id)
-   
+    user = get_object_or_404(User, pk=id)
     if request.method == "PUT":
         user_role = UserRoles.objects.get(pk=id)
         data = QueryDict(request.body).dict()
-        form = UserRoleFormE(data, instance=user_role)
+        form = UserRoleFormE(data, instance=user_role, user=user)
         if form.is_valid():
             instance = form.save()
             return HttpResponse(
@@ -333,12 +387,12 @@ def update_user_roles(request, id):
                     })
                 })
         
-        form = UserRoleFormE(instance=user_role) 
+        form = UserRoleFormE(instance=user_role, user=user) 
         context = {'form': form}
         return render(request, 'partial/edit_user_role.html', context)
     
     else:
-        form = UserRoleFormE(instance=user_role)
+        form = UserRoleFormE(instance=user_role, user=user)
         return render(request, 'partial/edit_user_role.html', {
         'form': form,
         'user_role': user_role,

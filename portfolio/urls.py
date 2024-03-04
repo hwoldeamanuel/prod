@@ -25,11 +25,12 @@ urlpatterns = [
     path('categories/', views.categories, name='categories'),
    
     path('portfolio_profile/<int:pk>/', views.portfolio_profile, name='portfolio_profile'),
+    path('portfolio_conceptnotes/<int:id>/', views.portfolio_conceptnotes, name='portfolio_conceptnotes'),
     path('fieldoffice/<int:id>/', views.fieldoffices, name='fieldoffices'),
     path('fieldoffice_edit/<int:pk>/', views.fieldoffice_edit, name='fieldoffice_edit'),
      
     path('fieldoffice_delete/<int:pk>/', views.remove_fieldoffice, name='remove_fieldoffice'),
-   
+
     
     
  
