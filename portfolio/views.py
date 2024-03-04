@@ -38,8 +38,9 @@ def portfolios(request):
     return render(request, 'portfolios.html', context)
 
 def mychartq(request, id):
-    qs1 = Icn.objects.filter(ilead_agency_id = id).annotate(m=TruncMonth('created')).values("m").annotate(icn_count=Count('id', distinct=True))
-    qs2 = Activity.objects.filter(alead_agency_id = id).annotate(m=TruncMonth('created')).values("m").annotate(activity_count=Count('id', distinct=True))
+    portfolio = Portfolio.objects.filter(id=id)
+    qs1 = Icn.objects.filter(Q(ilead_agency__in=portfolio) | Q(ilead_co_agency__in=portfolio)).annotate(m=TruncMonth('created')).values("m").annotate(icn_count=Count('id', distinct=True))
+    qs2 = Activity.objects.filter(Q(alead_agency__in=portfolio) | Q(alead_co_agency__in=portfolio)).annotate(m=TruncMonth('created')).values("m").annotate(activity_count=Count('id', distinct=True))
  
 
 
