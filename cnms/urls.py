@@ -27,6 +27,7 @@ urlpatterns = [
     path('setting/', include('app_admin.urls')),
     path('portfolio/', include('portfolio.urls')),
     path('conceptnote/', include('conceptnote.urls')),
+    path('report/', include('report.urls')),
     
 
 ]

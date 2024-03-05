@@ -1,0 +1,40 @@
+
+      <table class="data table table-sm table-striped no-margin" style="width:100%">
+        <thead>
+            <tr>
+              <th>#</th>
+           <th >Region</th>
+              <th>Zone</th>
+            <th >Woreda</th>
+             <th >Action</th>
+               
+            </tr>
+        </thead>
+        <tbody>
+            {%  if iareas %}
+            {% for iarea in iareas %}
+            <tr>
+               <td>{{forloop.counter}}</td>
+           
+                <td class="vertical-align-mid">
+                                    
+                                  {{ iarea.region }}</td>
+                <td class="vertical-align-mid">{{ iarea.zone }}</td>
+                <td class="vertical-align-mid">{{ iarea.woreda }}</td>
+                <td class="vertical-align-mid">
+
+                   
+                    <button class="btn btn-info btn-sm btn-xs" hx-get="/conceptnote/iregion/iedit_iarea/{{iarea.id}}/" hx-target="#dialog" ><i class="fa fa-edit"></i></button>
+
+                    
+                    
+                    
+                </td>
+            </tr>
+            {% endfor %}
+            
+        </tbody>
+{% endif %}
+    </table>
+   
+

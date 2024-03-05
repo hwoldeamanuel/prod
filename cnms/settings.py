@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'app_admin',
     'portfolio',
     'user',
-    
+    'report',
     'conceptnote',
    
     'django_htmx',
@@ -113,7 +113,7 @@ WSGI_APPLICATION = 'cnms.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-
+import dj_database_url
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',

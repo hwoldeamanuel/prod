@@ -1,0 +1,50 @@
+
+{% load widget_tweaks %}
+
+
+{% with WIDGET_ERROR_CLASS='is-invalid' %}
+                                                                
+<form id="iareaedit" form hx-post="{{ request.path }}" hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}' hx-target="#AreaList" hx-swap="innerHTML" >
+    {% csrf_token %}
+
+   
+    <div class="form-group row">
+    
+                <div class="col-3 col-sm-3">
+                   
+            
+            
+            
+                {% render_field form.region class="form-control form-control-sm" autocomplete="off"  hx-get="/conceptnote/iregion/izones" hx-target="#id_zone" hx-swap="innerHTML" %}
+                
+            
+                   
+                </div>
+
+       
+                <div class="col-3 col-sm-3">
+                     
+            
+                {% render_field form.zone class="form-control form-control-sm" autocomplete="off"  hx-get="/conceptnote/iregion/izones/iworedas" hx-target="#id_woreda" hx-swap="innerHTML" %}
+          
+                </div>
+                <div class="col-3 col-sm-3">
+           
+                {% render_field form.woreda class="form-control form-control-sm" %}
+            
+                </div>
+        <div class="col-3 col-sm-3">
+           
+        <button type="submit" class="btn btn-round btn-info btn-sm">Submit</button>
+        <input type="button" class="btn btn-round btn-secondary btn-sm" onclick="myFunction()" value="Reset">
+      
+        </div>
+    </div>
+</form>
+{% endwith %}
+
+<script>
+    function myFunction() {
+      document.getElementById("iareaedit").reset();
+    }
+</script>
