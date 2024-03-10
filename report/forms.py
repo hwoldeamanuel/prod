@@ -4,12 +4,15 @@ from .models import IcnReport, ActivityReport,IcnReportImpact,ActivityReportImpa
 from django import forms
 
 from program.models import  Program, ImplementationArea, Indicator, UserRoles
+from conceptnote.models import Icn, Activity, Impact, IcnImplementationArea
 from portfolio.models import Portfolio
 from datetime import datetime
 from django.forms.models import modelformset_factory
 from django_select2 import forms as s2forms
 from app_admin.models import Country , Region , Zone , Woreda 
 from django.contrib.auth.models import User
+from django.forms import inlineformset_factory
+from django.utils import timezone
 CHOICE1 =(
     ("1", "Low"),
     ("2", "Medium"),
@@ -25,24 +28,29 @@ CHOICE2 =(
 class IcnReportForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
+        icn = kwargs.pop('icn', None)
         super().__init__(*args, **kwargs)
-      
-        if user:
+        
+        if user and icn:
            
             program = Program.objects.filter(users_role=user)
+            icnreport = IcnReport.objects.filter(user=user)
+
+            self.fields['icn'].queryset =  Icn.objects.filter(id=icn.id)
+            self.fields['icn'].initial = Icn.objects.filter(id=icn.id).first()
             self.fields['program_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user)
             self.fields['program_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user).first()
             self.fields['technical_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_technical_approver=True).exclude(user=user)
             self.fields['technical_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_technical_approver=True).exclude(user=user).first()
             self.fields['finance_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user)
             self.fields['finance_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user).first()
-           
+            self.fields['actual_report_date'].initial= timezone.now()
         myfield = [
             
             'description',
             'actual_start_date', 
             'actual_end_date',
-            'ilead_agency',
+           
             'actual_report_date',
             'program_lead',
             'technical_lead',
@@ -68,7 +76,18 @@ class IcnReportForm(forms.ModelForm):
         
     
 
-       
+        self.fields['actual_mc_budget_usd'].widget = forms.widgets.NumberInput(
+            attrs={
+                'type': 'number', 
+                'class': 'form-control form-control-sm'
+                }
+            )
+        self.fields['actual_cost_sharing_budget_usd'].widget = forms.widgets.NumberInput(
+            attrs={
+                'type': 'number', 
+                'class': 'form-control form-control-sm'
+                }
+            )
        
         self.fields['actual_start_date'].widget = forms.widgets.DateInput(
           
@@ -80,23 +99,28 @@ class IcnReportForm(forms.ModelForm):
                 
                 }
             )
-  
+
         self.fields['actual_end_date'].widget = forms.widgets.DateInput(
             attrs={
                 'type': 'date', 'placeholder': 'yyyy-mm-dd (DOB)',
-                'class': 'form-control'
+                'class': 'form-control',
+                'required': 'true'
                 }
             )
+     
+        
         self.fields['actual_report_date'].widget = forms.widgets.DateInput(
             attrs={
-                'type': 'date', 'placeholder': 'yyyy-mm-dd (DOB)',
-                'class': 'form-control'
+                'type': 'date', 
+              
+                'class': 'form-control',
+                'readonly':'true'
                 }
             )
         self.fields['description'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-contro-sm', 'rows':'3', 'required':'required'  }    )
        
-        self.fields['ilead_co_agency'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
-        self.fields['ilead_co_agency'].queryset = Portfolio.objects.all()
+        self.fields['iworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
+        self.fields['iworeda'].queryset = ImplementationArea.objects.all()
          
     class Meta:
         model = IcnReport
@@ -115,9 +139,8 @@ class IcnReportForm(forms.ModelForm):
            
             'actual_cost_sharing_budget_usd',
             
+            'iworeda',
            
-            'ilead_agency',
-            'ilead_co_agency',
            
           
 
@@ -220,11 +243,11 @@ class IcnReportSubmitForm(forms.ModelForm):
 
      def __init__(self, *args, **kwargs):
          user = kwargs.pop('user', None)
-         icn = kwargs.pop('icn', None)
-         super(IcnSubmitForm, self).__init__(*args, **kwargs)
+         icnreport = kwargs.pop('icnreport', None)
+         super(IcnReportSubmitForm, self).__init__(*args, **kwargs)
 
          self.fields['document'].choices = [
-             (document.pk, document) for document in IcnReportDocument.objects.filter(user=user, icn=icn)
+             (document.pk, document) for document in IcnReportDocument.objects.filter(user=user, icnreport=icnreport)
          ]
              
       # invalid input from the client; ignore and fallback to empty City queryset
@@ -313,13 +336,26 @@ class IcnReportApprovalPForm(forms.ModelForm):
 
 class IcnReportImpactForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        program = kwargs.pop('program', None)
+       
         super().__init__(*args, **kwargs)
-    
+        
+       
+          
+
 
        
-       
-       
+        self.fields['actual_impact_pilot'].widget = forms.widgets.NumberInput(
+            attrs={
+                'type': 'number', 
+                'class': 'form-control form-control-sm'
+                }
+            )
+        self.fields['actual_impact_scaleup'].widget = forms.widgets.NumberInput(
+            attrs={
+                'type': 'number', 
+                'class': 'form-control form-control-sm'
+                }
+            )
         
         self.fields['actual_impact_pilot'].required = True 
         self.fields['actual_impact_scaleup'].required = True 
@@ -327,14 +363,17 @@ class IcnReportImpactForm(forms.ModelForm):
         model = IcnReportImpact
         fields = ['actual_impact_pilot' ,'actual_impact_scaleup',
                     ]
-        exclude=  ['icnreport']
+       
 
 class ActivityReportForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
+        acn = kwargs.pop('acn', None)
         super().__init__(*args, **kwargs)
       
-        if user:
+        if user and acn:
+            self.fields['activity'].queryset =  Activity.objects.filter(id=acn.id)
+            self.fields['activity'].initial = Activity.objects.filter(id=acn.id).first()
             
             program = Program.objects.filter(users_role=user)
             self.fields['program_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user)
@@ -343,14 +382,14 @@ class ActivityReportForm(forms.ModelForm):
             self.fields['technical_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_technical_approver=True).exclude(user=user).first()
             self.fields['finance_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user)
             self.fields['finance_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user).first()
-       
+            self.fields['actual_reporting_date'].initial= timezone.now()
            
         myfield = ['activity',
-            'icnreport',
+           
             'description',
             'actual_start_date', 
             'actual_end_date',
-            'alead_agency',
+           
             'actual_reporting_date',
             'program_lead',
             'technical_lead',
@@ -397,23 +436,25 @@ class ActivityReportForm(forms.ModelForm):
             )
         self.fields['actual_reporting_date'].widget = forms.widgets.DateInput(
             attrs={
-                'type': 'date', 'placeholder': 'yyyy-mm-dd (DOB)',
-                'class': 'form-control'
+                'type': 'date', 
+                'class': 'form-control',
+                 'readonly':'true'
                 }
             )
         self.fields['description'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-contro-sm', 'rows':'3', 'required':'required'  }    )
        
-        self.fields['alead_co_agency'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
-        self.fields['alead_co_agency'].queryset = Portfolio.objects.all()
+       
+        self.fields['aworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
+        self.fields['aworeda'].queryset = ImplementationArea.objects.all()
          
     class Meta:
         model = ActivityReport
         fields=['activity',
-            'icnreport',
+            
             'description',
             'actual_start_date', 
             'actual_end_date',
-            
+            'aworeda',
             'actual_reporting_date',
             'program_lead',
             'technical_lead',
@@ -424,8 +465,7 @@ class ActivityReportForm(forms.ModelForm):
             'actual_cost_sharing_budget_usd',
             
           
-            'alead_agency',
-            'alead_co_agency',
+           
            
           
 
@@ -527,7 +567,7 @@ class ActivityReportSubmitForm(forms.ModelForm):
 
      def __init__(self, *args, **kwargs):
          user = kwargs.pop('user', None)
-         activity = kwargs.pop('activity', None)
+         activityreport = kwargs.pop('activityreport', None)
          super(ActivityReportSubmitForm, self).__init__(*args, **kwargs)
 
          self.fields['document'].choices = [

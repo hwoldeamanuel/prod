@@ -1185,10 +1185,10 @@ def downloada(request, id):
     return response
 
 def latest_submit_approval_list(request, id):
-    
-    list = IcnSubmit.objects.filter(icn_id = id, submission_status=2).latest('id')
-    context = {'list':list}
-    
+    if IcnSubmit.objects.filter(icn_id = id, submission_status=2).exists():
+        list = IcnSubmit.objects.filter(icn_id = id, submission_status=2).latest('id')
+        context = {'list':list}
+    context = {}
     return render(request, 'partial/recent_submit_approval_list.html', context)
 
 def latest_submit_approval_list_activity(request, id):

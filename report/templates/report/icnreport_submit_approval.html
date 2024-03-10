@@ -14,7 +14,7 @@
         <div class="col-md-12">
           <div class="x_panel">
             <div class="x_title">
-              <h2>Intervention Concept Note</h2>
+              <h2>Intervention Report</h2>
               <ul class="nav navbar-right panel_toolbox">
                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                 </li>
@@ -44,7 +44,7 @@
 
                 <div style="height:350px;">
                   <div class="row">
-                    <div class="table" id="SubmitList" hx-trigger="load, SubmitApprovalListChanged from:body" hx-get= "{% url 'current_submit_approval_list' icn.id %}" hx-target="this" >
+                    <div class="table" id="SubmitList" hx-trigger="load, SubmitApprovalListChanged from:body" hx-get= "{% url 'icnreport_current_submit_approval_list' icnreport.id %}" hx-target="this" >
 
   
                     </div>
@@ -73,7 +73,7 @@
 
               
                 
-<div  hx-trigger="load, SubmitApprovalListChanged from:body" hx-get="{% url 'submit_approval_list' icn.id %}" hx-target="this">
+<div  hx-trigger="load, SubmitApprovalListChanged from:body" hx-get="{% url 'icnreport_submit_approval_list' icnreport.id %}" hx-target="this">
             
 
                 
@@ -81,7 +81,7 @@
               </div>
                         </div>
                         <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                       <div id="documentlist" hx-trigger="load, SubmitApprovalListChanged from:body" hx-get="{% url 'document_list' icn.id %}" hx-target="this">
+                       <div id="documentlist" hx-trigger="load, SubmitApprovalListChanged from:body" hx-get="{% url 'icnreport_document_list' icnreport.id %}" hx-target="this">
                         </div>
 </div>
                         <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
@@ -105,42 +105,40 @@
                     <div class="clearfix"></div>
                   </div>
                   <div class="panel-body">
-                    <h5 class="green"><i class="fa fa-paint-brush"></i> {{ icn.title }}</h5>
+                    <h5 class="green"><i class="fa fa-paint-brush"></i> {{ icnreport.icn.title }}</h5>
 
-                    <p>{{icn.description}}</p>
+                    <p>{{icnreport.description}}</p>
                
 
                     <div class="project_detail">
-                     <p>Program:<strong> {{icn.program}}</strong></p>
+                     <p>Program:<strong> {{icnreport.icn.program}}</strong></p>
 
-                      <p class="">Lead Agency:<strong> {{icn.ilead_agency}}</strong></p>
+                      <p class="">Lead Agency:<strong> {{icnreport.ilead_agency}}</strong></p>
                       <p>Co-Lead Agency:
-                      {% for colead in icn.ilead_co_agency.all %}
+                      {% for colead in icnreport.ilead_co_agency.all %}
                       <strong>{{colead}},</strong>
                       {% endfor %}</p>
                       <p class="">Proposed Start Date<strong>
-                      {{icn.proposed_start_date}}</strong></p>
+                      {{icnreport.actual_start_date}}</strong></p>
                       <p class="">Proposed End Date<strong>
-                      {{icn.proposed_end_date}}</strong></p>
+                      {{icnreport.actual_end_date}}</strong></p>
                   
 
                   
 
                       <p>Environmnetal Impact: {% if icn.eniromental_impact == '3' %}High{% elif icn.eniromental_impact == '2' %}<strong>Medium</strong>{% elif icn.eniromental_impact == '1' %}<strong>Low</strong>{% endif %}</p>
-                               <p>Environmnetal Impact Doc <i class="fa fa-paperclip"></i>:<strong>{% if icn.environmental_assessment_att %}<a href="{% url 'download_env_att' icn.id %}"><i class="fa fa-paperclip"></i>  download </a> {% else %}NA{% endif%} </strong></p>
+                               <p>Environmnetal Impact Doc <i class="fa fa-paperclip"></i>:<strong>{% if icnreport.environmental_assessment_att %}<a href="{% url 'download_env_att' icnreport.id %}"><i class="fa fa-paperclip"></i>  download </a> {% else %}NA{% endif%} </strong></p>
 
                               <p>Total Mercy Corps budget:<strong> ${{ icn.mc_budget_usd|intcomma }}</strong></p>
                               <p>Cost-share contributions:<strong>  ${{ icn.cost_sharing_budget_usd|intcomma }}</strong></p>
-             <p>Implementation Woreda:{% for woreda in icn.iworeda.all %}
-                      <strong>{{woreda}},</strong>
-                      {% endfor %}</p>
+             <p># of Implementation Woreda: <strong> {{ icn.icnimplementationarea_set.count }}</strong></p>
                              <p># of Impact/Target: <strong> {{ icn.impact_set.count }}</strong></p>
                              <p># of Program Indicators: <strong> {{ icn.get_num_indicator }}</strong></p>
                     <br />
   </div>
                     <div class="text-center mtop20">
                       
-                          <a href="{% url 'icn_detail' icn.id %}" class="btn btn-sm  btn-primary btn-xs"><i class="fa fa-eye"></i> View Details</a>
+                          <a href="{% url 'icn_detail' icnreport.id %}" class="btn btn-sm  btn-primary btn-xs"><i class="fa fa-eye"></i> View Details</a>
                     </div>
                   </div>
 

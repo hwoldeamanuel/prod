@@ -12,8 +12,8 @@ from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView
 from django.contrib.auth import get_user_model
-from .models import IcnReport, ActivityReport, ActivityReportImpact,ActivityReportImplementationArea,  IcnReportImplementationArea,  Impact, IcnReportSubmit, IcnReportDocument,  IcnReportSubmitApproval_P, IcnReportSubmitApproval_F, IcnReportSubmitApproval_T, ActivityReportDocument, ActivityReportSubmit, ActivityReportSubmitApproval_F,ActivityReportSubmitApproval_P,ActivityReportSubmitApproval_T
-from .forms import IcnReportForm, ActivityReportForm,ActivityReportImpactForm, ActivityReportImpactForm, ActivityReportAreaFormE, IcnReportAreaFormE, IcnReportSubmitForm,  IcnReportDocumentForm, IcnReportApprovalTForm, IcnReportApprovalFForm, IcnReportApprovalPForm, ActivityReportSubmitForm, ActivityReportDocumentForm, ActivityReportApprovalFForm, ActivityReportApprovalPForm,ActivityReportApprovalTForm
+from .models import IcnReport, ActivityReport, ActivityReportImpact,ActivityReportImplementationArea,  IcnReportImplementationArea,  Impact, IcnReportSubmit, IcnReportDocument,  IcnReportSubmitApproval_P, IcnReportSubmitApproval_F, IcnReportSubmitApproval_T, ActivityReportDocument, ActivityReportSubmit, ActivityReportSubmitApproval_F,ActivityReportSubmitApproval_P,ActivityReportSubmitApproval_T, IcnReportImpact, ActivityImpact
+from .forms import IcnReportForm, ActivityReportForm,ActivityReportImpactForm, ActivityReportImpactForm, ActivityReportAreaFormE, IcnReportAreaFormE, IcnReportSubmitForm,  IcnReportDocumentForm, IcnReportApprovalTForm, IcnReportApprovalFForm, IcnReportApprovalPForm, ActivityReportSubmitForm, ActivityReportDocumentForm, ActivityReportApprovalFForm, ActivityReportApprovalPForm,ActivityReportApprovalTForm,IcnReportImpactForm
 from program.models import  Program
 from django.http import QueryDict
 from django.conf import settings
@@ -22,54 +22,73 @@ from django.forms.models import modelformset_factory
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from django.db.models import Max, Avg,Sum,Count
-
+from conceptnote.models import Icn, Activity, IcnImplementationArea
+from django.forms import formset_factory 
+from django.views.generic.edit import CreateView
+from django.utils import timezone
 # Create your views here.
- 
-def reports(request):
-    reports = IcnReport.objects.all().order_by('-id')
-    context = {'reports':reports}
-    
-    return render(request, 'reports.html', context)
 
- 
-def icnreport_add(request): 
+
+def icnreports(request):
+    if IcnReport.objects.exists():
+        reports = IcnReport.objects.all().order_by('-id')
+        icns = Icn.objects.all().order_by('-id')
+        context = {'reports':reports, 'icns':icns}
+    else:
+        icns = Icn.objects.all().order_by('-id')
+        context = {'icns':icns}
+    
+    return render(request, 'report/reports.html', context)
+
+def icnreport_add(request, id): 
+    icn = Icn.objects.get(pk=id)
+    impacts =  Impact.objects.filter(icn_id=2)
     if request.method == "POST":
-        form = IcnReportForm(request.POST,request.FILES, user=request.user)
+        form = IcnReportForm(request.POST,request.FILES, user=request.user, icn=icn)
         if form.is_valid():
             instance = form.save(commit=False)
             instance.user = request.user
+            
             instance.save()
+           
+            for impact in impacts:
+                 IcnReportImpact.objects.create(icnreport=instance, impact=impact)
             return redirect('icnreport_detail',instance.pk) 
         
         
-        form = IcnReportForm(request.POST,request.FILES, user=request.user)   
+        form = IcnReportForm(request.POST,request.FILES, user=request.user, icn=icn)   
         context = {'form':form}
-        return render(request, 'interventionreport_add.html', context)
+        return render(request, 'report/icnreport_add.html', context)
     
-    form = IcnReportForm(user=request.user)   
-    context = {'form':form}
-    return render(request, 'interventionreport_add.html', context)
+    form = IcnReportForm(user=request.user, icn=icn)   
+    context = {'form':form, 'icn':icn}
+    return render(request, 'report/icnreport_add.html', context)
+
+
 
  
 def icnreport_edit(request, id): 
     icnreport = IcnReport.objects.get(pk=id)
+    icn = Icn.objects.get(pk=id)
+    impacts = Impact.objects.filter(icn_id=id)
     
     if request.method == "POST":
        
         form = IcnReportForm(request.POST,request.FILES, instance=icnreport, user=request.user)
         if form.is_valid():
             instance = form.save()
+            
             return redirect('icnreport_detail',instance.pk) 
         
-        form = IcnReportForm(request.POST, request.FILES, instance=icnreport, user=request.user) 
-        context = {'form':form}
-        return render(request, 'interventionreport_edit.html', context)
+        form = IcnReportForm(request.POST, request.FILES, instance=icnreport, user=request.user, icn=icn) 
+        context = {'form':form, 'icn':icn, 'icnreport':icnreport}
+        return render(request, 'report/icnreport_add.html', context)
             
     elif request.method == "GET" and icnreport.status == False:    
 
-        form = IcnReportForm(instance=icnreport,  user=request.user) 
-        context = {'form':form}
-        return render(request, 'interventionreport_edit.html', context)
+        form = IcnReportForm(instance=icnreport,  user=request.user, icn=icn) 
+        context = {'form':form, 'icn':icn, 'icnreport':icnreport}
+        return render(request, 'report/icnreport_add.html', context)
     else:
         return HttpResponseRedirect(request.path_info)
                 
@@ -83,8 +102,7 @@ def icnreport_detail(request, pk):
     # add the dictionary during initialization
   
     icnreport = IcnReport.objects.get(pk=pk)
-    if IcnReportImplementationArea.objects.filter(icnreport_id=icnreport.id).exists():
-        num_woreda = IcnReportImplementationArea.objects.filter(icnreport=icnreport).count()
+   
     if IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).exists():
         icnreportsubmit = IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).latest('id')
         context = {'icnreport':icnreport, 'icnreportsubmit':icnreportsubmit}
@@ -95,112 +113,11 @@ def icnreport_detail(request, pk):
     #icnsubmit = get_object_or_404(IcnReportSubmit, icnreport_id=icnreport.id).latest('id')
 
 
-    return render(request, 'intervention_detail.html', context)
+    return render(request, 'report/icnreport_detail.html', context)
 
-def izones(request):
-    form = IcnReportAreaFormE(request.GET)
-    return HttpResponse(form['zone'])
-
-
-    
-   
-
-def iworedas(request):
-    form = IcnReportAreaFormE(request.GET)
-    return HttpResponse(form['woreda'])
 
  
-def iregion(request, id):
-    #icnreport = get_object_or_404(IcnReportImplementationArea, pk=id)
-    if request.method == "POST":
-        form = IcnReportAreaFormE(request.POST or none)
-        if form.is_valid():
-            instance = form.save(commit=False)
-            instance.icnreport = IcnReport.objects.get(pk=id)
-            instance.user = request.user
-            instance.save()
-            return HttpResponse(
-                status=204,
-                headers={
-                    'HX-Trigger': json.dumps({
-                        "IareaListChanged": None,
-                        "showMessage": f"{instance.woreda} added."
-                    })
-                })
-        form = IcnReportAreaFormE(request.POST)
-        context = {'form': form}
-    
-        return render(request, 'iareareport_form.html', context)
-    
-    form = IcnReportAreaFormE()
-    context = {'form': form}
-    
-    return render(request, 'iareareport_form.html', context)
 
- 
-def icnreport_new(request): 
-    form = IcnReportForm(user=request.user)
-    if request.method == "POST":
-        form = IcnReportForm(request.POST, user=request.user)
-        if form.is_valid():
-            instance = form.save(commit=False)
-            instance.user = request.user
-            instance.save()
-            return redirect('icnreport_detail',instance.pk) 
-        
-    context = {'form':form}
-    return render(request, 'interventionreport_add.html', context)
-
- 
-def iarea_edit_form(request, pk):
-    iareareport = get_object_or_404(IcnReportImplementationArea, pk=pk)
-    icnreport = iareareport.icnreport
-    
-    if request.method == "GET":
-        iareareport = get_object_or_404(IcnReportImplementationArea, pk=int(pk))
-        form = IcnReportAreaFormE(instance=iareareport)
-        context = {'iareareport': iareareport, 'form': form }
-        return render(request, 'iareareport_edit_form.html', context)
-
-
-    elif request.method == "PUT":
-        iareareport = get_object_or_404(IcnReportImplementationArea, pk=int(pk))
-        data = QueryDict(request.body).dict()
-        form = IcnReportAreaFormE(data, instance=iareareport)
-        if form.is_valid():
-            instance = form.save()
-            return HttpResponse(
-                status=204,
-                headers={
-                    'HX-Trigger': json.dumps({
-                        "IareaListChanged": None,
-                        "showMessage": f"{instance.woreda} updated."
-                    })
-                }
-            )
-     
-
-
-
-def idelete_area(request, pk):
-    areareport = get_object_or_404(IcnReportImplementationArea, pk=pk)
-    icnreport = areareport.icnreport_id
-    areareport.delete()
-    return HttpResponse(
-        status=204,
-        headers={
-            'HX-Trigger': json.dumps({
-                "IareaListChanged": None,
-                "showMessage": f"{areareport.woreda} deleted."
-            })
-        })
-
-def icnreport_delete(request, pk):
-    icnreport = get_object_or_404(IcnReport, pk=pk)
-   
-    icnreport.delete()
-    icnreports =IcnReport.objects.all()
-    return render(request, 'partial/icn_list.html', {'icnreports': icnreports})
 
 
 def icnreport_submit_form(request, id): 
@@ -259,7 +176,7 @@ def icnreport_submit_form(request, id):
 
       
     context = {'form':form, 'icnreport':icnreport}
-    return render(request, 'icnreport_submit_form copy.html', context)
+    return render(request, 'report/icnreport_submit_form copy.html', context)
 
 def icnreport_submit_detail(request, pk):
     
@@ -273,7 +190,7 @@ def icnreport_submit_detail(request, pk):
 
     context = {'icnreportsubmit':icnreportsubmit}
 
-    return render(request, 'icnreportsubmit_detail.html', context)
+    return render(request, 'report/icnreportsubmit_detail.html', context)
 
  
 def icnreport_approvalt(request, id):
@@ -291,7 +208,7 @@ def icnreport_approvalt(request, id):
         icnreportsubmitApproval_t = get_object_or_404(IcnReportSubmitApproval_T, submit_id_id=id)
         form = IcnReportApprovalTForm(instance=icnreportsubmitApproval_t)
         context = {'icnreportsubmitapproval_t':icnreportsubmitApproval_t, 'form': form, 'icnreport':icnreport, }
-        return render(request, 'icnreport_approval_tform.html', context)
+        return render(request, 'report/icnreport_approval_tform.html', context)
     
     elif request.method == "PUT":
         icnreportsubmitApproval_t = get_object_or_404(IcnReportSubmitApproval_T, submit_id_id=id)
@@ -314,7 +231,7 @@ def icnreport_approvalt(request, id):
                     })
                 })
         
-        return render(request, 'icnreport_approval_tform.html', {'form':form})
+        return render(request, 'report/icnreport_approval_tform.html', {'form':form})
   
 
 def icnreport_approvalp(request, id):
@@ -332,7 +249,7 @@ def icnreport_approvalp(request, id):
         icnreportsubmitApproval_p = get_object_or_404(IcnReportSubmitApproval_P, submit_id_id=id)
         form = IcnReportApprovalPForm(instance=icnreportsubmitApproval_p)
         context = {'icnreportsubmitapproval_p':icnreportsubmitApproval_p, 'form': form, 'icnreport':icnreport, }
-        return render(request, 'icnreport_approval_pform.html', context)
+        return render(request, 'report/icnreport_approval_pform.html', context)
     
     elif request.method == "PUT":
         icnreportsubmitApproval_p = get_object_or_404(IcnReportSubmitApproval_P, submit_id_id=id)
@@ -354,7 +271,7 @@ def icnreport_approvalp(request, id):
                     })
                 })
         
-        return render(request, 'icn_approval_pform.html', {'form':form})
+        return render(request, 'report/icnreport_approval_pform.html', {'form':form})
 
 
  
@@ -372,7 +289,7 @@ def icnreport_approvalf(request, id):
         icnreportsubmitApproval_f = get_object_or_404(IcnReportSubmitApproval_F, submit_id_id=id)
         form = IcnReportApprovalFForm(instance=icnreportsubmitApproval_f)
         context = {'icnreportsubmitapproval_f':icnreportsubmitApproval_f, 'form': form, 'icnreport':icnreport, }
-        return render(request, 'icnreport_approval_fform.html', context)
+        return render(request, 'report/icnreport_approval_fform.html', context)
     
     elif request.method == "PUT":
         icnreportsubmitApproval_f = get_object_or_404(IcnReportSubmitApproval_F, submit_id_id=id)
@@ -394,7 +311,7 @@ def icnreport_approvalf(request, id):
                     })
                 })
         
-        return render(request, 'icnreport_approval_fform.html', {'form':form})
+        return render(request, 'report/icnreport_approval_fform.html', {'form':form})
 
 def icnreport_submit_approval(request, pk):
     icnreport = get_object_or_404(IcnReport, pk=pk)
@@ -409,7 +326,7 @@ def icnreport_submit_approval(request, pk):
         context = {'icnreport':icnreport}
     
 
-    return render(request, 'report_submit_approval.html', context)
+    return render(request, 'report/icnreport_submit_approval.html', context)
 
  
 def icnreport_submit_list(request, id):
@@ -424,7 +341,7 @@ def icnreport_submit_list(request, id):
     else:
         context = {'icnreport':icnreport}
 
-    return render(request, 'partial/submit_list.html', context)
+    return render(request, 'report/partial/submit_list.html', context)
 
 
  
@@ -466,7 +383,7 @@ def icnreport_submit_document(request, id):
     else:
        dform = IcnReportDocumentForm()
        context = {'dform':dform}
-       return render(request, 'partial/icnreport_document_form copy.html', context)
+       return render(request, 'report/partial/icnreport_document_form copy.html', context)
            
             
        
@@ -478,32 +395,30 @@ def document_list(request, id):
            
           
     
-    return render(request,'partial/icnreport_document_list.html', context)
+    return render(request,'report/partial/icnreport_document_list.html', context)
        
 
 
 def download(request, id):
-    document = get_object_or_404(Document, id=id)
+    document = get_object_or_404(IcnReportDocument, id=id)
     response = HttpResponse(document.document, content_type='application/docx')
     response['Content-Disposition'] = f'attachment; filename="{document.document}"'
     return response
 
 
-def search_results_view(request):
+def icnreport_filter(request):
     query = request.GET.get('search', '')
-    
-
-    all_icns= IcnReport.objects.all()
+    print(query)
     if query:
-        qs1 = IcnReport.objects.filter(title__icontains=query)
-        qs2 = IcnReport.objects.distinct().filter(program__title__icontains=query)
+        qs1 = IcnReport.objects.filter(icn__title__icontains=query)
+        qs2 = IcnReport.objects.distinct().filter(icn__program__title__icontains=query)
         
         
-        icns = qs1.union(qs2).order_by('id')
+        icnreports = qs1.union(qs2).order_by('id')
     else:
-        icns = IcnReport.objects.all()
+        icnreports = IcnReport.objects.all()
 
-    context = {'icns': icns, 'count': all_icns.count()}
+    context = {'icnreports': icnreports, }
     return render(request, 'partial/icnreport_list.html', context)
 
 
@@ -516,34 +431,31 @@ def search_results_view(request):
 
 
 
-def iarea_list(request, id):
-    return render(request, 'partial/iarea_list.html', {
-        'iareas': IcnReportImplementationArea.objects.filter(icnreport_id=id),
-    })
+
 
 def submit_approval_list(request, id):
     icnreport_submit_list = IcnReportSubmit.objects.filter(icnreport_id = id, submission_status=2)
     
     context = {'icnreport_submit_list': icnreport_submit_list }
-    return render(request, 'partial/reportsubmit_approval_list.html', context )
+    return render(request, 'report/partial/icnreport_submit_approval_list.html', context )
 
 def current_submit_approval_list(request, id):
     
     icnreport = IcnReport.objects.get(pk=id)
     if IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).exists():
-        icnsubmit = IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).latest('id')
-        context = {'icnreport':icnreport, 'icnsubmit':icnsubmit}
+        icnreportsubmit = IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).latest('id')
+        context = {'icnreport':icnreport, 'icnreportsubmit':icnreportsubmit}
     else:
         context = {'icnreport':icnreport}
   
     
-    return render(request, 'partial/submit_list.html', context)
+    return render(request, 'report/partial/icnreport_submit_list.html', context)
 
 def update_approval_status(id):
     icnsubmit = get_object_or_404(IcnReportSubmit, pk=id)
-    icnsubmitapproval_t = get_object_or_404(IcnSubmitApproval_T, submit_id_id=id)
-    icnsubmitapproval_p = get_object_or_404(IcnSubmitApproval_P, submit_id_id=id)
-    icnsubmitapproval_f = get_object_or_404(IcnSubmitApproval_F, submit_id_id=id)
+    icnsubmitapproval_t = get_object_or_404(IcnReportSubmitApproval_T, submit_id_id=id)
+    icnsubmitapproval_p = get_object_or_404(IcnReportSubmitApproval_P, submit_id_id=id)
+    icnsubmitapproval_f = get_object_or_404(IcnReportSubmitApproval_F, submit_id_id=id)
     
     approval_t = icnsubmitapproval_t.approval_status
     approval_p = icnsubmitapproval_p.approval_status
@@ -563,19 +475,20 @@ def update_approval_status(id):
     
 
     
-def add_impact(request, id):
+def add_icnreport_impact(request, id):
     icnreport = get_object_or_404(IcnReport, pk=id)
-    program = get_object_or_404(Program, pk=icnreport.program_id)
+   
     
     if request.method == "POST":
-        form = ImpactForm(request.POST or None)
-        if form.is_valid():
-            instance = form.save(commit=False)
-            instance.icnreport = get_object_or_404(IcnReport, pk=id)
-            selected_indicators = request.POST.getlist("indicators")
-            items = Indicator.objects.filter(id__in=selected_indicators)
-            instance.save()
-            instance.indicators.add(*items)
+        myformset = formset_factory(IcnReportImpactForm) 
+        formset = myformset() 
+        formset = formset(request.POST or None)
+        if formset.is_valid():
+            for form in formset:
+                instance = form.save(commit=False)
+                instance.icnreport = icnreport
+                instance.save()
+            
                
             return HttpResponse(
                 status=204,
@@ -586,25 +499,28 @@ def add_impact(request, id):
                     })
                 })
     else:
-        form = ImpactForm(program=program)
+        myformset = formset_factory(IcnReportImpactForm) 
+        formset = myformset() 
+        formset = formset()
     return render(request, 'partial/impact_form.html', {
-        'form': form,
+        'formset': formset,
     })
 
 
-def impact_list(request, id):
-    return render(request, 'partial/impact_list.html', {
-        'impacts': Impact.objects.filter(icnreport_id=id),
-    })
+def icnreport_impact_list(request, id):
+    impacts = IcnReportImpact.objects.filter(icnreport_id=id)
+    context = {'impacts':impacts}
+    return render(request, 'report/partial/impact_list.html', context)
+
 
 def edit_impact(request, pk):
-    impact = get_object_or_404(Impact, pk=pk)
+    impact = get_object_or_404(IcnReportImpact, pk=pk)
     icnreport = get_object_or_404(IcnReport, pk=impact.icnreport_id)
-    program = get_object_or_404(Program, pk=icnreport.program_id)
+    
    
     if request.method == "POST":
-        impact = Impact.objects.get(pk=pk)
-        form = ImpactForm(request.POST, instance=impact)
+        impact = IcnReportImpact.objects.get(pk=pk)
+        form = IcnReportImpactForm(request.POST, instance=impact)
         if form.is_valid():
             instance = form.save()
             return HttpResponse(
@@ -616,8 +532,8 @@ def edit_impact(request, pk):
                     })
                 })
     else:
-        form = ImpactForm(instance=impact, program=program)
-    return render(request, 'partial/impact_form_edit.html', {
+        form = IcnReportImpactForm(instance=impact)
+    return render(request, 'report/partial/impact_form_edit.html', {
         'form': form,
         'impact': impact,
     })
@@ -646,14 +562,20 @@ def icnreport_submit_form_partial(request, id):
     form = IcnReportSubmitForm(user=request.user,icnreport=icnreport)
     
     context = {'form':form, 'icnreport':icnreport}
-    return render(request, 'partial/reportpartial_doc_form.html', context)
+    return render(request, 'report/partial/icnreport_partial_doc_form.html', context)
 
  
 def activitiesreport(request):
-    activitiesreport = ActivityReport.objects.all().order_by('-id')
-    context = {'activitiesreport':activitiesreport}
+    if ActivityReport.objects.exists():
+        reports = ActivityReport.objects.all().order_by('-id')
+        acns = Activity.objects.all().order_by('-id')
+        context = {'reports':reports, 'acns':acns}
+    else:
+        acns = Activity.objects.all().order_by('-id')
+        context = {'acns':acns}
     
-    return render(request, 'activitiesreport.html', context)
+    
+    return render(request, 'report/activitiesreport.html', context)
 
  
 def activityreport_detail(request, pk):
@@ -670,30 +592,37 @@ def activityreport_detail(request, pk):
     #icnsubmit = get_object_or_404(IcnReportSubmit, icnreport_id=icnreport.id).latest('id')
 
 
-    return render(request, 'activityreport_detail.html', context)
+    return render(request, 'report/activityreport_detail.html', context)
 
  
-def activityreport_add(request): 
+def activityreport_add(request, id): 
+    acn = Activity.objects.get(pk=id)
+    aimpacts =  ActivityImpact.objects.filter(activity_id=id)
     if request.method == "POST":
-        form = ActivityReportForm(request.POST, user=request.user)
+        form = ActivityReportForm(request.POST,request.FILES, user=request.user, acn=acn)
         if form.is_valid():
             instance = form.save(commit=False)
             instance.user = request.user
+           
             instance.save()
+           
+            for aimpact in aimpacts:
+                 ActivityReportImpact.objects.create(activityreport=instance, activityimpact=aimpact)
             return redirect('activityreport_detail',instance.pk) 
         
         
-        form = ActivityReportForm(request.POST, user=request.user)
-        context = {'form':form}
-        return render(request, 'activityreport_add.html', context)
+        form = ActivityReportForm(request.POST,request.FILES, user=request.user, acn=acn)   
+        context = {'form':form, 'acn':acn}
+        return render(request, 'report/activityreport_add.html', context)
     
-    form = ActivityReportForm(user=request.user)   
-    context = {'form':form}
-    return render(request, 'activityreport_add.html', context)
+    form = ActivityReportForm(user=request.user, acn=acn)   
+    context = {'form':form, 'acn':acn}
+    return render(request, 'report/activityreport_add.html', context)
 
  
 def activityreport_edit(request, id): 
     activityreport = ActivityReport.objects.get(pk=id)
+    acn = Activity.objects.get(pk=id)
     
     if request.method == "POST":
        
@@ -702,79 +631,20 @@ def activityreport_edit(request, id):
             instance = form.save()
             return redirect('activityreport_detail',instance.pk) 
         
-        form = ActivityReportForm(request.POST,  instance=activityreport, user=request.user) 
-        context = {'form':form}
-        return render(request, 'activityreport_edit.html', context)
+        form = ActivityReportForm(request.POST,  instance=activityreport, user=request.user, acn=acn) 
+        context = {'form':form, 'acn':acn}
+        return render(request, 'report/activityreport_add.html', context)
             
     elif request.method == "GET" and activityreport.status == False:    
 
-        form = ActivityReportForm(instance=activityreport,  user=request.user) 
-        context = {'form':form}
-        return render(request, 'activityreport_edit.html', context)
+        form = ActivityReportForm(instance=activityreport,  user=request.user, acn=acn) 
+        context = {'form':form, 'acn':acn}
+        return render(request, 'report/activityreport_add.html', context)
     else:
         return HttpResponseRedirect(request.path_info)
     
  
-def aregion(request, id):
-    #icnreport = get_object_or_404(IcnReportImplementationArea, pk=id)
-    if request.method == "POST":
-        form = ActivityReportAreaFormE(request.POST or none)
-        if form.is_valid():
-            instance = form.save(commit=False)
-            instance.activityreport = ActivityReport.objects.get(pk=id)
-           
-            instance.save()
-            return HttpResponse(
-                status=204,
-                headers={
-                    'HX-Trigger': json.dumps({
-                        "AareaListChanged": None,
-                        "showMessage": f"{instance.woreda} added."
-                    })
-                })
-        form = ActivityReportAreaFormE(request.POST)
-        context = {'form': form}
-    
-        return render(request, 'aarea_form.html', context)
-    
-    form = ActivityReportAreaFormE()
-    context = {'form': form}
-    
-    return render(request, 'aarea_form.html', context)
 
-def aarea_list(request, id):
-    return render(request, 'partial/aarea_list.html', {
-        'aareas': ActivityReportImplementationArea.objects.filter(activityreport_id=id),
-    })
-
- 
-def aarea_edit_form(request, pk):
-    aarea = get_object_or_404(ActivityReportImplementationArea, pk=pk)
-    activityreport = aarea.activityreport
-    
-    if request.method == "GET":
-        aarea = get_object_or_404(ActivityReportImplementationArea, pk=int(pk))
-        form = ActivityReportAreaFormE(instance=aarea)
-        context = {'aarea': aarea, 'form': form }
-        return render(request, 'aarea_edit_form.html', context)
-
-
-    elif request.method == "PUT":
-        aarea = get_object_or_404(ActivityReportImplementationArea, pk=int(pk))
-        data = QueryDict(request.body).dict()
-        form = ActivityReportAreaFormE(data, instance=aarea)
-        if form.is_valid():
-            instance = form.save()
-            return HttpResponse(
-                status=204,
-                headers={
-                    'HX-Trigger': json.dumps({
-                        "AareaListChanged": None,
-                        "showMessage": f"{instance.woreda} updated."
-                    })
-                }
-            )
-        
 def add_activityreport_impact(request, id):
     activityreport = get_object_or_404(ActivityReport, pk=id)
     icnreport = get_object_or_404(IcnReport, pk=activityreport.icnreport_id)
@@ -804,33 +674,35 @@ def add_activityreport_impact(request, id):
 
    
 def activityreport_impact_list(request, id):
-    return render(request, 'partial/activityreport_impact_list.html', {
-        'activityreport_impacts': ActivityReportImpact.objects.filter(activityreport_id=id),
-    })
+    
+    activityreport_impacts=ActivityReportImpact.objects.filter(activityreport_id=id)
+    context = {'activityreport_impacts':activityreport_impacts }
+    return render(request, 'report/partial/activityreport_impact_list.html', context)
+
 
 def edit_activityreport_impact(request, pk):
-    activityreport_impact = get_object_or_404(ActivityReportImpact, pk=pk)
-    activityreport = get_object_or_404(ActivityReport, pk=activityreport_impact.activityreport_id)
-    icnreport = get_object_or_404(IcnReport, pk=activityreport.icnreport_id)
+    impact = get_object_or_404(ActivityReportImpact, pk=pk)
+    activityreport = get_object_or_404(ActivityReport, pk=impact.activityreport_id)
+    
    
     if request.method == "POST":
-        activityreport_impact = ActivityReportImpact.objects.get(pk=pk)
-        form = ActivityReportImpactForm(request.POST, instance=activityreport_impact)
+        impact = ActivityReportImpact.objects.get(pk=pk)
+        form = ActivityReportImpactForm(request.POST, instance=impact)
         if form.is_valid():
             instance = form.save()
             return HttpResponse(
                 status=204,
                 headers={
                     'HX-Trigger': json.dumps({
-                        "AImpactListChanged": None,
+                        "ImpactListChanged": None,
                         "showMessage": f"{instance.pk} updated."
                     })
                 })
     else:
-        form = ActivityReportImpactForm(instance=activityreport_impact, icnreport=icnreport)
-    return render(request, 'partial/activityreport_impact_form_edit.html', {
+        form = ActivityReportImpactForm(instance=impact)
+    return render(request, 'report/partial/activityimpact_form_edit.html', {
         'form': form,
-        'activityreport_impact': activityreport_impact,
+        'impact': impact,
     })
 
 def remove_activityreport_impact(request, pk):
@@ -845,18 +717,6 @@ def remove_activityreport_impact(request, pk):
             })
         })
 
-def adelete_area(request, pk):
-    area = get_object_or_404(ActivityReportImplementationArea, pk=pk)
-    activityreport = area.activityreport_id
-    area.delete()
-    return HttpResponse(
-        status=204,
-        headers={
-            'HX-Trigger': json.dumps({
-                "AareaListChanged": None,
-                "showMessage": f"{area.woreda} deleted."
-            })
-        })
 
 def search_results_view2(request):
     query = request.GET.get('search', '')
@@ -889,7 +749,7 @@ def activityreport_submit_approval(request, pk):
         context = {'activityreport':activityreport}
     
 
-    return render(request, 'activityreport_submit_approval.html', context)
+    return render(request, 'report/activityreport_submit_approval.html', context)
 
  
 def current_activityreport_submit_approval_list(request, id):
@@ -904,7 +764,7 @@ def current_activityreport_submit_approval_list(request, id):
     else:
         context = {'activityreport':activityreport}
 
-    return render(request, 'partial/activityreport_submit_list.html', context)
+    return render(request, 'report/partial/activityreport_submit_list.html', context)
 
 
 def activityreport_submit_form(request, id): 
@@ -964,7 +824,7 @@ def activityreport_submit_form(request, id):
 
       
     context = {'form':form, 'activityreport':activityreport}
-    return render(request, 'activityreport_submit_form.html', context)
+    return render(request, 'report/activityreport_submit_form.html', context)
 
 
  
@@ -1006,7 +866,7 @@ def activityreport_submit_document(request, id):
     else:
        dform = ActivityReportDocumentForm()
        context = {'dform':dform}
-       return render(request, 'partial/activityreport_document_form.html', context)
+       return render(request, 'report/partial/activityreport_document_form.html', context)
            
             
 def activityreport_submit_form_partial(request, id): 
@@ -1014,7 +874,7 @@ def activityreport_submit_form_partial(request, id):
     form = ActivityReportSubmitForm(user=request.user,activityreport=activityreport)
     
     context = {'form':form, 'activityreport':activityreport}
-    return render(request, 'partial/activityreport_partial_doc_form.html', context)
+    return render(request, 'report/partial/activityreport_partial_doc_form.html', context)
 
 def activityreport_document_list(request, id):
     documents = ActivityReportDocument.objects.filter(activityreport_id=id)
@@ -1022,13 +882,13 @@ def activityreport_document_list(request, id):
            
           
     
-    return render(request,'partial/activityreport_document_list.html', context)
+    return render(request,'report/partial/activityreport_document_list.html', context)
 
 def activityreport_submit_approval_list(request, id):
     activityreport_submit_list = ActivityReportSubmit.objects.filter(activityreport_id = id, submission_status=2)
     
     context = {'activityreport_submit_list': activityreport_submit_list }
-    return render(request, 'partial/activityreport_submit_approval_list.html', context )
+    return render(request, 'report/partial/activityreport_submit_approval_list.html', context )
 
  
 def activityreport_approvalt(request, id):
@@ -1047,7 +907,7 @@ def activityreport_approvalt(request, id):
         activityreportsubmitApproval_t = get_object_or_404(ActivityReportSubmitApproval_T, submit_id_id=id)
         form = ActivityReportApprovalTForm(instance=activityreportsubmitApproval_t)
         context = {'activityreportsubmitapproval_t':activityreportsubmitApproval_t, 'form': form, 'activityreport':activityreport, }
-        return render(request, 'activityreport_approval_tform.html', context)
+        return render(request, 'report/activityreport_approval_tform.html', context)
     
     elif request.method == "PUT":
         activityreportsubmitApproval_t = get_object_or_404(ActivityReportSubmitApproval_T, submit_id_id=id)
@@ -1070,7 +930,7 @@ def activityreport_approvalt(request, id):
                     })
                 })
         
-        return render(request, 'activityreport_approval_tform.html', {'form':form})
+        return render(request, 'report/activityreport_approval_tform.html', {'form':form})
 
  
 def activityreport_approvalp(request, id):
@@ -1089,7 +949,7 @@ def activityreport_approvalp(request, id):
         activityreportsubmitApproval_p = get_object_or_404(ActivityReportSubmitApproval_P, submit_id_id=id)
         form = ActivityReportApprovalPForm(instance=activityreportsubmitApproval_p)
         context = {'activityreportsubmitapproval_p':activityreportsubmitApproval_p, 'form': form, 'activityreport':activityreport, }
-        return render(request, 'activityreport_approval_pform.html', context)
+        return render(request, 'report/activityreport_approval_pform.html', context)
     
     elif request.method == "PUT":
         activityreportsubmitApproval_p = get_object_or_404(ActivityReportSubmitApproval_P, submit_id_id=id)
@@ -1112,7 +972,7 @@ def activityreport_approvalp(request, id):
                     })
                 })
         
-        return render(request, 'activityreport_approval_pform.html', {'form':form})
+        return render(request, 'report/activityreport_approval_pform.html', {'form':form})
 
  
 def activityreport_approvalf(request, id):
@@ -1131,7 +991,7 @@ def activityreport_approvalf(request, id):
         activityreportsubmitApproval_f = get_object_or_404(ActivityReportSubmitApproval_F, submit_id_id=id)
         form = ActivityReportApprovalFForm(instance=activityreportsubmitApproval_f)
         context = {'activityreportsubmitapproval_f':activityreportsubmitApproval_f, 'form': form, 'activityreport':activityreport, }
-        return render(request, 'activityreport_approval_fform.html', context)
+        return render(request, 'report/activityreport_approval_fform.html', context)
     
     elif request.method == "PUT":
         activityreportsubmitApproval_f = get_object_or_404(ActivityReportSubmitApproval_F, submit_id_id=id)
@@ -1154,7 +1014,7 @@ def activityreport_approvalf(request, id):
                     })
                 })
         
-        return render(request, 'activityreport_approval_fform.html', {'form':form})
+        return render(request, 'report/activityreport_approval_fform.html', {'form':form})
 
 def update_activityreport_approval_status(id):
     activityreportsubmit = get_object_or_404(ActivityReportSubmit, pk=id)
@@ -1184,15 +1044,18 @@ def downloada(request, id):
     return response
 
 def latest_submit_approval_list(request, id):
-    
-    list = IcnReportSubmit.objects.filter(icnreport_id = id, submission_status=2).latest('id')
-    context = {'list':list}
+    if IcnReportSubmit.objects.filter(icn_id=id).exists():
+         list = IcnReportSubmit.objects.filter(icn_id = id, submission_status=2).latest('id')
+         context = {'list':list}
+    else: 
+        context = {}
     
     return render(request, 'partial/recent_submit_approval_list.html', context)
 
 def latest_submit_approval_list_activity(request, id):
-    
-    list = ActivityReportSubmit.objects.filter(activityreport_id = id, submission_status=2).latest('id')
-    context = {'list':list}
-    
+    if ActivityReportSubmit.objects.filter(activity_id = id).exists():
+        list = ActivityReportSubmit.objects.filter(activity_id = id, submission_status=2).latest('id')
+        context = {'list':list}
+    else: 
+        context = {}
     return render(request, 'partial/recent_submit_approval_list_activity.html', context)

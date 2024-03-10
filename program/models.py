@@ -43,7 +43,7 @@ class ImplementationArea(models.Model):
         Woreda, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
-        return str(self.id)
+        return str(self.woreda)
     
 class UserRoles(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)

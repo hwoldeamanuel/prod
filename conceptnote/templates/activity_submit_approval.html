@@ -54,9 +54,7 @@
                         <li class="nav-item">
                           <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Concept Note Version Log</a>
                         </li>
-                        <li class="nav-item">
-                          <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Other Information</a>
-                        </li>
+                        
                       </ul>
                       <div class="tab-content" id="myTabContent">
                         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
@@ -75,10 +73,7 @@
                        <div id="documentlist" hx-trigger="load, SubmitApprovalListChanged from:body" hx-get="{% url 'activity_document_list' activity.id %}" hx-target="this">
                         </div>
 </div>
-                        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-                          xxFood truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo
-                              booth letterpress, commodo enim craft beer mlkshk 
-                        </div>
+                        
                       </div>
 </div>
                 </div>
@@ -121,7 +116,10 @@
 
                               <p>Total Mercy Corps budget:<strong> ${{ activity.mc_budget_usd|intcomma }}</strong></p>
                               <p>Cost-share contributions:<strong>  ${{ activity.cost_sharing_budget_usd|intcomma }}</strong></p>
-             <p># of Implementation Woreda: <strong> {{ activity.activityimplementationarea_set.count }}</strong></p>
+             <p>Activity Woredas
+                      {% for woreda in activity.aworeda.all %}
+                      <strong>{{woreda}},</strong>
+                      {% endfor %}</p>
                              <p># of Impact/Target: <strong> {{ activity.activityimpact_set.count }}</strong></p>
                              <p># of Intervention Target: <strong> {{ activity.get_num_impact }}</strong></p>
                     <br />

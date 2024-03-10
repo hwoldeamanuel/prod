@@ -12,6 +12,7 @@ from uuid import uuid4
 from app_admin.models import Country as NCountry, Region as NRegion, Zone as NZone, Woreda as NWoreda
 from django.contrib.auth.models import User
 from portfolio.models import Portfolio
+from program.models import ImplementationArea
 
 class Icn(models.Model):
     title = models.CharField(max_length=255)
@@ -27,7 +28,7 @@ class Icn(models.Model):
     technical_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='itechnical_lead')
     finance_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='ifinance_lead')
     description = models.TextField(null=True, blank=True)
-   
+    iworeda = models.ManyToManyField(ImplementationArea,  blank=True, related_name='program_woredas')
     
     mc_budget_usd = models.FloatField(null=True, blank=True)
     
@@ -304,7 +305,7 @@ class Activity(models.Model):
     technical_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='atechnical_lead')
     finance_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='afinance_lead')
     description = models.TextField(null=True, blank=True)
-   
+    aworeda = models.ManyToManyField(ImplementationArea,  blank=True, related_name='activity_woredas')
     
     mc_budget_usd = models.FloatField(null=True, blank=True)
     

@@ -55,6 +55,7 @@ class IcnForm(forms.ModelForm):
             
             'eniromental_impact',
             
+            
            
           
 
@@ -98,7 +99,8 @@ class IcnForm(forms.ModelForm):
         self.fields['eniromental_impact'].widget = forms.widgets.Select(choices = CHOICE1,attrs={'type': 'choice', 'class': 'form-control form-control-sm', 'rows':'1', 'placeholder':''   }    )
         self.fields['ilead_co_agency'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
         self.fields['ilead_co_agency'].queryset = Portfolio.objects.all()
-         
+        self.fields['iworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
+        self.fields['iworeda'].queryset = ImplementationArea.objects.all()
     class Meta:
         model = Icn
         fields=['title',
@@ -111,7 +113,7 @@ class IcnForm(forms.ModelForm):
             'program_lead',
             'technical_lead',
             'finance_lead',
-           
+            'iworeda',
             'mc_budget_usd',
            
             'cost_sharing_budget_usd',
@@ -418,6 +420,8 @@ class ActivityForm(forms.ModelForm):
        
         self.fields['alead_co_agency'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
         self.fields['alead_co_agency'].queryset = Portfolio.objects.all()
+        self.fields['aworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
+        self.fields['aworeda'].queryset = ImplementationArea.objects.all()
          
     class Meta:
         model = Activity
@@ -431,7 +435,7 @@ class ActivityForm(forms.ModelForm):
             'program_lead',
             'technical_lead',
             'finance_lead',
-           
+            'aworeda',
             'mc_budget_usd',
            
             'cost_sharing_budget_usd',

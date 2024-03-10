@@ -1,0 +1,121 @@
+
+<table class="data table table-striped no-margin">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Team Lead</th>
+        <th>Date</th>
+        <th>Concept Note Ver#</th>
+        <th >Status</th>
+      
+      </tr>
+    </thead>
+    <tbody hx-trigger="load, SubmitApprovalListChanged from:body" >
+      <tr>
+        <td>1</td>
+        <td>
+          <a>Initiator</a>
+          <br />
+          <small>{{ activityreport.user }}</small>
+        </td>
+        {% if activityreportsubmit %}
+        <td>{{activityreportsubmit.submission_date}}</td>
+        <td>{{activityreportsubmit.document }}</td>
+        <td>
+          <button type="button" class="btn btn-success btn-sm btn-xs" >{{ activityreportsubmit.get_submission_status_display}}</button>
+          {% if request.user.id == activityreport.user.id %}<span type="button" class="glyphicon glyphicon-repeat" aria-hidden="true"  hx-get="{% url 'activityreport_submit_form' activityreport.id %}" hx-target="#SubmitList" ></span>{% endif %}
+        
+       
+ </td>
+        
+        {% else %}
+        <td></td>
+        <td></td>
+     
+        <td>
+            <button type="button" class="btn btn-primary btn-sm btn-xs" {% if request.user.id == activityreport.user.id %} hx-get="{% url 'activityreport_submit_form' activityreport.id %}" hx-target="#SubmitList" {% endif %}>Pending Submission </button>
+        </td>
+        {% endif%}
+
+
+
+
+    
+</tr>
+            <tr>
+        <td>2</td>
+        <td>
+          <a>Techncial</a>
+          <br />
+          <small>{{ activityreport.technical_lead}}</small>
+        </td>
+        {% if activityreportsubmit %}
+        <td>{% if activityreportsubmit.activityreportsubmitapproval_t.approval_date|time == activityreportsubmit.submission_date|time %}{{ activityreportsubmit.submission_date|timesince }} {% else %} {{activityreportsubmit.activityreportsubmitapproval_t.approval_date}} {% endif %}</td>
+   
+
+
+        <td>{{activityreportsubmit.activityreportsubmitapproval_t.document }}</td>
+        <td>
+          <button type="button" class="{% if activityreportsubmit.activityreportsubmitapproval_t.approval_status == 1 %} btn btn-primary btn-sm btn-xs{% elif activityreportsubmit.activityreportsubmitapproval_t.approval_status == 2 %}btn btn-warning btn-sm btn-xs {% elif activityreportsubmit.activityreportsubmitapproval_t.approval_status == 3 %}btn btn-success btn-sm btn-xs{% elif activityreportsubmit.activityreportsubmitapproval_t.approval_status == 4 %}btn btn-danger btn-sm btn-xs {% else %}btn btn-secondary btn-sm{% endif %}" {% if request.user.id == activityreport.technical_lead.user.id %} hx-get={% url 'activityreport_approvalt' activityreportsubmit.id %} hx-target="#SubmitList"{% endif %}>{% if activityreportsubmit.activityreportsubmitapproval_t %} {{ activityreportsubmit.activityreportsubmitapproval_t.get_approval_status_display}} {% else %}Pending Submission{% endif %}</button>
+        </td>
+        {% else %}
+        <td></td>
+        <td></td>
+        <td></td>
+    
+        {% endif%}
+
+
+
+
+    
+</tr>
+<tr>
+    <td>3</td>
+    <td>
+      <a>Program</a>
+      <br />
+      <small>{{ activityreport.program_lead }}</small>
+    </td>
+    {% if activityreportsubmit %}
+    <td>{% if activityreportsubmit.activityreportsubmitapproval_p.approval_date|time == activityreportsubmit.submission_date|time %}{{ activityreportsubmit.submission_date|timesince }}{% else %}{{activityreportsubmit.activityreportsubmitapproval_p.approval_date}}{% endif %}</td>
+    
+    <td>{{activityreportsubmit.activityreportsubmitapproval_p.document}}</td>
+    <td>
+      <button type="button" class="{% if activityreportsubmit.activityreportsubmitapproval_p.approval_status == 1 %} btn btn-primary btn-sm btn-xs{% elif activityreportsubmit.activityreportsubmitapproval_p.approval_status == 2 %}btn btn-warning btn-sm btn-xs {% elif activityreportsubmit.activityreportsubmitapproval_p.approval_status == 3 %}btn btn-success btn-sm btn-xs{% elif activityreportsubmit.activityreportsubmitapproval_p.approval_status == 4 %}btn btn-danger btn-sm btn-xs {% else %} btn btn-secondary btn-sm{% endif %}" {% if request.user.id == activityreport.program_lead.user.id %} hx-get={% url 'activityreport_approvalp' activityreportsubmit.id %} hx-target="#SubmitList"  {% endif %}>{% if activityreportsubmit.activityreportsubmitapproval_p %}{{ activityreportsubmit.activityreportsubmitapproval_p.get_approval_status_display}}{% else %}Pending Submission{%endif%}</button>
+    </td>
+    {% else %}
+    <td></td>
+    <td></td>
+    <td></td>
+
+    {% endif%}
+
+
+
+</tr>
+<tr>
+    <td>4</td>
+    <td>
+      <a>Finance</a>
+      <br />
+      <small>{{ activityreport.finance_lead }}</small>
+    </td>
+    {% if activityreportsubmit %}
+    <td> {% if activityreportsubmit.activityreportsubmitapproval_f.approval_date|time == activityreportsubmit.submission_date|time %}{{ activityreportsubmit.submission_date|timesince }}{% else %}{{activityreportsubmit.activityreportsubmitapproval_f.approval_date}}{% endif %}</td>
+    <td>{{activityreportsubmit.activityreportsubmitapproval_f.document }}</td>
+    <td>
+      <button type="button" class="{% if activityreportsubmit.activityreportsubmitapproval_f.approval_status == 1 %} btn btn-primary btn-sm{% elif activityreportsubmit.activityreportsubmitapproval_f.approval_status == 2 %}btn btn-warning btn-sm btn-xs {% elif activityreportsubmit.activityreportsubmitapproval_f.approval_status == 3 %}btn btn-success btn-sm btn-xs{% elif activityreportsubmit.activityreportsubmitapproval_f.approval_status == 4 %}btn btn-danger btn-sm btn-xs{% else %}btn btn-secondary btn-sm{% endif %}" {% if request.user.id == activityreport.finance_lead.user.id %} hx-get={% url 'activityreport_approvalf' activityreportsubmit.id %} hx-target="#SubmitList" {% endif %}>{% if activityreportsubmit.activityreportsubmitapproval_f %}{{ activityreportsubmit.activityreportsubmitapproval_f.get_approval_status_display}}{% else %}Pending Submission{%endif%}</button>
+    </td>
+    {% else %}
+    <td></td>
+    <td></td>
+    <td></td>
+
+    {% endif%}
+
+
+
+</tr>
+    </tbody>
+  </table>

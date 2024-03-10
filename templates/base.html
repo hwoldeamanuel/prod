@@ -252,6 +252,7 @@
 <script src="{% static 'vendors/jszip/dist/jszip.min.js' %}"></script>
 <script src="{% static 'vendors/pdfmake/build/pdfmake.min.js' %}"></script>
 <script src="{% static 'vendors/pdfmake/build/vfs_fonts.js' %}"></script>
+
 <script>
   document.body.addEventListener('htmx:configRequest', (event) => {
       event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';

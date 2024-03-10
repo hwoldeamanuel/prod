@@ -1,0 +1,119 @@
+
+<table class="data table table-striped no-margin">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Team Lead</th>
+        <th>Date</th>
+        <th>Concept Note Ver#</th>
+        <th >Status</th>
+      
+      </tr>
+    </thead>
+    <tbody hx-trigger="load, SubmitApprovalListChanged from:body" >
+      <tr>
+        <td>1</td>
+        <td>
+          <a>Initiator</a>
+          <br />
+          <small>{{ icnreport.user }}</small>
+        </td>
+        {% if icnreportsubmit %}
+        <td>{{icnreportsubmit.submission_date}}</td>
+        <td>{{icnreportsubmit.document }}</td>
+        <td>
+          <button type="button" class="btn btn-success btn-sm btn-xs" >{{ icnreportsubmit.get_submission_status_display}}</button>
+          {% if request.user.id == icnreport.user.id %}<span type="button" class="glyphicon glyphicon-repeat" aria-hidden="true"  hx-get="{% url 'icnreport_submit_form' icnreport.id %}" hx-target="#SubmitList" ></span>{% endif %}
+        
+       
+ </td>
+        
+        {% else %}
+        <td></td>
+        <td></td>
+     
+        <td>
+            <button type="button" class="btn btn-primary btn-sm btn-xs" {% if request.user.id == icnreport.user.id %} hx-get="{% url 'icnreport_submit_form' icnreport.id %}" hx-target="#SubmitList" {% endif %}>Pending Submission </button>
+        </td>
+        {% endif%}
+
+
+
+
+    
+</tr>
+            <tr>
+        <td>2</td>
+        <td>
+          <a>Techncial</a>
+          <br />
+          <small>{{ icnreport.technical_lead }}</small>
+        </td>
+        {% if icnreportsubmit %}
+        <td>{% if icnreportsubmit.icnreportsubmitapproval_t.approval_date|time == icnreportsubmit.submission_date|time %}{{ icnreportsubmit.submission_date|timesince }} {% else %} {{icnreportsubmit.icnreportsubmitapproval_t.approval_date}} {% endif %}</td>
+   
+        <td>{{icnreportsubmit.icnreportsubmitapproval_t.document }}</td>
+        <td>
+          <button type="button" class="{% if icnreportsubmit.icnreportsubmitapproval_t.approval_status == 1 %} btn btn-primary btn-sm btn-xs{% elif icnreportsubmit.icnreportsubmitapproval_t.approval_status == 2 %}btn btn-warning btn-sm btn-xs {% elif icnreportsubmit.icnreportsubmitapproval_t.approval_status == 3 %}btn btn-success btn-sm btn-xs{% elif icnreportsubmit.icnreportsubmitapproval_t.approval_status == 4 %}btn btn-danger btn-sm btn-xs {% else %}btn btn-secondary btn-sm{% endif %}" {% if request.user.id == icnreport.technical_lead.user.id %} hx-get={% url 'icnreport_approvalt' icnreportsubmit.id %} hx-target="#SubmitList"{% endif %}>{% if icnreportsubmit.icnreportsubmitapproval_t %} {{ icnreportsubmit.icnreportsubmitapproval_t.get_approval_status_display}} {% else %}Pending Submission{% endif %}</button>
+        </td>
+        {% else %}
+        <td></td>
+        <td></td>
+        <td></td>
+    
+        {% endif%}
+
+
+
+
+    
+</tr>
+<tr>
+    <td>3</td>
+    <td>
+      <a>Program</a>
+      <br />
+      <small>{{ icnreport.program_lead }}</small>
+    </td>
+    {% if icnreportsubmit %}
+    <td>{% if icnreportsubmit.icnreportsubmitapproval_p.approval_date|time == icnreportsubmit.submission_date|time %}{{ icnreportsubmit.submission_date|timesince }}{% else %}{{icnreportsubmit.icnreportsubmitapproval_p.approval_date}}{% endif %}</td>
+    
+    <td>{{icnreportsubmit.icnreportsubmitapproval_p.document}}</td>
+    <td>
+      <button type="button" class="{% if icnreportsubmit.icnreportsubmitapproval_p.approval_status == 1 %} btn btn-primary btn-sm btn-xs{% elif icnreportsubmit.icnreportsubmitapproval_p.approval_status == 2 %}btn btn-warning btn-sm btn-xs {% elif icnreportsubmit.icnreportsubmitapproval_p.approval_status == 3 %}btn btn-success btn-sm btn-xs{% elif icnreportsubmit.icnreportsubmitapproval_p.approval_status == 4 %}btn btn-danger btn-sm btn-xs {% else %} btn btn-secondary btn-sm{% endif %}" {% if request.user.id == icnreport.program_lead.user.id %} hx-get={% url 'icnreport_approvalp' icnreportsubmit.id %} hx-target="#SubmitList"  {% endif %}>{% if icnreportsubmit.icnreportsubmitapproval_p %}{{ icnreportsubmit.icnreportsubmitapproval_p.get_approval_status_display}}{% else %}Pending Submission{%endif%}</button>
+    </td>
+    {% else %}
+    <td></td>
+    <td></td>
+    <td></td>
+
+    {% endif%}
+
+
+
+</tr>
+<tr>
+    <td>4</td>
+    <td>
+      <a>Finance</a>
+      <br />
+      <small>{{ icnreport.finance_lead }}</small>
+    </td>
+    {% if icnreportsubmit %}
+    <td> {% if icnreportsubmit.icnreportsubmitapproval_f.approval_date|time == icnreportsubmit.submission_date|time %}{{ icnreportsubmit.submission_date|timesince }}{% else %}{{icnreportsubmit.icnreportsubmitapproval_f.approval_date}}{% endif %}</td>
+    <td>{{icnreportsubmit.icnreportsubmitapproval_f.document }}</td>
+    <td>
+      <button type="button" class="{% if icnreportsubmit.icnreportsubmitapproval_f.approval_status == 1 %} btn btn-primary btn-sm{% elif icnreportsubmit.icnreportsubmitapproval_f.approval_status == 2 %}btn btn-warning btn-sm btn-xs {% elif icnreportsubmit.icnreportsubmitapproval_f.approval_status == 3 %}btn btn-success btn-sm btn-xs{% elif icnreportsubmit.icnreportsubmitapproval_f.approval_status == 4 %}btn btn-danger btn-sm btn-xs{% else %}btn btn-secondary btn-sm{% endif %}" {% if request.user.id == icnreport.finance_lead.user.id %} hx-get={% url 'icnreport_approvalf' icnreportsubmit.id %} hx-target="#SubmitList" {% endif %}>{% if icnreportsubmit.icnreportsubmitapproval_f %}{{ icnreportsubmit.icnreportsubmitapproval_f.get_approval_status_display}}{% else %}Pending Submission{%endif%}</button>
+    </td>
+    {% else %}
+    <td></td>
+    <td></td>
+    <td></td>
+
+    {% endif%}
+
+
+
+</tr>
+    </tbody>
+  </table>

@@ -13,6 +13,7 @@ from app_admin.models import Country as NCountry, Region as NRegion, Zone as NZo
 from django.contrib.auth.models import User
 from portfolio.models import Portfolio
 from conceptnote.models import Icn, Activity, Impact, ActivityImpact
+from program.models import ImplementationArea
 
 class IcnReport(models.Model):
     icn = models.OneToOneField(Icn, on_delete=models.DO_NOTHING)
@@ -28,7 +29,7 @@ class IcnReport(models.Model):
     technical_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='irtechnical_lead')
     finance_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='irfinance_lead')
     description = models.TextField(null=True, blank=True)
-   
+    iworeda = models.ManyToManyField(ImplementationArea,  blank=True, related_name='program_rworedas')
     
     actual_mc_budget_usd = models.FloatField(null=True, blank=True)
     
@@ -45,7 +46,7 @@ class IcnReport(models.Model):
 
     
     def __str__(self):
-        return self.icn.title
+        return str(self.icn.title)
   
 
 class IcnReportImplementationArea(models.Model):
@@ -66,9 +67,9 @@ def path_and_rename(instance, filename):
 
     # get filename
     if hasattr(instance, 'icnreport'):
-        filename = '{}.{}'.format(instance.icnreport.title +"_Version_"+ instance.ver + "_" + instance.user.email.split('@')[0], ext)
+        filename = '{}.{}'.format(instance.icnreport.icn.title +"_Version_"+ instance.ver + "_" + instance.user.email.split('@')[0], ext)
     elif hasattr(instance, 'activityreport'):
-         filename = '{}.{}'.format(instance.activityreport.title +"_Version_"+ instance.ver + "_" + instance.user.email.split('@')[0], ext)
+         filename = '{}.{}'.format(instance.activityreport.activity.title +"_Version_"+ instance.ver + "_" + instance.user.email.split('@')[0], ext)
         # set filename as random string
     else:
         filename = '{}.{}'.format(uuid4().hex, ext)
@@ -248,7 +249,7 @@ class IcnReportImpact(models.Model):
    
 
     def __str__(self):
-        return str(self.icnreport.title)
+        return str(self.icnreport)
 
 class ActivityReport(models.Model):
     activity = models.OneToOneField(Activity, on_delete=models.DO_NOTHING)
@@ -256,7 +257,7 @@ class ActivityReport(models.Model):
     icnreport = models.ForeignKey(IcnReport, on_delete=models.DO_NOTHING, null=True, blank=True)
     actual_start_date = models.DateField()
     actual_end_date = models.DateField()
-    
+    aworeda = models.ManyToManyField(ImplementationArea,  blank=True, related_name='program_aworedas')
     alead_agency = models.ForeignKey(Portfolio, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='arcns')
     alead_co_agency = models.ManyToManyField(Portfolio,  blank=True, related_name='arco_leads')
     actual_reporting_date = models.DateField(null=True, blank=True)

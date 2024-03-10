@@ -5,7 +5,14 @@
 
 {% load humanize%}
 <div class="right_col" role="main">
-    <div class="">
+       <div class="">
+            <div class="page-title">
+              <div class="title_left">
+                <h4>Activity Report</h4>
+              </div>
+
+              
+            </div>
       
       
       <div class="clearfix"></div>
@@ -13,23 +20,7 @@
       <div class="row">
         <div class="col-md-12">
           <div class="x_panel">
-            <div class="x_title">
-              <h2>Intervention Concept Note</h2>
-              <ul class="nav navbar-right panel_toolbox">
-                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                </li>
-                <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                      <a class="dropdown-item" href="#">Settings 1</a>
-                      <a class="dropdown-item" href="#">Settings 2</a>
-                    </div>
-                </li>
-                <li><a class="close-link"><i class="fa fa-close"></i></a>
-                </li>
-              </ul>
-              <div class="clearfix"></div>
-            </div>
+       
 
             <div class="x_content">
 
@@ -44,7 +35,7 @@
 
                 <div style="height:350px;">
                   <div class="row">
-                    <div class="table" id="SubmitList" hx-trigger="load, SubmitApprovalListChanged from:body" hx-get= "{% url 'current_submit_approval_list' icn.id %}" hx-target="this" >
+                    <div class="table" id="SubmitList" hx-trigger="load, SubmitApprovalListChanged from:body" hx-get= "{% url 'current_activityreport_submit_approval_list' activityreport.id %}" hx-target="this" >
 
   
                     </div>
@@ -73,7 +64,7 @@
 
               
                 
-<div  hx-trigger="load, SubmitApprovalListChanged from:body" hx-get="{% url 'submit_approval_list' icn.id %}" hx-target="this">
+<div  hx-trigger="load, SubmitApprovalListChanged from:body" hx-get="{% url 'activityreport_submit_approval_list' activityreport.id %}" hx-target="this">
             
 
                 
@@ -81,7 +72,7 @@
               </div>
                         </div>
                         <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                       <div id="documentlist" hx-trigger="load, SubmitApprovalListChanged from:body" hx-get="{% url 'document_list' icn.id %}" hx-target="this">
+                       <div id="documentlist" hx-trigger="load, SubmitApprovalListChanged from:body" hx-get="{% url 'activityreport_document_list' activityreport.id %}" hx-target="this">
                         </div>
 </div>
                         <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
@@ -101,46 +92,43 @@
                 <section class="panel">
 
                   <div class="x_title">
-                    <h2>Concept Note Details</h2>
+                    <h2> Concept Note overview </h2>
                     <div class="clearfix"></div>
                   </div>
                   <div class="panel-body">
-                    <h5 class="green"><i class="fa fa-paint-brush"></i> {{ icn.title }}</h5>
+                    <h5 class="green"><i class="fa fa-paint-brush"></i> {{ activityreport.activity.title }}</h5>
 
-                    <p>{{icn.description}}</p>
+                    <p>{{activityreport.description}}</p>
                
 
                     <div class="project_detail">
-                     <p>Program:<strong> {{icn.program}}</strong></p>
+                     <p>Intervention:<strong> {{activityreport.activity.icn}}</strong></p>
 
-                      <p class="">Lead Agency:<strong> {{icn.ilead_agency}}</strong></p>
+                      <p class="">Lead Agency:<strong> {{activityreport.activity.alead_agency}}</strong></p>
                       <p>Co-Lead Agency:
-                      {% for colead in icn.ilead_co_agency.all %}
+                      {% for colead in activityreport.activity.alead_co_agency.all %}
                       <strong>{{colead}},</strong>
                       {% endfor %}</p>
-                      <p class="">Proposed Start Date<strong>
-                      {{icn.proposed_start_date}}</strong></p>
-                      <p class="">Proposed End Date<strong>
-                      {{icn.proposed_end_date}}</strong></p>
+                      <p class="">Actual Start Date<strong>
+                      {{activityreport.actual_start_date}}</strong></p>
+                      <p class="">Actual End Date<strong>
+                      {{activityreport.actual_end_date}}</strong></p>
                   
 
                   
 
-                      <p>Environmnetal Impact: {% if icn.eniromental_impact == '3' %}High{% elif icn.eniromental_impact == '2' %}<strong>Medium</strong>{% elif icn.eniromental_impact == '1' %}<strong>Low</strong>{% endif %}</p>
-                               <p>Environmnetal Impact Doc <i class="fa fa-paperclip"></i>:<strong>{% if icn.environmental_assessment_att %}<a href="{% url 'download_env_att' icn.id %}"><i class="fa fa-paperclip"></i>  download </a> {% else %}NA{% endif%} </strong></p>
+                     
 
-                              <p>Total Mercy Corps budget:<strong> ${{ icn.mc_budget_usd|intcomma }}</strong></p>
-                              <p>Cost-share contributions:<strong>  ${{ icn.cost_sharing_budget_usd|intcomma }}</strong></p>
-             <p>Implementation Woreda:{% for woreda in icn.iworeda.all %}
-                      <strong>{{woreda}},</strong>
-                      {% endfor %}</p>
-                             <p># of Impact/Target: <strong> {{ icn.impact_set.count }}</strong></p>
-                             <p># of Program Indicators: <strong> {{ icn.get_num_indicator }}</strong></p>
+                              <p>Total Mercy Corps budget:<strong> ${{ activityreport.actual_mc_budget_usd|intcomma }}</strong></p>
+                              <p>Cost-share contributions:<strong>  ${{ activityreport.actual_cost_sharing_budget_usd|intcomma }}</strong></p>
+             <p>Imp. Woreda: <strong> {% for woreda in activityreport.aworeda.all %} {{ woreda }}, {%endfor%}</strong></p>
+                             <p># of Impact/Target: <strong> {{ activityreport.activityimpact_set.count }}</strong></p>
+                             <p># of Intervention Target: <strong> {{ activityreport.get_num_impact }}</strong></p>
                     <br />
   </div>
                     <div class="text-center mtop20">
                       
-                          <a href="{% url 'icn_detail' icn.id %}" class="btn btn-sm  btn-primary btn-xs"><i class="fa fa-eye"></i> View Details</a>
+                          <a href="{% url 'activityreport_detail' activityreport.id %}" class="btn btn-sm  btn-primary btn-xs"><i class="fa fa-eye"></i> View Details</a>
                     </div>
                   </div>
 
