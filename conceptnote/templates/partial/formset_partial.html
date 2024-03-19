@@ -1,0 +1,29 @@
+
+
+{% load static %}
+  <div class="form-group row">
+<input hx-swap-oob="true" 
+       type="hidden" 
+       name="form-TOTAL_FORMS" 
+       value="{{ new_total_formsets }}" 
+       id="id_form-TOTAL_FORMS">
+
+<table>{{ new_formset }}</table>
+    {{ form.media.js }}
+<button type="button" 
+        hx-trigger="click"
+        hx-get="{% url 'add_formset' new_total_formsets %}"  
+        hx-swap="outerHTML">
+  Add formset
+</button>
+
+</div>
+
+
+
+       <!-- BEGIN: Vendor JS-->
+   
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.css" rel="stylesheet"/>
+
+

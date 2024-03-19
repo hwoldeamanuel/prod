@@ -210,7 +210,7 @@
   </div>
                     <div class="text-center mtop20">
                       
-                          <a href="#" class="btn btn-sm  btn-primary btn-xs"><i class="fa fa-eye"></i> View Details</a>
+                          <a href="{% url 'icn_detail' icn.id %}" class="btn btn-sm  btn-primary btn-xs"><i class="fa fa-eye"></i> View Details</a>
                     </div>
                   </div>
 
@@ -228,37 +228,7 @@
   <!-- /page content -->
 {% endblock %}
 {% block content_page_js %}
-<script  type="text/javascript">
-   $(function () {
-                $('#myDatepicker').datetimepicker();
-            });
-    
-    $('#myDatepicker2').datetimepicker({
-        format: 'DD.MM.YYYY'
-    });
-    
-    $('#myDatepicker3').datetimepicker({
-        format: 'hh:mm A'
-    });
-    
-    $('#myDatepicker4').datetimepicker({
-        ignoreReadonly: true,
-        allowInputToggle: true
-    });
 
-    $('#datetimepicker6').datetimepicker();
-    
-    $('#datetimepicker7').datetimepicker({
-        useCurrent: false
-    });
-    
-    $("#datetimepicker6").on("dp.change", function(e) {
-        $('#datetimepicker7').data("DateTimePicker").minDate(e.date);
-    });
-    
-    $("#datetimepicker7").on("dp.change", function(e) {
-        $('#datetimepicker6').data("DateTimePicker").maxDate(e.date);
-    });
 </script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.css" rel="stylesheet"/>

@@ -4,14 +4,20 @@
  <div class="right_col" role="main">
           <div class="">
          
+          <div class="page-title">
+              <div class="title_left">
+                <h3>Concept Note :: Intervention</h3>
+              </div>
 
+              
+            </div>
             <div class="clearfix"></div>
 
             <div class="row">
               <div class="col-md-12 col-sm-12  ">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2>Intervention Concept Note :: Add New</h2>
+                    <h2>Intervention | Add New</h2>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                       </li>
@@ -51,14 +57,14 @@
                               </div>
                           <div class="form-group row">
 
-                              <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.ilead_agency.id_for_label }}">Lead Agency: <span class="required">*</span>
+                              <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.ilead_agency.id_for_label }}">Lead Agency: <span class="required"> </span>
                                   </label>
                               <div class="col-md-3 col-sm-3">
                               
                                  {% render_field   form.ilead_agency class="form-control form-control-sm" required= %}
                                  <div class="invalid-feedback">{{ form.ilead_agency.errors|first }}</div>
                               </div>
-                              <label class="col-form-label col-md-2 col-sm-2 label-align" for=" {% render_field form.ilead_co_agency.id_for_label %}"> Co-Lead Agency: <span class="required">*</span>
+                              <label class="col-form-label col-md-2 col-sm-2 label-align" for=" {% render_field form.ilead_co_agency.id_for_label %}"> Co-Lead Agency: <span class="required"> </span>
                               </label>
                               <div class="col-md-3 col-sm-3 ">
                                    {% render_field form.ilead_co_agency class+="form-control form-control-sm form-select form-select-solid" attr="data-control:select2" %}
@@ -86,13 +92,14 @@
                                  {% render_field form.final_report_due_date class+="form-control form-control-sm" %}
                                  <div class="invalid-feedback">{{ form.final_report_due_date.errors|first }}</div>
                             </div>
-                             <label class="col-form-label col-md-2 col-sm-2 label-align" for=" {% render_field form.ilead_co_agency.id_for_label %}">Woredas:<span class="required">*</span>
+                             <label class="col-form-label col-md-2 col-sm-2 label-align" for=" {% render_field form.ilead_co_agency.id_for_label %}">Woredas:<span class="required"> </span>
                               </label>
                               <div class="col-md-3 col-sm-3 ">
-                                   {% render_field form.iworeda class+="form-control form-control-sm form-select form-select-solid" attr="data-control:select2" %}
+                                   {% render_field form.iworeda class+="form-control form-control-sm select2_group form-control" attr="data-control:select2"  %}
                                     <div class="invalid-feedback">{{ form.iworeda.errors|first }}</div>
                               </div>
                           </div>
+                         
                           <div class="form-group row">
                             <label class="col-form-label col-md-2 col-sm-2 label-align" >Environmental Impact:<span class+="required"></span>
                             </label>
@@ -109,18 +116,26 @@
 
                           </div>
                              <div class="form-group row">
-                            <label class="col-form-label col-md-2 col-sm-2 label-align" >Mercy Corps Budget($): <span class+="required"></span>
+                            <label class="col-form-label col-md-2 col-sm-2 label-align" >Mercy Corps Budget: <span class+="required"></span>
                             </label>
-                            <div class="col-md-3 col-sm-3 ">
-                                   {% render_field form.mc_budget_usd class="form-control form-control-sm" %}
-                                 <div class="invalid-feedback">{{ form.mc_budget_usd.errors|first }}</div>
+                            <div class="col-md-2 col-sm-2">
+                                   {% render_field form.mc_budget class="form-control form-control-sm" %}
+                                 <div class="invalid-feedback">{{ form.mc_budget.errors|first }}</div>
+                            </div>
+                             <div class="col-md-1 col-sm-1">
+                                   {% render_field form.mc_currency class="form-control form-control-sm" %}
+                                 <div class="invalid-feedback">{{ form.mc_currency.errors|first }}</div>
                             </div>
                          
-                            <label class="col-form-label col-md-2 col-sm-2 label-align" >Cost Share Budget($):
+                            <label class="col-form-label col-md-2 col-sm-2 label-align" >Cost Share Budget:
                             </label>
-                            <div class="col-md-3 col-sm-3 ">
-                                    {% render_field form.cost_sharing_budget_usd class="form-control form-control-sm" %}
-                                 <div class="invalid-feedback">{{ form.cost_sharing_budget_usd.errors|first }}</div>
+                            <div class="col-md-2 col-sm-2 ">
+                                    {% render_field form.cost_sharing_budget class="form-control form-control-sm" %}
+                                 <div class="invalid-feedback">{{ form.cost_sharing_budget.errors|first }}</div>
+                            </div>
+                            <div class="col-md-1 col-sm-1">
+                                    {% render_field form.cs_currency class="form-control form-control-sm" %}
+                                 <div class="invalid-feedback">{{ form.cs_currency.errors|first }}</div>
                             </div>
                           </div>
                           <div class="form-group row">
@@ -158,8 +173,8 @@
                           </div>
                         <div class="ln_solid"></div>
 										<div class="form-group row">
-											<div class="col-md-9 col-sm-9 offset-md-4">
-												<button class="btn btn-primary" type="button">Cancel</button>
+											<div class="col-md-12 col-sm-12 offset-md-4">
+												<button onclick="window.history.back()" class="btn btn-secondary" type="button">Cancel</button>
 												<button class="btn btn-primary" type="reset">Reset</button>
 												<button type="submit" class="btn btn-success">Submit</button>
 											</div>

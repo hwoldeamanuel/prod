@@ -21,9 +21,9 @@
        <td>{{ cn.get_name }}</td>
        <td>{% if cn.get_name == "Intervention" %} <a href="{% url 'icn_detail' cn.id %}">{{ cn.title }}{% elif cn.get_name == "Activity" %}<a href="{% url 'activity_detail' cn.id %}">{{cn.title}} {% endif %} </a></td>
        <td> {% if cn.user == request.user %}Initiator
-            {% elif cn.technical_lead.user.id == request.user.user.id %} Technical Lead 
-            {% elif cn.program_lead.user.id == request.user.user.id %} Program Lead 
-            {% elif cn.finance_lead.user.id == request.user.user.id %} Finance Lead 
+            {% elif cn.technical_lead.user == request.user %} Technical Lead 
+            {% elif cn.program_lead.user == request.user %} Program Lead 
+            {% elif cn.finance_lead.user == request.user %} Finance Lead 
             {% endif%}
             
         </td>

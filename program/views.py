@@ -19,17 +19,23 @@ from django.db.models.functions import TruncMonth
 from django.db.models import Q
 from collections import defaultdict
 from itertools import chain
+from report.models import IcnReport, ActivityReport
+from django.contrib.auth.decorators import permission_required
 
+@login_required(login_url='login')
 def program(request):
     programs = Program.objects.all().order_by('-id')
     context = {'programs': programs}
     return render(request, 'programs.html', context)
 
+@login_required(login_url='login')
 def program_profile(request, id):
     program = Program.objects.get(pk=id)
     context = {'program': program}
     return render(request, 'partial/program_profile.html', context)
- 
+
+@login_required(login_url='login')
+@permission_required("program.can_add_program", raise_exception=True)
 def create_view(request): 
     # dictionary for initial data with  
     # field names as keys 
@@ -44,14 +50,18 @@ def create_view(request):
     context = {'form':form}
     return render(request, 'add_program.html', context)
 
- 
+
+@login_required(login_url='login')
 def program_detail(request, pk):
-   
+    program = Program.objects.filter(pk=pk)
     qs1 = Icn.objects.filter(program_id = pk).annotate(m=TruncMonth('created')).values("m").annotate(icn_count=Count('id', distinct=True))
     qs2 = Activity.objects.filter(icn__program_id = pk).annotate(m=TruncMonth('created')).values("m").annotate(activity_count=Count('id', distinct=True))
  
     total_icn  =  Icn.objects.filter(program_id = pk).count
     total_acn  =  Activity.objects.filter(icn__program_id = pk).count
+    total_report = IcnReport.objects.filter(Q(activityreport__activity__icn__program__in=program), Q(icn__program__in=program)).count 
+   
+   
     collector = defaultdict(dict)
 
     for collectible in chain(qs1, qs2):
@@ -65,7 +75,7 @@ def program_detail(request, pk):
        
     conceptnotes = sorted(list(chain(qsi, qsa)), key=lambda instance: instance.created, reverse=True)
     
-
+    
 
    
  
@@ -73,11 +83,11 @@ def program_detail(request, pk):
   
     program = Program.objects.get(pk=pk)
     
-    context = {'program':program, 'all_request':all_request, 'total_icn':total_icn, 'total_acn':total_acn, 'conceptnotes': conceptnotes  }
+    context = {'program':program, 'all_request':all_request, 'total_report':total_report,  'total_icn':total_icn, 'total_acn':total_acn, 'conceptnotes': conceptnotes  }
     return render(request, 'program.html', context)
 
-
- 
+@login_required(login_url='login')
+@permission_required("program.can_change_program", raise_exception=True)
 def edit_view(request, id): 
     # dictionary for initial data with  
     # field names as keys 
@@ -97,6 +107,7 @@ def edit_view(request, id):
     form = ProgramForm(instance=program) 
     context = {'form':form}
     return render(request, 'add_program.html', context)
+
 
 def edit_program_profile(request, id):
     program = Program.objects.get(pk=id)

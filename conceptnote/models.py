@@ -30,18 +30,26 @@ class Icn(models.Model):
     description = models.TextField(null=True, blank=True)
     iworeda = models.ManyToManyField(ImplementationArea,  blank=True, related_name='program_woredas')
     
-    mc_budget_usd = models.FloatField(null=True, blank=True)
+    mc_budget = models.FloatField(null=True, blank=True)
     
-    cost_sharing_budget_usd = models.FloatField(null=True, blank=True)
+    cost_sharing_budget = models.FloatField(null=True, blank=True)
     
     eniromental_impact =  models.CharField(max_length=255, null=True, blank=True)
     
     environmental_assessment_att = models.FileField(null=True,  blank=True, upload_to='documents/')
-   
+    USD = 1
+    ETB = 2
+    CURRENCY_CHOICES =   (
+        (USD, 'USD'),
+        (ETB, 'ETB'),
+     
+        )
 
     STATUS_CHOICES = [(False, 'Draft'), (True, 'Submitted')]
+    mc_currency = models.PositiveSmallIntegerField(choices=CURRENCY_CHOICES, default = 1, blank=True, null=True)
+    cs_currency =  models.PositiveSmallIntegerField(choices=CURRENCY_CHOICES, default = 1, blank=True, null=True)
     status = models.BooleanField("Status", default=False, 
-                                       choices=STATUS_CHOICES)
+                                    choices=STATUS_CHOICES)
     approval_status = models.CharField(max_length=100,null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
@@ -49,8 +57,8 @@ class Icn(models.Model):
 
     def get_num_indicator(self):
         if Impact.objects.filter(icn_id=self).exists():
-            qs = Impact.objects.filter(icn_id=self).annotate(Count('indicators', distinct=True))
-            num = qs[0].indicators__count
+            qs = Icn.objects.filter(title=self).annotate(Count('impact', distinct=True), Count('impact__indicators', distinct=True))
+            num = qs[0].impact__indicators__count
         else:
             num = 0
        
@@ -80,9 +88,9 @@ def path_and_rename(instance, filename):
 
     # get filename
     if hasattr(instance, 'icn'):
-        filename = '{}.{}'.format(instance.icn.title +"_Version_"+ instance.ver + "_" + instance.user.email.split('@')[0], ext)
+        filename = '{}.{}'.format(instance.icn.title +"_Version_"+ instance.ver + "_" + instance.user.username, ext)
     elif hasattr(instance, 'activity'):
-         filename = '{}.{}'.format(instance.activity.title +"_Version_"+ instance.ver + "_" + instance.user.email.split('@')[0], ext)
+         filename = '{}.{}'.format(instance.activity.title +"_Version_"+ instance.ver + "_" + instance.user.username, ext)
         # set filename as random string
     else:
         filename = '{}.{}'.format(uuid4().hex, ext)
@@ -104,7 +112,7 @@ class Document(models.Model):
     
     
     def __str__(self):
-        return "%s %s %s" % ("Version", self.ver, self.user.email.split('@')[0])
+        return "%s %s %s" % ("Version", self.ver, self.user.username)
     
       
 
@@ -146,12 +154,12 @@ class IcnSubmit(models.Model):
 
 class Icn_Approval(models.Model):
     Pending_Review = 1
-    Require_Doc_Update = 2
+    Require_Update = 2
     Approved = 3
     Rejected = 4
     STATUS = (
         (Pending_Review, 'Pending_Review'),
-        (Require_Doc_Update, 'Require_Doc_Update'),
+        (Require_Update, 'Require Update'),
         (Approved, 'Approved'),
         (Rejected, 'Rejected'),
         )

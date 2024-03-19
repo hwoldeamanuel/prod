@@ -23,7 +23,7 @@
         <td>{{icnsubmit.document }}</td>
         <td>
           <button type="button" class="btn btn-success btn-sm btn-xs" >{{ icnsubmit.get_submission_status_display}}</button>
-          {% if request.user.id == icn.user.id %}<span type="button" class="glyphicon glyphicon-repeat" aria-hidden="true"  hx-get="{% url 'icn_submit_form' icn.id %}" hx-target="#SubmitList" ></span>{% endif %}
+          {% if request.user.id == icn.user.id and icn.approval_status != '100% Approved'%}<span type="button" class="glyphicon glyphicon-repeat" aria-hidden="true"  hx-get="{% url 'icn_submit_form' icn.id %}" hx-target="#SubmitList" ></span>{% endif %}
         
        
  </td>
@@ -114,6 +114,18 @@
 
 
 
+</tr>
+<tr>
+<td></td>
+<td>
+    
+     
+    </td>
+    <td></td>
+    <td></td>
+    <td>
+                     <h2> <span class="badge {% if 'Rejected' in icn.approval_status %} bg-red {% elif 'Approved' in icn.approval_status %} bg-green {% else %} bg-warning {% endif %}">{% if icn.approval_status %} {{ icn.approval_status}} {% else %} Pending Approval{% endif %}</span></h2>
+                    </td>
 </tr>
     </tbody>
   </table>

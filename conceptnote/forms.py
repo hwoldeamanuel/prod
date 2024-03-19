@@ -10,6 +10,7 @@ from django.forms.models import modelformset_factory
 from django_select2 import forms as s2forms
 from app_admin.models import Country , Region , Zone , Woreda 
 from django.contrib.auth.models import User
+from django.forms import inlineformset_factory
 CHOICE1 =(
     ("1", "Low"),
     ("2", "Medium"),
@@ -49,9 +50,9 @@ class IcnForm(forms.ModelForm):
             'technical_lead',
             'finance_lead',
            
-            'mc_budget_usd',
+            'mc_budget',
            
-            'cost_sharing_budget_usd',
+            'cost_sharing_budget',
             
             'eniromental_impact',
             
@@ -82,6 +83,7 @@ class IcnForm(forms.ModelForm):
                 
                 }
             )
+    
   
         self.fields['proposed_end_date'].widget = forms.widgets.DateInput(
             attrs={
@@ -99,8 +101,9 @@ class IcnForm(forms.ModelForm):
         self.fields['eniromental_impact'].widget = forms.widgets.Select(choices = CHOICE1,attrs={'type': 'choice', 'class': 'form-control form-control-sm', 'rows':'1', 'placeholder':''   }    )
         self.fields['ilead_co_agency'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
         self.fields['ilead_co_agency'].queryset = Portfolio.objects.all()
-        self.fields['iworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
+        self.fields['iworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'rows':'3','class':'form-control form-control-sm select',  'data-width': '100%'})
         self.fields['iworeda'].queryset = ImplementationArea.objects.all()
+      
     class Meta:
         model = Icn
         fields=['title',
@@ -108,15 +111,16 @@ class IcnForm(forms.ModelForm):
             'description',
             'proposed_start_date', 
             'proposed_end_date',
-            
+            'mc_currency',
+            'cs_currency',
             'final_report_due_date',
             'program_lead',
             'technical_lead',
             'finance_lead',
             'iworeda',
-            'mc_budget_usd',
+            'mc_budget',
            
-            'cost_sharing_budget_usd',
+            'cost_sharing_budget',
             
             'eniromental_impact',
             'environmental_assessment_att',
@@ -225,6 +229,7 @@ class IcnAreaFormE(forms.ModelForm):
             exclude=  ['icn']
 
 class IcnSubmitForm(forms.ModelForm):
+     submission_status = forms.ChoiceField(choices= IcnSubmit._meta.get_field('submission_status').choices, initial=2, disabled=False)
      #document = forms.ChoiceField(
          #choices=[(document.id, document.document) for document in Document.objects.all()]
 #)
@@ -240,12 +245,16 @@ class IcnSubmitForm(forms.ModelForm):
              
       # invalid input from the client; ignore and fallback to empty City queryset
         
-  
+
     
 
          self.fields['submission_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
          self.fields['submission_note'].required = True 
-        
+         self.fields['submission_status'].required = True 
+   
+         
+          
+           
      class Meta:
             model = IcnSubmit
             fields=['submission_status',
@@ -335,12 +344,12 @@ class ImpactForm(forms.ModelForm):
             self.fields['indicators'].queryset = Indicator.objects.all()
         self.fields['indicators'].required = True 
         self.fields['title'].required = True 
-        self.fields['description'].required = True 
+       
         self.fields['impact_pilot'].required = True 
         self.fields['impact_scaleup'].required = True 
     class Meta:
         model = Impact
-        fields = ['title','description', 'impact_pilot' ,'impact_scaleup',
+        fields = ['title', 'description','impact_pilot' ,'impact_scaleup',
                     'indicators']
         exclude=  ['icn']
 
@@ -632,3 +641,8 @@ class ActivityApprovalFForm(forms.ModelForm):
             fields = ('approval_note','approval_status','document')
 
             exclude=  ['activity','user',]
+
+ImpactFormSet = inlineformset_factory(
+    Icn, Impact, form=ImpactForm,
+    extra=1, can_delete=True, can_delete_extra=True
+)

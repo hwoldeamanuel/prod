@@ -25,6 +25,7 @@ from datetime import datetime
 from django.db.models.functions import TruncMonth
 from django.db.models import Q
 from collections import defaultdict
+from django.contrib.auth.decorators import permission_required
 
 def convertmonth(created):
     #template = '%(function)s(MONTH from %(expressions)s)'
@@ -37,23 +38,7 @@ def portfolios(request):
     context = {'portfolios': portfolios}
     return render(request, 'portfolios.html', context)
 
-def mychartq(request, id):
-    portfolio = Portfolio.objects.filter(id=id)
-    qs1 = Icn.objects.filter(Q(ilead_agency__in=portfolio) | Q(ilead_co_agency__in=portfolio)).annotate(m=TruncMonth('created')).values("m").annotate(icn_count=Count('id', distinct=True))
-    qs2 = Activity.objects.filter(Q(alead_agency__in=portfolio) | Q(alead_co_agency__in=portfolio)).annotate(m=TruncMonth('created')).values("m").annotate(activity_count=Count('id', distinct=True))
- 
 
-
-
-    collector = defaultdict(dict)
-
-    for collectible in chain(qs1, qs2):
-        collector[collectible['m']].update(collectible.items())
-
-    all_request = list(collector.values())
-
-    context = {'all_request':all_request,}
-    return render(request, 'partial/mychart.html', context)
 
 
 
@@ -66,18 +51,23 @@ def portfolios_list(request):
     context = {'portfolios': portfolios}
     return render(request, 'partial/portfolios_list.html', context)
 
+
+
+
+@login_required(login_url='login')
+@permission_required("portfolio.can_change_portfolio", raise_exception=True)
 def edit_portfolio(request, id):
     portfolio = get_object_or_404(Portfolio, id=id)
     if request.method == "POST":
         form = PortfolioForm(request.POST, request.FILES, instance=portfolio)
         if form.is_valid():
-            isinstance =form.save()
+            instance =form.save()
             return HttpResponse(
                 status=204,
                 headers={
                     'HX-Trigger': json.dumps({
                         "PortfolioListChanged": None,
-                        "showMessage": f"{isinstance.title} updated."
+                        "showMessage": f"{instance.title} updated."
                     })
                 }
             )
@@ -88,6 +78,8 @@ def edit_portfolio(request, id):
         'portfolio': portfolio,
     })
 
+@login_required(login_url='login')
+@permission_required("portfolio.can_add_portfolio", raise_exception=True)
 def add_porfolio(request):
     
     form = PortfolioForm()
@@ -114,6 +106,8 @@ def add_porfolio(request):
         'form': form,
     })
 
+@login_required(login_url='login')
+@permission_required("portfolio.can_delete_portfolio", raise_exception=True)
 def delete_portfolio(request, pk):
     portfolio = get_object_or_404(Portfolio, pk=pk)
     portfolio.delete()
@@ -126,6 +120,7 @@ def delete_portfolio(request, pk):
             })
         })
 
+@login_required(login_url='login')
 def portfolio_filter(request):
     query = request.GET.get('search', '')
     
@@ -149,13 +144,27 @@ def categories(request):
     form = PortfolioForm(request.GET)
     return HttpResponse(form['category'])
 
+@login_required(login_url='login')
 def portfolio_detail(request, pk):
-    portfolio = Portfolio.objects.get(pk=pk)
+    portfolio = Portfolio.objects.filter(id=pk)
+    qs1 = Icn.objects.filter(Q(ilead_agency__in=portfolio) | Q(ilead_co_agency__in=portfolio)).annotate(m=TruncMonth('created')).values("m").annotate(icn_count=Count('id', distinct=True))
+    qs2 = Activity.objects.filter(Q(alead_agency__in=portfolio) | Q(alead_co_agency__in=portfolio)).annotate(m=TruncMonth('created')).values("m").annotate(activity_count=Count('id', distinct=True))
+ 
+
+
+
+    collector = defaultdict(dict)
+
+    for collectible in chain(qs1, qs2):
+        collector[collectible['m']].update(collectible.items())
+
+    all_request = list(collector.values())
+    portfolio = Portfolio.objects.get(id=pk)
     total_icn  =  Icn.objects.filter(Q(ilead_agency=portfolio.id) | Q(ilead_co_agency=portfolio.id)).count
     total_acn  =  Activity.objects.filter(Q(alead_agency=portfolio.id) | Q(alead_co_agency=portfolio.id)).count
     
     total_program = Icn.objects.filter(Q(ilead_agency=portfolio.id) | Q(ilead_co_agency=portfolio.id)).values('program__title').distinct().count()
-    context = {'portfolio': portfolio, 'total_icn':total_icn, 'total_acn':total_acn, 'total_program':total_program}
+    context = {'portfolio': portfolio, 'all_request':all_request,'total_icn':total_icn, 'total_acn':total_acn, 'total_program':total_program}
     return render(request, 'portfolio.html', context)
 
 def pregion(request, id):
@@ -180,28 +189,31 @@ def pregion(request, id):
     
     return render(request, 'partial/portfolio_area_form.html', context)
 
-
+@login_required(login_url='login')
 def pzones(request):
     form = FieldOfficeForm(request.GET)
     return HttpResponse(form['zone'])
 
 
    
-
+@login_required(login_url='login')
 def pworedas(request):
     form = FieldOfficeForm(request.GET)
     return HttpResponse(form['woreda'])
 
+@login_required(login_url='login')
 def fieldoffices(request, id):
     return render(request, 'partial/portfolio_fieldoffice.html', {
         'fieldoffices': FieldOffice.objects.filter(portfolio_id=id),
     })
 
+@login_required(login_url='login')
 def portfolio_profile(request, pk):
     portfolio = Portfolio.objects.get(pk=pk)
     context = {'portfolio': portfolio}
     return render(request, 'partial/portfolio_profile.html', context)
 
+@login_required(login_url='login')
 def fieldoffice_edit(request, pk):
     fieldoffice = get_object_or_404(FieldOffice, pk=pk)
     if request.method == "POST":
@@ -235,6 +247,7 @@ def remove_fieldoffice(request, pk):
             })
         })
 
+
 def portfolio_conceptnotes(request, id):
     
     portfolio = Portfolio.objects.filter(id=id)
@@ -248,4 +261,6 @@ def portfolio_conceptnotes(request, id):
 
     return render(request, 'partial/portfolio_conceptnotes.html', context)
 
-
+@login_required(login_url='login')
+def new_portfolio(request):
+    return render(request, 'new_portfolio.html')

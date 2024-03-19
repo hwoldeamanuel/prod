@@ -8,7 +8,7 @@
           <div class="">
             <div class="page-title">
               <div class="title_left">
-                <h3>Portfolio Details</h3>
+                <h3>Portfolio :: Portfolio Detail</h3>
               </div>
 
               
@@ -38,7 +38,11 @@
                   </div>
 
                   <div class="x_content">
-
+  <div class="col-md-3 col-sm-3  ">
+                   <div  hx-trigger="load, PortfolioListChanged from:body " hx-get="{% url 'portfolio_profile' portfolio.id %}" hx-target="this">
+                     
+                    </div>
+                    </div>
                     <div class="col-md-9 col-sm-9  ">
 
                       <ul class="stats-overview">
@@ -58,9 +62,10 @@
                       </ul>
                       <br />
 
-                      <div style="height:250px;" hx-trigger="load, UserprofileChanged from:body" hx-get="{% url 'mychartq' portfolio.id %}" hx-target="this">
-                      
-                      </div>
+                   
+  <div id="container" style="width: 100%;"  >
+      <canvas id="canvas" height="240" width="679" style="width: 503px; height: 251px;"></canvas>
+    </div>
 
                       <div>
 
@@ -96,10 +101,7 @@
                     </div>
 
                     <!-- start project-detail sidebar -->
-                    <div class="col-md-3 col-sm-3  ">
-                   <div  hx-trigger="load, PortfolioListChanged from:body " hx-get="{% url 'portfolio_profile' portfolio.id %}" hx-target="this">
-                     
-                    </div>
+                  
                     <!-- end project-detail sidebar -->
 
                   </div>
@@ -113,4 +115,106 @@
         </div>
         <!-- /page content -->
 
-        {% endblock%}
+{% endblock%}
+{% block content_page_js %}
+   <script>
+
+
+var ctx = document.getElementById("canvas").getContext("2d");
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    
+    
+     data: {
+        labels: [{% for cn in all_request %} "{{ cn.m|date:'M-Y' }}", {% endfor %}],
+        datasets: [{
+          label: "Intervention",
+          data: [{% for cn in all_request %} {{ cn.icn_count }}, {% endfor %}],
+           backgroundColor: "rgba(38, 185, 154, 1)",
+                
+            
+            borderColor: "rgba(38, 185, 154, 1)",
+                
+            
+            borderWidth: 1
+        },
+        {
+          label: "Activity",
+          data: [{% for cn in all_request %} {{ cn.activity_count }}, {% endfor %}],
+           backgroundColor:  "rgba(35, 57, 93, 1)",
+                
+                       borderColor: "rgba(35, 57, 93, 1)",
+                
+            
+            borderWidth: 1
+        }, 
+        ]
+      },
+    options: {
+             
+         
+                    title:{
+                        display:false,
+                        text:'Chart.js Bar Chart - Skip Points'
+                    },
+                    tooltips: {
+                        mode: 'label',
+                    },
+                    hover: {
+                        mode: 'label'
+                    },
+            scales: {
+               
+            yAxes: [{
+            scaleLabel: {
+                            display: true,
+                            labelString: '# conceptnote'
+                        },
+                ticks: {
+                    beginAtZero:true
+                }
+            }],
+     
+                xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Month'
+                        }
+                    }],
+            }
+    },
+  
+
+});
+
+  window.onload = function() {
+   var ctx = document.getElementById("canvas").getContext("2d");
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    
+    
+     data:data,
+          options: {
+              // Elements options apply to all of the options unless overridden in a dataset
+              // In this case, we are setting the border of each bar to be 2px wide and green
+              elements: {
+                  rectangle: {
+                      borderWidth: 2,
+                      borderColor: 'rgb(0, 255, 0)',
+                      borderSkipped: 'bottom'
+                  }
+              },
+              responsive: true,
+              legend: {
+                  position: 'top',
+              },
+              title: {
+                  display: true,
+                  text: 'Chart.js Bar Chart'
+              }
+          }
+      });
+     };
+</script>
+  {% endblock %}

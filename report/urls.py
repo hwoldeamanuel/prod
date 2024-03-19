@@ -17,7 +17,7 @@ urlpatterns = [
     path('intervention/<int:pk>/', views.icnreport_detail, name='icnreport_detail'),
     path('intervention/<int:pk>/approval/', views.icnreport_submit_approval, name='icnreport_submit_approval'),
     path('activity/<int:pk>/approval/', views.activityreport_submit_approval, name='activityreport_submit_approval'),
-    path('download/<int:id>/', views.download, name='download'),
+    path('downloadi/<int:id>/', views.download, name='downloadi'),
     path('downloada/<int:id>/', views.downloada, name='downloada'),
     
     
@@ -62,7 +62,7 @@ htmxpatterns = [
  path('latest_submit_approval_list/<int:id>/', views.latest_submit_approval_list, name='icnreport_latest_submit_approval_list'),
  path('latest_submit_approval_list_activity/<int:id>/', views.latest_submit_approval_list_activity, name='latest_submit_approval_list_reportactivity'),
  path('current_activityreport_submit_approval_list/<int:id>/', views.current_activityreport_submit_approval_list, name='current_activityreport_submit_approval_list'),
- path('submit_approval_list/<int:id>/', views.submit_approval_list, name='icnreport_submit_approval_list'),
+ path('icnreport_submit_approval_list/<int:id>/', views.submit_approval_list, name='icnreport_submit_approval_list'),
  path('activityreport_submit_approval_list/<int:id>/', views.activityreport_submit_approval_list, name='activityreport_submit_approval_list'),
  path('add_impact/<int:id>/', views.add_icnreport_impact, name='icnreport_add_impact'),
  path('add_activityreport_impact/<int:id>/', views.add_activityreport_impact, name='add_activityreport_impact'),
@@ -70,7 +70,7 @@ htmxpatterns = [
  path('activityreport_impact_list/<int:id>/', views.activityreport_impact_list, name='activityreport_impact_list'),
  path('edit_impact/<int:pk>/', views.edit_impact, name='icnreport_edit_impact'),
  path('edit_activityreport_impact/<int:pk>/', views.edit_activityreport_impact, name='edit_activityreport_impact'),
- path('impact/<int:pk>/remove', views.remove_impact, name='remove_impact'),
+ path('icnreport_impact/<int:pk>/remove/', views.icnreport_remove_impact, name='icnreport_remove_impact'),
  path('activityreport_impact/<int:pk>/remove', views.remove_activityreport_impact, name='remove_activityreport_impact'),
 ]
 

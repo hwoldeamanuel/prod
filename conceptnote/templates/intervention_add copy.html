@@ -100,13 +100,14 @@
                                   </label>
                               <div class="col-md-3 col-sm-3">
                               
-                                 {% render_field   form.lead_agency class="form-control form-control-sm" required= %}
-                                 <div class="invalid-feedback">{{ form.lead_agency.errors|first }}</div>
+                                 {% render_field   form.ilead_agency class="form-control form-control-sm" required= %}
+                                 <div class="invalid-feedback">{{ form.ilead_agency.errors|first }}</div>
                               </div>
                               <label class="col-form-label col-md-2 col-sm-2 label-align" for=" {% render_field form.co_lead_agenc.id_for_label %}"> Co-Lead Agency <span class="required">*</span>
                               </label>
                               <div class="col-md-3 col-sm-3 ">
-                                   {% render_field form.co_lead_agency class+="form-control form-control-sm" required="required"  %}
+                                   {% render_field form.ilead_co_agency class+="form-control form-control-sm form-select form-select-solid" attr="data-control:select2" %}
+                                    <div class="invalid-feedback">{{ form.ilead_co_agency.errors|first }}</div>
                               </div>
                             </div>
                             <div class="form-group row">
@@ -147,67 +148,39 @@
                      
                         <div class="form-group row">
                        
-                          <label class="col-form-label col-md-2 col-sm-2 label-align" >IMPLEMTATION AREAS<span class="required"></span>
-                          </label>
-                              <label class="col-form-label col-md-3 col-sm-3 label-align" >Region<span class="required">*</span>
-                              </label>
-                              <div class="col-form-label col-md-1 col-sm-1 label-align" >
-                                 {% render_field form.implementation_region class="form-control form-control-sm" %}
-                                 <div class="invalid-feedback">{{ form.implementation_region.errors|first }}</div>
-                              </div>
-                              <label class="col-form-label col-md-1 col-sm-1 label-align">Woreda<span class="required">*</span>
-                              </label>
-                              <div class="col-form-label col-md-1 col-sm-1 label-align" >
-                                 {% render_field form.implementation_woreda class="form-control form-control-sm" %}
-                              </div>
-                              
-                        </div>
-                        <div class="form-group row">
-                          <label class="col-form-label col-md-2 col-sm-2 label-align" >TARGET GROUPS<span class="required"></span>
-                          </label>
-                              <label class="col-form-label col-md-3 col-sm-3 label-align" >Marekt Actors<span class="required">*</span>
-                              </label>
-                              <div class="col-form-label col-md-1 col-sm-1 label-align" >
-                                 {% render_field form.is_target_market_actor class="form-control form-control-sm" %}
-                              </div>
-                              
-                        </div>
-                        
-                   
-                        <div class="form-group row">
-                          <label class="col-form-label col-md-2 col-sm-2 label-align" ><span class="required"></span>
-                          </label>
-                              <label class="col-form-label col-md-3 col-sm-3 label-align" >Direct Individual Beneficiaries <span class="required">*</span>
-                              </label>
-                              <div class="col-form-label col-md-1 col-sm-1 label-align" >
-                                 {% render_field form.is_target_direct_individual class="form-control form-control-sm" %}
-                              </div>
-                              <label class="col-form-label col-md-1 col-sm-1 label-align" > Female <span class="required"></span>
-                              </label>
-                              <div class="col-form-label col-md-1 col-sm-1 label-align" >
-                                 {% render_field form.is_target_direct_individual_female class="form-control form-control-sm" %}
-                              </div>
-                              <label class="col-form-label col-md-1 col-sm-1 label-align" > Youth <span class="required"></span>
-                              </label>
-                              <div class="col-form-label col-md-1 col-sm-1 label-align" >
-                                 {% render_field form.is_target_direct_individual_youth class="form-control form-control-sm" %}
-                              </div>
-                              
-                        </div>
-                     
-                    
-                       
-                        <div class="form-group row">
-                          <label class="col-form-label col-md-2 col-sm-2 label-align" ><span class="required">*</span>
-                          </label>
-                              <label class="col-form-label col-md-3 col-sm-3 label-align" >Indirect Individual Beneficiaries <span class="required">*</span>
-                              </label>
-                              <div class="col-form-label col-md-1 col-sm-1 label-align" >
-                                 {% render_field form.is_target_indirect_beneficiary class="form-control form-control-sm" %}
-                              </div>
-                              
-                        </div>
-                        
+                          {{formset.management_form}}
+                           {% load humanize %}
+      <table class="data table table-sm table-striped no-margin" style="width:100%">
+        <thead>
+            <tr>
+              <th>#</th>
+           <th >Title</th>
+             
+            <th >Pilot</th>
+             <th >Scaleup</th>
+            <th >Program indicators</th>
+               
+            </tr>
+        </thead>
+        <tbody>
+        {% for form in formset %}
+        <tr>
+        <td>{{forloop.counter}}</td>
+        <td>{{form.title}}</td>
+        <td>{{form.impact_pilot}}</td>
+        <td>{{form.impact_scaleup}}</td>
+        <td>{{form.indicators}}</td>
+        </tr>
+           {% endfor %}
+       </tbody>
+       </table>
+     
+        <button type="button" 
+          hx-trigger="click"
+          hx-get="{% url 'add_formset' formset.total_form_count %}"
+          hx-swap="outerHTML">
+    Add formset
+  </button> 
                         
                       </div>
 
@@ -306,7 +279,10 @@
                         {% endwith %}
                   </div>
                 </form>
-                
+                 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.css" rel="stylesheet"/>
+
+    {{ form.media.js }}
           </div>
         </div>
         </div>
@@ -321,4 +297,10 @@
 <!-- /page con
 /page content -->
   
+{% endblock %}
+{% block content_page_js %}
+{% load static %}
+       <!-- BEGIN: Vendor JS-->
+   
+   <script src="{% static 'vendors/jQuery-Smart-Wizard/js/jquery.smartWizard.js' %}"></script>
 {% endblock %}

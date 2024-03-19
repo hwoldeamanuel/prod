@@ -538,7 +538,7 @@ def edit_impact(request, pk):
         'impact': impact,
     })
 
-def remove_impact(request, pk):
+def icnreport_remove_impact(request, pk):
     impact = get_object_or_404(Impact, pk=pk)
     impact.delete()
     return HttpResponse(
@@ -546,7 +546,7 @@ def remove_impact(request, pk):
         headers={
             'HX-Trigger': json.dumps({
                 "ImpactListChanged": None,
-                "showMessage": f"{impact.category} deleted."
+                "showMessage": f"{impact} deleted."
             })
         })
 

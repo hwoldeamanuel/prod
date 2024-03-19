@@ -64,7 +64,7 @@
 </div>
   <div class="modal-footer">
           {% if activity_impact %}
-          <button type="button" class="btn btn-danger btn-sm" hx-post="{% url 'remove_activity_impact' pk=activity_impact.pk %}">Remove</button>
+          <button type="button" class="btn btn-danger btn-sm" hx-post="{% url 'remove_activityreport_impact' pk=activity_impact.pk %}">Remove</button>
           <span class="flex-grow-1"></span>
           {% endif %}
           <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">

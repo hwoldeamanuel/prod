@@ -4,16 +4,17 @@
          <div class="col-md-4 col-sm-4  profile_details">
                         <div class="well profile_view">
                           <div class="col-sm-12">
-                            <h4 class="brief"><i>{{user.profile.portfolio }}</i></h4>
-                            <div class="left col-sm-7">
-                              <h6>{{user.profile.full_name }} </h6>
-                              <p><strong>Position: </strong> {{user.profile.job_title}} </p>
+                            <h4 class="brief"><i>{{user.profile.job_title }}</i></h4>
+                            <div class="left col-sm-8">
+                              <h4>{{user.profile.full_name }}</h4>
+                              <p><i class="fa fa-university"></i> {{user.profile.portfolio}} </p>
                               <ul class="list-unstyled">
-                                <li><i class="fa fa-external-link"></i>{{user.email}}</li>
+                                <li><i class="fa fa-tag"></i>:{{user.username}}</li>
+                                <li><i class="fa fa-mail-forward"></i>:{{user.email}}</li>
                                 <li><i class="fa fa-phone"></i>:{{user.profile.contact_number}}  </li>
                               </ul>
                             </div>
-                            <div class="right col-sm-5 text-center">
+                            <div class="right col-sm-4 text-center">
                               <img src="{% static 'images/user.png' %}" alt="" class="img-circle img-fluid">
                             </div>
                           </div>

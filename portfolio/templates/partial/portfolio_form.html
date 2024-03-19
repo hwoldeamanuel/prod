@@ -45,8 +45,18 @@
               
                 <div class="invalid-feedback">{{ form.start_date.errors|first }}</div>
         </div>
+        <label class="col-form-label col-md-2 col-sm-2 label-align">Logo</label>
+                   
+               <div class="col-3 col-sm-3">
+                    {% render_field form.logo class="form-control form-control-sm"  %}
+              
+                <div class="invalid-feedback">{{ form.logo.errors|first }}</div>
+        </div>
+        </div>
+
+           <div class="form-group row">
         <label class="col-form-label col-md-2 col-sm-2 label-align">URL:</label>
-                   <div class="col-3 col-sm-3">
+                   <div class="col-8 col-sm-8">
                     {% render_field form.address_url class="form-control form-control-sm"  %}
               
                 <div class="invalid-feedback">{{ form.address_url.errors|first }}</div>

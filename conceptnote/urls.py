@@ -67,19 +67,18 @@ htmxpatterns = [
  path('iarea_list/<int:id>/', views.iarea_list, name='iarea_list'),
  path('aarea_list/<int:id>/', views.aarea_list, name='aarea_list'),
  path('current_submit_approval_list/<int:id>/', views.current_submit_approval_list, name='current_submit_approval_list'),
- path('latest_submit_approval_list/<int:id>/', views.latest_submit_approval_list, name='latest_submit_approval_list'),
- path('latest_submit_approval_list_activity/<int:id>/', views.latest_submit_approval_list_activity, name='latest_submit_approval_list_activity'),
  path('current_activity_submit_approval_list/<int:id>/', views.current_activity_submit_approval_list, name='current_activity_submit_approval_list'),
- path('submit_approval_list/<int:id>/', views.submit_approval_list, name='submit_approval_list'),
+ path('icn_submit_approval_list/<int:id>/', views.icn_submit_approval_list, name='icn_submit_approval_list'),
  path('activity_submit_approval_list/<int:id>/', views.activity_submit_approval_list, name='activity_submit_approval_list'),
  path('add_impact/<int:id>/', views.add_impact, name='add_impact'),
  path('add_activity_impact/<int:id>/', views.add_activity_impact, name='add_activity_impact'),
  path('impact_list/<int:id>/', views.impact_list, name='impact_list'),
  path('activity_impact_list/<int:id>/', views.activity_impact_list, name='activity_impact_list'),
- path('edit_impact/<int:pk>/', views.edit_impact, name='edit_impact'),
+ path('icn_edit_impact/<int:pk>/', views.icn_edit_impact, name='icn_edit_impact'),
  path('edit_activity_impact/<int:pk>/', views.edit_activity_impact, name='edit_activity_impact'),
- path('impact/<int:pk>/remove', views.remove_impact, name='remove_impact'),
+ path('impact/<int:pk>/remove/', views.remove_impact, name='remove_impact'),
  path('activity_impact/<int:pk>/remove', views.remove_activity_impact, name='remove_activity_impact'),
+ path('add_formset/<int:current_total_formsets>/', views.add_formset, name='add_formset'),
 ]
 
 urlpatterns += htmxpatterns

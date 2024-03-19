@@ -29,7 +29,7 @@ from easyaudit.models import CRUDEvent, RequestEvent, LoginEvent
 from .forms import LoginForm, ProfileFormAdd
 from .models import Profile
 
-
+from datetime import datetime, timedelta
  
 
 register = template.Library()
@@ -47,11 +47,13 @@ def jsonify(data):
 
 @login_required(login_url='login')
 def user(request):
-    user_activity = CRUDEvent.objects.filter(user=1).order_by('-id')[:12]
+    last_month_filter = datetime.today() - timedelta(days=get_lapse())
+  
+    user_activity = CRUDEvent.objects.filter(user=request.user, datetime__gte=last_month_filter).order_by('-id')
     for item in  user_activity:
         item.object_json_repr = jsonify(item.object_json_repr)
-    qs1 = RequestEvent.objects.filter(user_id=1).values('datetime__date').annotate(id_count=Count('id', distinct=True))
-    qs2 = RequestEvent.objects.filter(user_id=1, method='POST').values('datetime__date').annotate(count_login=Count('id', distinct=True))
+    qs1 = RequestEvent.objects.filter(user_id=request.user,datetime__gte=last_month_filter).values('datetime__date').annotate(id_count=Count('id', distinct=True))
+    qs2 = RequestEvent.objects.filter(user_id=request.user, method='POST', datetime__gte=last_month_filter).values('datetime__date').annotate(count_login=Count('id', distinct=True))
     collector = defaultdict(dict)
 
     for collectible in chain(qs1, qs2):
@@ -246,3 +248,33 @@ def user_conceptnotes(request):
     return render(request, 'user/partial/conceptnotes.html', {
         'conceptnotes': conceptnotes,
     })
+
+from datetime import datetime, timedelta
+
+def is_leap_year(year): 
+    if year % 100 == 0:
+        return year % 100 == 0
+
+    return year % 4 == 0
+
+def get_lapse():
+    last_month = datetime.today().month
+    current_year = datetime.today().year
+
+    #is last month a month with 30 days?
+    if last_month in [9, 4, 6, 11]:
+        lapse = 30
+
+    #is last month a month with 31 days?
+    elif last_month in [1, 3, 5, 7, 8, 10, 12]:
+        lapse = 31
+
+    #is last month February?
+    else:
+        if is_leap_year(current_year):
+            lapse = 29
+        else:
+            lapse = 30
+
+    return lapse
+

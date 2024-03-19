@@ -13,7 +13,7 @@ from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView
 from django.contrib.auth import get_user_model
 from .models import Icn, Activity, ActivityImpact,ActivityImplementationArea,  Indicator, IcnImplementationArea,  Impact, IcnSubmit, Document, Icn_Approval, IcnSubmitApproval_P, IcnSubmitApproval_F, IcnSubmitApproval_T, ActivityDocument, ActivitySubmit, ActivitySubmitApproval_F,ActivitySubmitApproval_P,ActivitySubmitApproval_T
-from .forms import IcnForm, ActivityForm,ImpactForm, ActivityImpactForm, ActivityAreaFormE, IcnAreaFormE, IcnSubmitForm, IcnAreaFormset, IcnDocumentForm, IcnApprovalTForm, IcnApprovalFForm, IcnApprovalPForm, ActivitySubmitForm, ActivityDocumentForm, ActivityApprovalFForm, ActivityApprovalPForm,ActivityApprovalTForm
+from .forms import IcnForm, ActivityForm,ImpactForm, ActivityImpactForm, ActivityAreaFormE, IcnAreaFormE, IcnSubmitForm, IcnAreaFormset, IcnDocumentForm, IcnApprovalTForm, IcnApprovalFForm, IcnApprovalPForm, ActivitySubmitForm, ActivityDocumentForm, ActivityApprovalFForm, ActivityApprovalPForm,ActivityApprovalTForm, ImpactFormSet
 from program.models import  Program
 from django.http import QueryDict
 from django.conf import settings
@@ -22,7 +22,11 @@ from django.forms.models import modelformset_factory
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from django.db.models import Max, Avg,Sum,Count
-
+from django.utils.safestring import mark_safe
+from django.template.loader import get_template
+from django.template import Context
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 # Create your views here.
  
 def conceptnotes(request):
@@ -43,11 +47,13 @@ def icn_add(request):
         
         
         form = IcnForm(request.POST,request.FILES, user=request.user)   
+       
         context = {'form':form}
         return render(request, 'intervention_add.html', context)
     
     form = IcnForm(user=request.user)   
-    context = {'form':form}
+    formset = ImpactFormSet()
+    context = {'form':form, 'formset':formset}
     return render(request, 'intervention_add.html', context)
 
  
@@ -83,8 +89,7 @@ def icn_detail(request, pk):
     # add the dictionary during initialization
   
     icn = Icn.objects.get(pk=pk)
-    if IcnImplementationArea.objects.filter(icn_id=icn.id).exists():
-        num_woreda = IcnImplementationArea.objects.filter(icn=icn).count()
+    
     if IcnSubmit.objects.filter(icn_id=icn.id).exists():
         icnsubmit = IcnSubmit.objects.filter(icn_id=icn.id).latest('id')
         context = {'icn':icn, 'icnsubmit':icnsubmit}
@@ -206,10 +211,11 @@ def icn_delete(request, pk):
 def icn_submit_form(request, id): 
     icn = get_object_or_404(Icn, pk=id)
     form = IcnSubmitForm(user=request.user,icn=icn)
+   
     
     subject = 'Request for Approval'
     
-    message = 'A new Intervention Concept Note has been submitted'
+
     email_from = None 
     recipient_list = [icn.user.email,icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
 
@@ -228,11 +234,26 @@ def icn_submit_form(request, id):
             #Document.objects.create(user = icn.user, document = instance.document,  icn=instance.icn, description = document_i)
             if icnsubmit.submission_status == 2:
                 Icn.objects.filter(pk=id).update(status=True)
-                Icn.objects.filter(pk=id).update(approval_status="Pending")
+                Icn.objects.filter(pk=id).update(approval_status="Pending Approval")
                 IcnSubmitApproval_T.objects.create(user = icn.technical_lead,submit_id = instance, document = instance.document, approval_status=1)
                 IcnSubmitApproval_P.objects.create(user = icn.program_lead,submit_id = instance,document = instance.document, approval_status=1)
                 IcnSubmitApproval_F.objects.create(user = icn.finance_lead,submit_id = instance,document = instance.document, approval_status=1)
-
+                context = {
+                    "program": icn.program,
+                    "title": icn.title,
+                    "id": icn.id,
+                    "initiator": icn.user,
+                    "submission_note": icnsubmit.submission_note,
+                    "version": icnsubmit.document,
+                    "date": icnsubmit.submission_date,
+                    }
+                template_name = "partial/intervention_mail.html"
+                convert_to_html_content =  render_to_string(
+                template_name=template_name,
+                context=context
+                        )
+                plain_message = strip_tags(convert_to_html_content)
+                message = plain_message
                 send_mail(subject, message, email_from, recipient_list)
                 return HttpResponse(
                 status=204,
@@ -246,8 +267,24 @@ def icn_submit_form(request, id):
                 Icn.objects.filter(pk=id).update(status=False)
                 Icn.objects.filter(pk=id).update(approval_status="Pending Submission")
                 subject = 'Request withdrawn temporarly'
-                message = "The Intervention Concept Note approval request has been withdrawn for further update/changes & will notify you when it's re-submitted for approval process"
+                context = {
+                    "program": icn.program,
+                    "title": icn.title,
+                    "id": icn.id,
+                    "initiator": icn.user,
+                    "submission_note": icnsubmit.submission_note,
+                    "version": icnsubmit.document,
+                    "date": icnsubmit.submission_date,
+                    }
+                template_name = "partial/intervention_mail.html"
+                convert_to_html_content =  render_to_string(
+                template_name=template_name,
+                context=context
+                        )
+                plain_message = strip_tags(convert_to_html_content)
+                message = plain_message
                 send_mail(subject, message, email_from, recipient_list)
+               
                 return HttpResponse(
                 status=204,
                 headers={
@@ -282,11 +319,7 @@ def icn_approvalt(request, id):
     icnsubmit = get_object_or_404(IcnSubmit, pk=id)
     
     icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
-    subject = 'Approval Status changed'
-    message = 'Reviewed & status has been updated to this Concept Note has been submitted'
-    email_from = None 
-    recipient_list = [icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
-       
+      
     if request.method == "GET":
         icnsubmitApproval_t = get_object_or_404(IcnSubmitApproval_T, submit_id_id=id)
         form = IcnApprovalTForm(instance=icnsubmitApproval_t)
@@ -303,8 +336,29 @@ def icn_approvalt(request, id):
             icnsubmit = get_object_or_404(IcnSubmit, pk=id)
             icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
             update_approval_status(icnsubmit.id)
+           
+            subject = 'Approval Status changed'
+            context = {
+                    "program": icn.program,
+                    "title": icn.title,
+                    "id": icn.id,
+                    "initiator": icnsubmitApproval_t.user,
+                    "submission_note": icnsubmit.submission_note,
+                    "version": icnsubmit.document,
+                    "date": icnsubmit.submission_date,
+                    }
+            template_name = "partial/intervention_mail.html"
+            convert_to_html_content =  render_to_string(
+            template_name=template_name,
+            context=context
+                                )
+            plain_message = strip_tags(convert_to_html_content)
+            message = plain_message
+            
+            email_from = None 
+            recipient_list = [icn.user.email, icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
+            send_mail(subject, message, email_from, recipient_list) 
             context = {'icn':icn, 'icnsubmit':icnsubmit }
-            send_mail(subject, message, email_from, recipient_list)
             return HttpResponse(
                 status=204,
                 headers={
@@ -343,8 +397,29 @@ def icn_approvalp(request, id):
             icnsubmit = get_object_or_404(IcnSubmit, pk=id)
             update_approval_status(icnsubmit.id)
             icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
+            
+            subject = 'Approval Status changed'
+            context = {
+                    "program": icn.program,
+                    "title": icn.title,
+                    "id": icn.id,
+                    "initiator": icn.user,
+                    "submission_note": icnsubmit.submission_note,
+                    "version": icnsubmit.document,
+                    "date": icnsubmit.submission_date,
+                    }
+            template_name = "partial/intervention_mail.html"
+            convert_to_html_content =  render_to_string(
+            template_name=template_name,
+            context=context
+                                )
+            plain_message = strip_tags(convert_to_html_content)
+            message = plain_message
+            
+            email_from = None 
+            recipient_list = [icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
+            send_mail(subject, message, email_from, recipient_list) 
             context = {'icn':icn, 'icnsubmit':icnsubmit }
-            send_mail(subject, message, email_from, recipient_list)
             return HttpResponse(
                 status=204,
                 headers={
@@ -383,8 +458,28 @@ def icn_approvalf(request, id):
             icnsubmit = get_object_or_404(IcnSubmit, pk=id)
             update_approval_status(icnsubmit.id)
             icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
+            subject = 'Approval Status changed'
+            context = {
+                    "program": icn.program,
+                    "title": icn.title,
+                    "id": icn.id,
+                    "initiator": icn.user,
+                    "submission_note": icnsubmit.submission_note,
+                    "version": icnsubmit.document,
+                    "date": icnsubmit.submission_date,
+                    }
+            template_name = "partial/intervention_mail.html"
+            convert_to_html_content =  render_to_string(
+            template_name=template_name,
+            context=context
+                                )
+            plain_message = strip_tags(convert_to_html_content)
+            message = plain_message
+            
+            email_from = None 
+            recipient_list = [icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
+            send_mail(subject, message, email_from, recipient_list) 
             context = {'icn':icn, 'icnsubmit':icnsubmit }
-            send_mail(subject, message, email_from, recipient_list)
             return HttpResponse(
                 status=204,
                 headers={
@@ -521,10 +616,13 @@ def iarea_list(request, id):
         'iareas': IcnImplementationArea.objects.filter(icn_id=id),
     })
 
-def submit_approval_list(request, id):
-    icn_submit_list = IcnSubmit.objects.filter(icn_id = id, submission_status=2)
-    
-    context = {'icn_submit_list': icn_submit_list }
+def icn_submit_approval_list(request, id):
+   
+
+    icnsubmitlist = IcnSubmit.objects.filter(icn_id=id)[:10]
+    context = {'icnsubmitlist':icnsubmitlist}
+   
+  
     return render(request, 'partial/submit_approval_list.html', context )
 
 def current_submit_approval_list(request, id):
@@ -550,7 +648,7 @@ def update_approval_status(id):
     approval_f = icnsubmitapproval_f.approval_status
     
     if approval_t == 4 or approval_p== 4 or approval_f== 4:
-        Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="Rejected")
+        Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="100% Rejected")
     elif approval_t < 3 and approval_p < 3 and approval_p < 3:
         Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="Pending Approval")
     elif approval_t == 3 and approval_p ==3 and approval_f==3:
@@ -597,7 +695,7 @@ def impact_list(request, id):
         'impacts': Impact.objects.filter(icn_id=id),
     })
 
-def edit_impact(request, pk):
+def icn_edit_impact(request, pk):
     impact = get_object_or_404(Impact, pk=pk)
     icn = get_object_or_404(Icn, pk=impact.icn_id)
     program = get_object_or_404(Program, pk=icn.program_id)
@@ -630,7 +728,7 @@ def remove_impact(request, pk):
         headers={
             'HX-Trigger': json.dumps({
                 "ImpactListChanged": None,
-                "showMessage": f"{impact.category} deleted."
+                "showMessage": f"{impact.title} deleted."
             })
         })
 
@@ -1184,16 +1282,43 @@ def downloada(request, id):
     response['Content-Disposition'] = f'attachment; filename="{document.document}"'
     return response
 
-def latest_submit_approval_list(request, id):
-    if IcnSubmit.objects.filter(icn_id = id, submission_status=2).exists():
-        list = IcnSubmit.objects.filter(icn_id = id, submission_status=2).latest('id')
-        context = {'list':list}
-    context = {}
-    return render(request, 'partial/recent_submit_approval_list.html', context)
 
-def latest_submit_approval_list_activity(request, id):
+
+
+
+
+
+
+def formset_view(request):
+    template = 'formset.html'
+
+    if request.POST:
+        formset = BookFormSet(request.POST)
+        if formset.is_valid():
+            print(f">>>> form is valid. Request.post is {request.POST}")
+            return HttpResponseRedirect(reverse('app2:formset_view'))
+    else:
+        formset = BookFormSet()
+
+    return render(request, template, {'formset': formset})
+
+
+def add_formset(request, current_total_formsets):
+    formset = ImpactFormSet()
+    new_formset = build_new_formset(formset, current_total_formsets)
+    context = {
+        'new_formset': new_formset,
+        'new_total_formsets': current_total_formsets + 1,
+    }
+    return render(request, 'partial/formset_partial.html', context)
+
+
+# Helper to build the needed formset
+def build_new_formset(formset, new_total_formsets):
+    html = ""
+
+    for form in formset.empty_form:
+        html += form.label_tag().replace('__prefix__', str(new_total_formsets))
+        html += str(form).replace('__prefix__', str(new_total_formsets))
     
-    list = ActivitySubmit.objects.filter(activity_id = id, submission_status=2).latest('id')
-    context = {'list':list}
-    
-    return render(request, 'partial/recent_submit_approval_list_activity.html', context)
+    return mark_safe(html)
