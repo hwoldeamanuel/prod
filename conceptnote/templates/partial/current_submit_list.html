@@ -1,0 +1,49 @@
+
+
+<table class="data table table-striped no-margin">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th style="width:14%">Team Lead</th>
+        <th style="width:10%">Date</th>
+        <th>Concept Note Ver#</th>
+          <th style="width:38%">Submission Note</th>
+        <th>Status</th>
+      
+      </tr>
+    </thead>
+    <tbody hx-trigger="load, SubmitApprovalListChanged from:body" >
+      <tr>
+        <td>1</td>
+        <td>
+          <a>Initiator</a>
+          <br />
+          <small>{{ icn.user.profile.full_name }}</small>
+        </td>
+        {% if icnsubmit %}
+        <td>{{icnsubmit.submission_date|date:"M d,Y"}}</br><small>{{icnsubmit.submission_date|time}}</small></td>
+        <td>{{icnsubmit.document }}</td>
+           <td>{{icnsubmit.submission_note }}</td>
+        <td>
+          <button type="button" class="btn btn-success btn-sm btn-xs" >{{ icnsubmit.get_submission_status_display}}</button>
+          {% if request.user.id == icn.user.id and icn.approval_status != '100% Approved'%}<span type="button" class="glyphicon glyphicon-repeat" aria-hidden="true"  hx-get="{% url 'icn_submit_form' icn.id %}" hx-target="#SubmitList" ></span>{% endif %}
+        
+       
+ </td>
+        
+        {% else %}
+        <td></td>
+        <td></td>
+      <td></td>
+        <td>
+            <button type="button" class="btn btn-primary btn-sm btn-xs" {% if request.user.id == icn.user.id %} hx-get="{% url 'icn_submit_form' icn.id %}" hx-target="#SubmitList" {% endif %}>Pending Submission </button>
+        </td>
+        {% endif%}
+
+
+
+
+    
+</tr>
+</tbody>
+</table>

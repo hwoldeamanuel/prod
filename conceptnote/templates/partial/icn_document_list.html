@@ -14,7 +14,7 @@
                         <p class="month">{{ document.uploaded_at|date:"M" }}</p>
                       </div>
                       <div class="message_wrapper">
-                        <h4 class="heading">{{ document.user }}</h4>
+                        <h4 class="heading">{{ document.user.profile.full_name }}</h4>
                         <blockquote class="message">{{ document.description }}</blockquote>
                         <br />
                         <p class="url">

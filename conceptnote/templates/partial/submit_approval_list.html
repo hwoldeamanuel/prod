@@ -9,7 +9,7 @@
                               <p class="month">{{ list.submission_date|date:"M" }}</p>
                             </div>
                             <div class="message_wrapper">
-                              <h4 class="heading">{{list.icn.user }}</h4>
+                              <h4 class="heading">{{list.icn.user.profile.full_name }}</h4>
                               <blockquote class="message"> {{list.submission_note }}</blockquote>
                               <br />
                               <p class="url">
@@ -26,7 +26,7 @@
                               <p class="month">{{ list.icnsubmitapproval_t.approval_date|date:"M" }}</p> {% endif %}
                             </div>
                             <div class="message_wrapper">
-                              <h4 class="heading">{{ list.icnsubmitapproval_t.user.user}}</h4>
+                              <h4 class="heading">{{ list.icnsubmitapproval_t.user.user.profile.full_name}}</h4>
                              {% if list.icnsubmitapproval_t.approval_note %} <blockquote class="message">{{list.icnsubmitapproval_t.approval_note}}</blockquote> {% endif %}
                               <br />
                               <p class="url">
@@ -42,7 +42,7 @@
                               <p class="month">{{ list.icnsubmitapproval_p.approval_date|date:"M" }}</p>{% endif %}
                             </div>
                             <div class="message_wrapper">
-                              <h4 class="heading">{{ list.icnsubmitapproval_p.user.user }}</h4>
+                              <h4 class="heading">{{ list.icnsubmitapproval_p.user.user.profile.full_name }}</h4>
                               {% if list.icnsubmitapproval_p.approval_note %} <blockquote class="message">{{list.icnsubmitapproval_p.approval_note}}</blockquote> {% endif %}
                               <br />
                               <p class="url">
@@ -58,7 +58,7 @@
                               <p class="month">{{ list.icnsubmitapproval_f.approval_date|date:"M" }}</p>{% endif %}
                             </div>
                             <div class="message_wrapper">
-                              <h4 class="heading">{{ list.icnsubmitapproval_f.user.user }}</h4>
+                              <h4 class="heading">{{ list.icnsubmitapproval_f.user.user.profile.full_name }}</h4>
                              {% if list.icnsubmitapproval_f.approval_note %} <blockquote class="message">{{list.icnsubmitapproval_f.approval_note}}</blockquote> {% endif%}
                               <br />
                               <p class="url">

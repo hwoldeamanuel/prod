@@ -27,15 +27,17 @@ from django.template.loader import get_template
 from django.template import Context
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from render_block import render_block_to_string
 # Create your views here.
- 
+
+@login_required(login_url='login')
 def conceptnotes(request):
     icns = Icn.objects.all().order_by('-id')
     context = {'icns':icns}
     
     return render(request, 'interventions.html', context)
 
- 
+@login_required(login_url='login')
 def icn_add(request): 
     if request.method == "POST":
         form = IcnForm(request.POST,request.FILES, user=request.user)
@@ -49,14 +51,14 @@ def icn_add(request):
         form = IcnForm(request.POST,request.FILES, user=request.user)   
        
         context = {'form':form}
-        return render(request, 'intervention_add.html', context)
+        return render(request, 'intervention_step_profile_new.html', context)
     
     form = IcnForm(user=request.user)   
-    formset = ImpactFormSet()
-    context = {'form':form, 'formset':formset}
-    return render(request, 'intervention_add.html', context)
+    
+    context = {'form':form}
+    return render(request, 'intervention_step_profile_new.html', context)
 
- 
+@login_required(login_url='login')
 def icn_edit(request, id): 
     icn = Icn.objects.get(pk=id)
     
@@ -69,19 +71,63 @@ def icn_edit(request, id):
         
         form = IcnForm(request.POST, request.FILES, instance=icn, user=request.user) 
         context = {'form':form}
-        return render(request, 'intervention_edit.html', context)
+        return render(request, 'intervention_step_profile_edit.html', context)
             
     elif request.method == "GET" and icn.status == False:    
 
         form = IcnForm(instance=icn,  user=request.user) 
-        context = {'form':form}
-        return render(request, 'intervention_edit.html', context)
+        context = {'form':form, 'icn':icn}
+        return render(request, 'intervention_step_profile_edit.html', context)
     else:
         return HttpResponseRedirect(request.path_info)
                 
+@login_required(login_url='login') 
+def icn_step_impact(request, id):
+     icn = Icn.objects.get(pk=id)
+     impacts= Impact.objects.filter(icn_id=id)
+     context = {'icn':icn, 'impacts': impacts}
+     return render(request, 'intervention_step_impact.html', context)
 
-
+@login_required(login_url='login') 
+def icn_step_submission(request, id):
+    icn = get_object_or_404(Icn, pk=id)
+    context ={}
  
+    # add the dictionary during initialization
+    icn = Icn.objects.get(pk=id)
+    if IcnSubmit.objects.filter(icn_id=icn.id).exists():
+        icnsubmit = IcnSubmit.objects.filter(icn_id=icn.id).latest('id')
+        context = {'icn':icn, 'icnsubmit':icnsubmit}
+    else:
+        context = {'icn':icn}
+    return render(request, 'intervention_step_submission.html', context)
+
+def current_submit_list(request, id):
+    
+    icn = Icn.objects.get(pk=id)
+    if IcnSubmit.objects.filter(icn_id=icn.id).exists():
+        icnsubmit = IcnSubmit.objects.filter(icn_id=icn.id).latest('id')
+        context = {'icn':icn, 'icnsubmit':icnsubmit}
+    else:
+        context = {'icn':icn}
+  
+    
+    return render(request, 'partial/current_submit_list.html', context)
+
+@login_required(login_url='login') 
+def icn_step_approval(request, id):
+    icn = get_object_or_404(Icn, pk=id)
+    context ={}
+ 
+    # add the dictionary during initialization
+    icn = Icn.objects.get(pk=id)
+    if IcnSubmit.objects.filter(icn_id=icn.id).exists():
+        icnsubmit = IcnSubmit.objects.filter(icn_id=icn.id).latest('id')
+        context = {'icn':icn, 'icnsubmit':icnsubmit}
+    else:
+        context = {'icn':icn}
+    return render(request, 'intervention_step_approval.html', context)
+@login_required(login_url='login') 
 def icn_detail(request, pk):
     
     context ={}
@@ -90,17 +136,31 @@ def icn_detail(request, pk):
   
     icn = Icn.objects.get(pk=pk)
     
+    form = IcnForm(instance=icn,  user=request.user) 
+    for fieldname in form.fields:
+        form.fields[fieldname].disabled  = True
     if IcnSubmit.objects.filter(icn_id=icn.id).exists():
         icnsubmit = IcnSubmit.objects.filter(icn_id=icn.id).latest('id')
-        context = {'icn':icn, 'icnsubmit':icnsubmit}
+        context = {'icn':icn, 'icnsubmit':icnsubmit, 'form':form}
     else:
-        context = {'icn':icn}
+        context = {'form':form, 'icn':icn}
     
     #icnsubmit= IcnSubmit.objects.filter(icn_id=icn.id).latest('id')
     #icnsubmit = get_object_or_404(IcnSubmit, icn_id=icn.id).latest('id')
 
 
-    return render(request, 'intervention_detail.html', context)
+    return render(request, 'intervention_step_profile_detail.html', context)
+
+@login_required(login_url='login') 
+def icn_step_report(request, id):
+    icn = Icn.objects.get(pk=id)
+    if IcnSubmit.objects.filter(icn_id=icn.id).exists():
+        icnsubmit = IcnSubmit.objects.filter(icn_id=icn.id).latest('id')
+        context = {'icn':icn, 'icnsubmit':icnsubmit}
+    else:
+        context = {'icn':icn}
+    return render(request, 'intervention_step_report.html', context)
+
 
 def izones(request):
     form = IcnAreaFormE(request.GET)
@@ -380,7 +440,7 @@ def icn_approvalp(request, id):
     subject = 'Approval Status changed'
     message = 'Reviewed & status has been updated to this Concept Note has been submitted'
     email_from = None 
-    recipient_list = [icn.user ,icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
+    recipient_list = [icn.user.email ,icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
        
     if request.method == "GET":
         icnsubmitApproval_p = get_object_or_404(IcnSubmitApproval_P, submit_id_id=id)
@@ -441,7 +501,7 @@ def icn_approvalf(request, id):
     subject = 'Approval Status changed'
     message = 'Reviewed & status has been updated to this Concept Note has been submitted'
     email_from = None 
-    recipient_list = [icn.user ,icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
+    recipient_list = [icn.user.email ,icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
        
     if request.method == "GET":
         icnsubmitApproval_f = get_object_or_404(IcnSubmitApproval_F, submit_id_id=id)
@@ -477,7 +537,7 @@ def icn_approvalf(request, id):
             message = plain_message
             
             email_from = None 
-            recipient_list = [icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
+            recipient_list = [icn.user.email ,icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
             send_mail(subject, message, email_from, recipient_list) 
             context = {'icn':icn, 'icnsubmit':icnsubmit }
             return HttpResponse(
@@ -684,9 +744,9 @@ def add_impact(request, id):
                     })
                 })
     else:
-        form = ImpactForm(program=program)
+        iform = ImpactForm(program=program)
     return render(request, 'partial/impact_form.html', {
-        'form': form,
+        'iform': iform,
     })
 
 
@@ -1140,7 +1200,7 @@ def activity_approvalt(request, id):
     subject = 'Approval Status changed'
     message = 'Reviewed & status has been updated to this Concept Note has been submitted'
     email_from = None 
-    recipient_list = [activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
+    recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
        
     if request.method == "GET":
         activitysubmitApproval_t = get_object_or_404(ActivitySubmitApproval_T, submit_id_id=id)
@@ -1180,9 +1240,9 @@ def activity_approvalp(request, id):
     activity =  get_object_or_404(Activity, id=activitysubmit.activity_id)
 
     subject = 'Approval Status changed'
-    message = 'Reviewed & status has been updated to this Concept Note has been submitted'
+    message = 'Reviewed & status has been updated to this Concept Note'
     email_from = None 
-    recipient_list = [activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
+    recipient_list = [activity.user.email,activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
        
     if request.method == "GET":
         activitysubmitApproval_p = get_object_or_404(ActivitySubmitApproval_P, submit_id_id=id)
@@ -1224,7 +1284,7 @@ def activity_approvalf(request, id):
     subject = 'Approval Status changed'
     message = 'Reviewed & status has been updated to this Concept Note'
     email_from = None 
-    recipient_list = [activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
+    recipient_list = [activity.user.email,activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
        
     if request.method == "GET":
         activitysubmitApproval_f = get_object_or_404(ActivitySubmitApproval_F, submit_id_id=id)
@@ -1322,3 +1382,40 @@ def build_new_formset(formset, new_total_formsets):
         html += str(form).replace('__prefix__', str(new_total_formsets))
     
     return mark_safe(html)
+
+def add_impact_form(request):
+    impact_form = ImpactForm()
+    return render(request, 'partial/impact_form.html', {
+        'impact_form': impact_form,
+    })
+
+
+def icn_approval_invoice(request, id):
+    context ={}
+ 
+    # add the dictionary during initialization
+  
+    icn = Icn.objects.get(pk=id)
+    if IcnSubmit.objects.filter(icn_id=icn.id).exists():
+        icnsubmit = IcnSubmit.objects.filter(icn_id=icn.id).latest('id')
+        context = {'icn':icn, 'icnsubmit':icnsubmit}
+    else:
+        context = {'icn':icn}
+
+    return render(request, 'icn_approval_invoice.html', context)
+
+def program_lead(request):
+    form = IcnForm(request.GET, user=request.user)
+    return HttpResponse(form['program_lead'])
+
+def program_changes(request):
+    
+    
+    return HttpResponse(
+                status=204,
+                headers={
+                    'HX-Trigger': json.dumps({
+                        "programchanges": None,
+                       
+                    })
+                })

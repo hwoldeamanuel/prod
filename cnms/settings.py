@@ -181,7 +181,7 @@ LOGOUT_REDIRECT_URL = 'login'
 
 
 
-
+USE_THOUSAND_SEPARATOR = True
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Africa/Addis_Ababa'

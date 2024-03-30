@@ -1,58 +1,64 @@
-<!-- page content -->
-{% extends "base.html" %}
+
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content_page_css %}
+
+<link href="{% static 'vendors/pnotify/dist/pnotify.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/pnotify/dist/pnotify.buttons.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/pnotify/dist/pnotify.nonblock.css' %}" rel="stylesheet">
+
+
+   
+
+{% endblock %}
+
 {% block content %}
-  <div class="right_col" role="main">
+{% load humanize%}
+ <div class="right_col" role="main">
           <div class="">
-            <div class="page-title">
+         
+          <div class="page-title">
               <div class="title_left">
-                <h3>Form Wizards</h3>
+                <h3>Concept Note :: Intervention</h3>
               </div>
 
-              <div class="title_right">
-                <div class="col-md-5 col-sm-5  form-group row pull-right top_search">
-                  <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search for...">
-                    <span class="input-group-btn">
-                              <button class="btn btn-secondary" type="button">Go!</button>
-                          </span>
-                  </div>
-                </div>
-              </div>
+              
             </div>
             <div class="clearfix"></div>
 
             <div class="row">
-
-              <div class="col-md-12 col-sm-12 ">
+              <div class="col-md-12 col-sm-12  ">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2>Form Wizards <small>Sessions</small></h2>
+                    <h2>Intervention | Detail | Impact</h2>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                       </li>
                       <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                        <ul class="dropdown-menu" role="menu">
-                          <li><a href="#">Settings 1</a>
-                          </li>
-                          <li><a href="#">Settings 2</a>
-                          </li>
-                        </ul>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="#">Settings 1</a>
+                            <a class="dropdown-item" href="#">Settings 2</a>
+                          </div>
                       </li>
                       <li><a class="close-link"><i class="fa fa-close"></i></a>
                       </li>
                     </ul>
                     <div class="clearfix"></div>
                   </div>
-                  <div class="x_content">
+  
+               
+                  
+          <div class="x_content">
+                    <!-- Smart Wizard -->
+      <form class="form-horizontal form-label-left" method="post" action="" enctype="multipart/form-data">
+                   
                       {% load widget_tweaks %}
                       {% with WIDGET_ERROR_CLASS='is-invalid' %}
-                              <form class="form-horizontal form-label-left" action={% url 'icn_edit' icn.id %}  method="POST" enctype="multipart/form-data">
-                 
    {% csrf_token %}
-
-                    <!-- Smart Wizard -->
-        <div id="wizard" class="form_wizard wizard_horizontal">
+                    <div id="wizard" class="form_wizard wizard_horizontal">
                       <ul class="wizard_steps">
                         <li>
                           <a href="#step-1">
@@ -86,14 +92,13 @@
                             <span class="step_no">4</span>
                             <span class="step_descr">
                                               Step 4<br />
-                                              <small>Step 4 Approval Team</small>
+                                              <small>Step 4 Risk Assasment, Approval Team</small>
                                           </span>
                           </a>
                         </li>
                       </ul>
-                      <div id="step-1" style="width: 100%; height: 245px;">
-  
-
+                      <div id="step-1" style="width: 100%; height: 235px;">
+                              
                         <div class="form-group row">
                           <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.title.id_for_label }}">Title <span class="required">*</span>
                           </label>
@@ -118,7 +123,7 @@
                                {% render_field   form.ilead_agency class="form-control form-control-sm"%}
                               <div class="invalid-feedback">{{ form.ilead_agency.errors|first }}</div>
                             </div>
-                          <label class="col-form-label col-md-1 col-sm-1 label-align" for="first-name">Co-Lead:
+                            <label class="col-form-label col-md-1 col-sm-1 label-align" for=" {% render_field form.co_lead_agenc.id_for_label %}">Co-Lead:
                             </label>
                             <div class="col-md-5 col-sm-5">
                                 {% render_field form.ilead_co_agency class+="form-control form-control-sm form-select form-select-solid" attr="data-control:select2" %}
@@ -139,7 +144,7 @@
                             {% render_field form.proposed_end_date class+="form-control form-control-sm" %}
                               <div class="invalid-feedback">{{ form.proposed_end_date.errors|first }}</div>
                           </div>
-                           <label class="col-form-label col-md-1 col-sm-1 label-align" for="first-name">Report D:
+                            <label class="col-form-label col-md-1 col-sm-1 label-align"><small>Report Date:</small>
                             </label>
                             <div class="col-md-2 col-sm-2 ">
                                 {% render_field form.final_report_due_date class+="form-control form-control-sm" %}
@@ -147,9 +152,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                          
-                          </div>
+                    
                     
                           <div class="form-group row">
                             <label class="col-form-label col-md-2 col-sm-2 label-align" >Description:
@@ -162,7 +165,7 @@
               
                       </div>
                      
-                      <div id="step-2" style="width: 100%; height: 245px;">
+                      <div id="step-2" style="width: 100%; height: 235px;">
                         
                      
                         <div class="form-group row">
@@ -181,9 +184,9 @@
                               </div>
                         </div>
                             <div class="form-group row">
-                        <div class="col-md-2 col-sm-2"></div>
-                             <label class="col-form-label col-md-4 col-sm-4" ><strong>Risk Assasment</strong>
-                              </label>
+                              <div class="col-md-2 col-sm-2"></div>
+                                  <label class="col-form-label col-md-4 col-sm-4" ><strong>Risk Assasment</strong>
+                                    </label>
                           
                         </div>
                          
@@ -209,7 +212,7 @@
          
                       </div>
 
-                      <div id="step-3" style="width: 100%; height: 245px;">
+                      <div id="step-3" style="width: 100%; height: 235px;">
                          <div class="form-group row">
                           <label class="col-form-label col-md-4 col-sm-4 label-align" ><strong>Expected Budget</strong>
                             </label>
@@ -246,7 +249,7 @@
                           </div>
                       </div>
 
-                      <div id="step-4" style="width: 100%; height: 245px;">
+                      <div id="step-4" style="width: 100%; height: 235px;">
 
                         
                 
@@ -283,26 +286,30 @@
                             </div>
                          </div>
                         
-                                   {% endwith %}
-                  </div>
-                </form>
-                 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.css" rel="stylesheet"/>
-
-    {{ form.media.js }}
                         
-                        </div>
-                    <!-- End SmartWizard Content -->
+                        
+                    
+                          
+ 
+                    
+             
+                     </form>
+                        {% endwith %}
+                    
+              
+    
+         
+          
 
 
+                  
+                    
+          
+ </div>
+{% endblock %}
 
+{% block content_page_js %}
 
+ <script src="{% static 'vendors/jQuery-Smart-Wizard/js/jquery.smartWizard.js' %}"></script>
 
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- /page content -->
 {% endblock %}

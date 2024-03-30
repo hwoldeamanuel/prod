@@ -2,7 +2,7 @@
 {% with WIDGET_ERROR_CLASS='is-invalid' %}
 <form hx-post="{{ request.path }}" hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}' class="modal-content">
     {% csrf_token %}  
-
+ {{ form.media.css }}
 <style>
         input, select {width: 100%}
     </style>
@@ -16,8 +16,8 @@
                             </label>
                             <div class="col-md-8 col-sm-8 ">
                                 
-                                    {% render_field iform.title class+="form-control form-control-sm" %}
-                                    <div class="invalid-feedback">{{ iform.title.errors|first }}</div>
+                                    {% render_field form.title class+="form-control form-control-sm" %}
+                                    <div class="invalid-feedback">{{ form.title.errors|first }}</div>
                             </div>
                         
                         </div>
@@ -26,8 +26,8 @@
                             </label>
                             <div class="col-md-8 col-sm-8 ">
                                 
-                                    {% render_field iform.description class+="form-control form-control-sm" %}
-                                    <div class="invalid-feedback">{{ iform.description.errors|first }}</div>
+                                    {% render_field form.description class+="form-control form-control-sm" %}
+                                    <div class="invalid-feedback">{{ form.description.errors|first }}</div>
                             </div>
                         
                         </div>
@@ -36,8 +36,8 @@
                             </label>
                             <div class="col-md-8 col-sm-8 ">
                                 
-                                    {% render_field iform.impact_pilot class+="form-control form-control-sm" %}
-                                    <div class="invalid-feedback">{{ iform.impact_pilot.errors|first }}</div>
+                                    {% render_field form.impact_pilot class+="form-control form-control-sm" %}
+                                    <div class="invalid-feedback">{{ form.impact_pilot.errors|first }}</div>
                             </div>
                         
                         </div>
@@ -45,8 +45,8 @@
                                                 <label class="col-form-label col-md-2 col-sm-2 label-align" for="first-name">impact_scaleup:<span class="required">*</span>
                                                 </label>
                                                 <div class="col-md-8 col-sm-8 ">
-                          {% render_field iform.impact_scaleup class+="form-control form-control-sm " %}
-                          <div class="invalid-feedback">{{ iform.impact_scaleup.errors|first }}</div>
+                          {% render_field form.impact_scaleup class+="form-control form-control-sm " %}
+                          <div class="invalid-feedback">{{ form.impact_scaleup.errors|first }}</div>
                         </div>
                                             
                         </div>
@@ -56,8 +56,8 @@
                                 </label>
                                 <div class="col-md-8 col-sm-8">
                                   
-                                  {% render_field iform.indicators class+="form-control form-control-sm form-select form-select-solid" attr="data-control:select2" %}
-                                    <div class="invalid-feedback">{{ iform.indicators.errors|first }}</div>
+                                  {% render_field form.indicators class+="form-control form-control-sm form-select form-select-solid" attr="data-control:select2" %}
+                                    <div class="invalid-feedback">{{ form.indicators.errors|first }}</div>
                                 </div>
                         </div>
 
@@ -77,5 +77,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.css" rel="stylesheet"/>
 
-    {{ iform.media.js }}
+    {{ form.media.js }}
 
+
+   <div>
+        <button type="button" 
+          hx-trigger="click"
+          hx-get="{% url 'add_impact_form'  %}"
+          hx-swap="outerHTML">
+    Add formset
+  </button> 
+         </div> 

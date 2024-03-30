@@ -33,7 +33,7 @@ class Icn(models.Model):
     mc_budget = models.FloatField(null=True, blank=True)
     
     cost_sharing_budget = models.FloatField(null=True, blank=True)
-    
+    icn_number =  models.CharField(max_length=20, null=True, blank=True)
     eniromental_impact =  models.CharField(max_length=255, null=True, blank=True)
     
     environmental_assessment_att = models.FileField(null=True,  blank=True, upload_to='documents/')
@@ -52,7 +52,16 @@ class Icn(models.Model):
                                     choices=STATUS_CHOICES)
     approval_status = models.CharField(max_length=100,null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    
 
+    
+    
+    def save(self,*args, **kwargs):
+        suffix = f"{self.pk}".zfill(4)
+        self.icn_number = f"{self.program.title}/ICN/{suffix}"
+        super(Icn, self).save(*args, **kwargs)
+
+   
     
 
     def get_num_indicator(self):
@@ -66,6 +75,8 @@ class Icn(models.Model):
         return num
     def get_name(self):
         return "Intervention"
+    
+   
     def __str__(self):
         return self.title
   
@@ -305,7 +316,7 @@ class Activity(models.Model):
     icn = models.ForeignKey(Icn, on_delete=models.DO_NOTHING)
     proposed_start_date = models.DateField()
     proposed_end_date = models.DateField()
-    
+    acn_number =  models.CharField(max_length=20, null=True, blank=True)
     alead_agency = models.ForeignKey(Portfolio, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='acns')
     alead_co_agency = models.ManyToManyField(Portfolio,  blank=True, related_name='aco_leads')
     final_report_due_date = models.DateField(null=True, blank=True)
@@ -327,6 +338,11 @@ class Activity(models.Model):
                                        choices=STATUS_CHOICES)
     approval_status = models.CharField(max_length=100,null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+    def save(self,*args, **kwargs):
+        suffix = f"{self.pk}".zfill(4)
+        self.acn_number = f"{self.icn.icn_number}/ACN/{suffix}"
+        super(Activity, self).save(*args, **kwargs)
 
     def get_num_impact(self):
         if ActivityImpact.objects.filter(activity_id=self).exists():

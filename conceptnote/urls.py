@@ -9,18 +9,21 @@ urlpatterns = [
    
     path('', views.conceptnotes, name='icns'),
     path('intervention/', views.conceptnotes, name='icns'),
-    path('intervention/new', views.icn_add, name='icn_new'),
-    path('intervention/<int:id>/edit/', views.icn_edit, name='icn_edit'),
-
-
+    path('intervention/new/profile/', views.icn_add, name='icn_new'),
+    path('intervention/<int:id>/profile/edit/', views.icn_edit, name='icn_edit'),
+    path('intervention/<int:id>/impact/', views.icn_step_impact, name='icn_step_impact'),
+    path('intervention/<int:id>/submission/', views.icn_step_submission, name='icn_step_submission'),
+    path('intervention/<int:id>/approval/', views.icn_step_approval, name='icn_step_approval'),
+    path('intervention/<int:id>/report/', views.icn_step_report, name='icn_step_report'),
+    path('intervention/<int:id>/submission/list/', views.current_submit_list, name='current_submit_list'),
     path('icn/add', views.icn_add, name='icn_add'),
-    path('intervention/<int:pk>/', views.icn_detail, name='icn_detail'),
+    path('intervention/<int:pk>/profile/', views.icn_detail, name='icn_detail'),
     path('intervention/<int:pk>/approval/', views.icn_submit_approval, name='icn_submit_approval'),
     path('activity/<int:pk>/approval/', views.activity_submit_approval, name='activity_submit_approval'),
     path('download/<int:id>/', views.download, name='download'),
     path('downloada/<int:id>/', views.downloada, name='downloada'),
     path('delete_icn/<int:pk>/', views.icn_delete, name='icn_delete'),
-    
+    path('intervention/program_lead/', views.program_lead, name='program_lead'),
     path('iregion/', views.iregion, name='iregion'),
     path('iregion/izones/', views.izones, name='izones'),
     path('iregion/<int:id>/', views.iregion, name='iregion'),
@@ -38,7 +41,8 @@ urlpatterns = [
     path('activity/<int:id>/edit/', views.activity_edit, name='activity_edit'),
     path('aregion/<int:id>/', views.aregion, name='aregion'),
     path('aregion/aedit_aarea/<int:pk>/', views.aarea_edit_form, name='aarea_edit_form'),
-    
+    path('intervention/program_changes/', views.program_changes, name='program_changes'),
+   
 ]
 
 htmxpatterns = [
@@ -47,7 +51,7 @@ htmxpatterns = [
  
  path('icn_submit_detail/<int:id>/', views.icn_submit_detail, name='icn_submit_detail'),
  path('icn_submit_list/<int:id>/', views.icn_submit_list, name='icn_submit_list'),
-
+ path('icn_approval_invoice/<int:id>/', views.icn_approval_invoice, name='icn_approval_invoice'),
 
  path('icn_submit_form/<int:id>/', views.icn_submit_form, name='icn_submit_form'),
  path('activity_submit_form/<int:id>/', views.activity_submit_form, name='activity_submit_form'),
@@ -79,6 +83,8 @@ htmxpatterns = [
  path('impact/<int:pk>/remove/', views.remove_impact, name='remove_impact'),
  path('activity_impact/<int:pk>/remove', views.remove_activity_impact, name='remove_activity_impact'),
  path('add_formset/<int:current_total_formsets>/', views.add_formset, name='add_formset'),
+ path('add_impact_form/', views.add_impact_form, name='add_impact_form'),
+ 
 ]
 
 urlpatterns += htmxpatterns

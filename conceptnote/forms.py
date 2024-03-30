@@ -337,7 +337,7 @@ class ImpactForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
     
 
-        self.fields['indicators'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select', 'data-width': '100%'})
+        self.fields['indicators'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'select2', 'class':'form-control form-control-sm', 'data-width': '100%'})
         if program:
              self.fields['indicators'].queryset = Indicator.objects.filter(program_id=program.id)
         else:

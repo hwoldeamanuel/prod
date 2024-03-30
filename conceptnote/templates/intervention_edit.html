@@ -1,23 +1,32 @@
 <!-- page content -->
 {% extends "base.html" %}
 {% block content %}
- <div class="right_col" role="main">
+<div class="right_col" role="main">
           <div class="">
-         
-          <div class="page-title">
+            <div class="page-title">
               <div class="title_left">
                 <h3>Concept Note :: Intervention</h3>
               </div>
 
-              
+              <div class="title_right">
+                <div class="col-md-5 col-sm-5   form-group pull-right top_search">
+                  <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search for...">
+                    <span class="input-group-btn">
+                      <button class="btn btn-default" type="button">Go!</button>
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
+
             <div class="clearfix"></div>
 
             <div class="row">
               <div class="col-md-12 col-sm-12  ">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2>Intervention | Edit</h2>
+                    <h2>Intervention Form </h2>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                       </li>
@@ -37,41 +46,41 @@
                       {% load widget_tweaks %}
                       {% with WIDGET_ERROR_CLASS='is-invalid' %}
                       
-                     <form class="form-horizontal form-label-left" method="post" novalidate action="" enctype="multipart/form-data"   >
-                   
-                     
-                        {% csrf_token %}
-                         <div class="field item form-group">
-                                <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.title.id_for_label }}">Title: <span class="required"></span>
-                                </label>
-                                <div class="col-md-8 col-sm-8">
-                                  {%  render_field form.title class+="form-control form-control-sm required" %}
-                                  <div class="invalid-feedback">{{ form.title.errors|first }}</div>
+                        <form class="form-horizontal form-label-left" method="post" novalidate action="" enctype="multipart/form-data"   >
+                           {% csrf_token %}
+                         <div class="form-group row">
+                            <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.title.id_for_label }}">Title: <span class="required"></span>
+                            </label>
+                            <div class="col-md-8 col-sm-8">
+                              {%  render_field form.title class+="form-control form-control-sm required" %}
+                              <div class="invalid-feedback">{{ form.title.errors|first }}</div>
+                              
 
-                                </div>                     
+                            </div>                     
                                 
-                                  <div class="col-md-2 col-sm-2">
-                                    {%  render_field form.program class+="form-control form-control-sm" readonly="readonly" %}
-                                  </div>
+                            <div class="col-md-2 col-sm-2">
+                              {%  render_field form.program class+="form-control form-control-sm" readonly="readonly" %}
+
+                            </div>
                                 
-                              </div>
+                          </div>
                           <div class="form-group row">
 
-                              <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.ilead_agency.id_for_label }}">Lead Agency: <span class="required"> </span>
-                                  </label>
-                              <div class="col-md-3 col-sm-3">
-                              
-                                 {% render_field   form.ilead_agency class="form-control form-control-sm" required= %}
-                                 <div class="invalid-feedback">{{ form.ilead_agency.errors|first }}</div>
-                              </div>
-                              <label class="col-form-label col-md-2 col-sm-2 label-align" for=" {% render_field form.ilead_co_agency.id_for_label %}"> Co-Lead Agency: <span class="required"> </span>
-                              </label>
-                              <div class="col-md-3 col-sm-3 ">
-                                   {% render_field form.ilead_co_agency class+="form-control form-control-sm form-select form-select-solid" attr="data-control:select2" %}
-                                    <div class="invalid-feedback">{{ form.ilead_co_agency.errors|first }}</div>
-                              </div>
+                            <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.ilead_agency.id_for_label }}">Lead Agency: <span class="required"> </span>
+                                </label>
+                            <div class="col-md-3 col-sm-3">
+                            
+                                {% render_field   form.ilead_agency class="form-control form-control-sm" required= %}
+                                <div class="invalid-feedback">{{ form.ilead_agency.errors|first }}</div>
                             </div>
-                            <div class="form-group row">
+                            <label class="col-form-label col-md-2 col-sm-2 label-align" for=" {% render_field form.ilead_co_agency.id_for_label %}"> Co-Lead Agency: <span class="required"> </span>
+                            </label>
+                            <div class="col-md-3 col-sm-3 ">
+                                  {% render_field form.ilead_co_agency class+="form-control form-control-sm form-select form-select-solid" attr="data-control:select2" %}
+                                  <div class="invalid-feedback">{{ form.ilead_co_agency.errors|first }}</div>
+                            </div>
+                          </div>
+                           <div class="form-group row">
                               <label class="col-form-label col-md-2 col-sm-2 label-align" >Proposed Start Date: <span class="required"></span>
                                   </label>
                               <div class="col-md-3 col-sm-3 ">
@@ -92,14 +101,13 @@
                                  {% render_field form.final_report_due_date class+="form-control form-control-sm" %}
                                  <div class="invalid-feedback">{{ form.final_report_due_date.errors|first }}</div>
                             </div>
-                             <label class="col-form-label col-md-2 col-sm-2 label-align" for=" {% render_field form.ilead_co_agency.id_for_label %}">Woredas:<span class="required"> </span>
+                             <label class="col-form-label col-md-2 col-sm-2 label-align" for=" {% render_field form.ilead_co_agency.id_for_label %}">Imp. Woredas:<span class="required"> </span>
                               </label>
                               <div class="col-md-3 col-sm-3 ">
                                    {% render_field form.iworeda class+="form-control form-control-sm select2_group form-control" attr="data-control:select2"  %}
                                     <div class="invalid-feedback">{{ form.iworeda.errors|first }}</div>
                               </div>
                           </div>
-                         
                           <div class="form-group row">
                             <label class="col-form-label col-md-2 col-sm-2 label-align" >Environmental Impact:<span class+="required"></span>
                             </label>
@@ -163,35 +171,38 @@
 
                                 </div>
                          </div>
-                        <div class="form-group row">
+                         <div class="form-group row">
                             <label class="col-form-label col-md-2 col-sm-2 label-align" >Description:<span class="required"></span>
                                 </label>
                             <div class="col-md-8 col-sm-8 ">
                                  {% render_field form.description class+="form-control form-control-sm" %}
+                                 <div class="invalid-feedback">{{ form.description.errors|first }}</div>
                             </div>
                         
                           </div>
-                        <div class="ln_solid"></div>
-										<div class="form-group row">
-											<div class="col-md-12 col-sm-12 offset-md-4">
+                          <div class="ln_solid"></div>
+										
+											<div class="col-md-12 col-sm-12">
+                      	<div class="col-md-4 col-sm-4"></div>
 												<button onclick="window.history.back()" class="btn btn-secondary" type="button">Cancel</button>
 												<button class="btn btn-primary" type="reset">Reset</button>
 												<button type="submit" class="btn btn-success">Submit</button>
 											</div>
-										</div>
+										
 
-                  </form>
+                        </form>
                     {% endwith %}
                     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.css" rel="stylesheet"/>
 
     {{ form.media.js }}
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
         <!-- /page content -->
   
 {% endblock %}
