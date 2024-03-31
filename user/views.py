@@ -30,6 +30,7 @@ from .forms import LoginForm, ProfileFormAdd
 from .models import Profile
 
 from datetime import datetime, timedelta
+from django.utils import timezone
  
 
 register = template.Library()
@@ -47,12 +48,12 @@ def jsonify(data):
 
 @login_required(login_url='login')
 def user(request):
-    last_month_filter = datetime.today() - timedelta(days=get_lapse())
-  
+    last_month_filter = timezone.now() - timedelta(days=get_lapse())
+    print(last_month_filter)
     user_activity = CRUDEvent.objects.filter(user=request.user, datetime__gte=last_month_filter).order_by('-id')
     for item in  user_activity:
         item.object_json_repr = jsonify(item.object_json_repr)
-    qs1 = RequestEvent.objects.filter(user_id=request.user,datetime__gte=last_month_filter).values('datetime__date').annotate(id_count=Count('id', distinct=True))
+    qs1 = RequestEvent.objects.filter(user_id=request.user, datetime__gte=last_month_filter).values('datetime__date').annotate(id_count=Count('id', distinct=True))
     qs2 = RequestEvent.objects.filter(user_id=request.user, method='POST', datetime__gte=last_month_filter).values('datetime__date').annotate(count_login=Count('id', distinct=True))
     collector = defaultdict(dict)
 
@@ -63,7 +64,7 @@ def user(request):
 
   
     
-    context = {'user_activity':user_activity, 'all_request':all_request}
+    context = {'user_activity':user_activity, 'all_request':all_request,}
     return render(request, 'user/accounts.html', context)
 
 @register.filter(name='jsonify')
@@ -75,10 +76,11 @@ def jsonify(data):
 
 @login_required(login_url='login')
 def user_activity(request):
-    qs1 = RequestEvent.objects.filter(user_id=request.user).values('datetime__date').annotate(id_count=Count('id', distinct=True))
-    qs2 = RequestEvent.objects.filter(user_id=request.user, method='POST').values('datetime__date').annotate(count_login=Count('id', distinct=True))
+    last_month_filter = timezone.now() - timedelta(days=get_lapse())
+    qs1 = RequestEvent.objects.filter(user_id=request.user, datetime__gte=last_month_filter).values('datetime__date').annotate(id_count=Count('id', distinct=True))
+    qs2 = RequestEvent.objects.filter(user_id=request.user, method='POST', datetime__gte=last_month_filter).values('datetime__date').annotate(count_login=Count('id', distinct=True))
   
-
+    
 
 
 
@@ -249,7 +251,7 @@ def user_conceptnotes(request):
         'conceptnotes': conceptnotes,
     })
 
-from datetime import datetime, timedelta
+
 
 def is_leap_year(year): 
     if year % 100 == 0:
@@ -258,8 +260,8 @@ def is_leap_year(year):
     return year % 4 == 0
 
 def get_lapse():
-    last_month = datetime.today().month
-    current_year = datetime.today().year
+    last_month = timezone.now().month
+    current_year = timezone.now().year
 
     #is last month a month with 30 days?
     if last_month in [9, 4, 6, 11]:

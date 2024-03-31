@@ -42,7 +42,7 @@
                             </div>                     
                                 
                             <div class="col-md-2 col-sm-2">
-                              {% render_field form.program class="form-control form-control-sm" hx-get="/conceptnote/intervention/program_changes/"  hx-target="this" %}
+                              {% render_field form.program class="form-control form-control-sm" readonly="readonly" %}
 
                             </div>
                                 
@@ -133,7 +133,7 @@
                           <div class="form-group row">
                             <label class="col-form-label col-md-2 col-sm-2 label-align" >Program:<span class="required"></span>
                             </label>
-                            <div class="col-md-2 col-sm-2"  hx-trigger="programchanges from:body" hx-get="{% url 'program_lead' %}" hx-target="#id_program_lead" hx-swap="innerHTML" >
+                            <div class="col-md-2 col-sm-2" >
                             
                                 {% render_field form.program_lead class="form-control form-control-sm" %}
                                   <div class="invalid-feedback">{{ form.program_lead.errors|first }}</div>

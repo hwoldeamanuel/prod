@@ -167,17 +167,17 @@
                               <tbody>
                                 <tr>
                                   <th style="width:50%">Mercy Corps:</th>
-                                  <td> {{ icn.mc_budget|floatformat:2|intcomma }}{{icn.get_mc_currency_display }}</td>
+                                  <td> {{ icn.mc_budget|intcomma }} {{icn.get_mc_currency_display }}</td>
                                  
                                 </tr>
                                 <tr>
                                   <th>Cost Share contributions</th>
-                                  <td>{% if icn.cost_share_budget %} {{ icn.cost_share_budget|floatformat:2|intcomma }}{{icn.get_cs_currency_display }}{% endif %}</td>
+                                  <td>{% if icn.cost_share_budget %} {{ icn.cost_share_budget|intcomma }} {{icn.get_cs_currency_display }} {% else %} 0.0 {{icn.get_mc_currency_display}} {% endif %}</td>
                                 </tr>
                                
                                 <tr>
                                   <th>Total:</th>
-                                  <td> {{ icn.mc_budget|floatformat:2|intcomma }}{{icn.get_mc_currency_display }}</td>
+                                  <td> {% if icn.cost_share_budget > 0 %} {{ icn.mc_budget|add:icn.cost_share_budget|intcomma }}{% else %}{{ icn.mc_budget|intcomma}}{% endif%} {{icn.get_cs_currency_display }} </td>
                                 </tr>
                               </tbody>
                             </table>
@@ -191,8 +191,7 @@
                       <div class="row no-print">
                         <div class=" ">
                           <button class="btn btn-default" onclick="window.print();"><i class="fa fa-print"></i> Print</button>
-                           <a href="{% url 'icn_detail' icn.id %}" class="btn btn-primary btn-xs"><i class="fa fa-credit-card"></i>Intervention</a>
-                           <a href="{% url 'icn_submit_approval' icn.id %}" class="btn btn-success btn-xs"><i class="fa fa-mail-forward"></i> Approval Workflow</a>
+                           
                         </div>
                       </div>
                     </section>

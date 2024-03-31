@@ -32,7 +32,10 @@ from render_block import render_block_to_string
 
 @login_required(login_url='login')
 def conceptnotes(request):
-    icns = Icn.objects.all().order_by('-id')
+    user = request.user
+    program = Program.objects.filter(users_role=user)
+   
+    icns = Icn.objects.filter(program__in=program).order_by('-id')
     context = {'icns':icns}
     
     return render(request, 'interventions.html', context)
@@ -645,18 +648,22 @@ def download(request, id):
 
 
 def search_results_view(request):
+    user = request.user
+    program = Program.objects.filter(users_role=user)
+   
+    icns = Icn.objects.filter(program__in=program).order_by('-id')
     query = request.GET.get('search', '')
     
 
-    all_icns= Icn.objects.all()
+    all_icns= Icn.objects.filter(program__in=program).order_by('-id')
     if query:
-        qs1 = Icn.objects.filter(title__icontains=query)
-        qs2 = Icn.objects.distinct().filter(program__title__icontains=query)
+        qs1 = all_icns.filter(title__icontains=query)
+        qs2 = all_icns.distinct().filter(program__title__icontains=query)
         
         
         icns = qs1.union(qs2).order_by('id')
     else:
-        icns = Icn.objects.all()
+        icns = all_icns
 
     context = {'icns': icns, 'count': all_icns.count()}
     return render(request, 'partial/icn_list.html', context)

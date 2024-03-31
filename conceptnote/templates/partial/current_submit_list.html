@@ -25,7 +25,7 @@
         <td>{{icnsubmit.document }}</td>
            <td>{{icnsubmit.submission_note }}</td>
         <td>
-          <button type="button" class="btn btn-success btn-sm btn-xs" >{{ icnsubmit.get_submission_status_display}}</button>
+          <button type="button" class="btn btn-success btn-sm btn-xs" >{% if icnsubmit.submission_status == 1 %}Pending Submission{% else %}{{ icnsubmit.get_submission_status_display}}{% endif %}</button>
           {% if request.user.id == icn.user.id and icn.approval_status != '100% Approved'%}<span type="button" class="glyphicon glyphicon-repeat" aria-hidden="true"  hx-get="{% url 'icn_submit_form' icn.id %}" hx-target="#SubmitList" ></span>{% endif %}
         
        

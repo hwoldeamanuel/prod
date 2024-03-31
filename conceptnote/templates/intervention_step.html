@@ -162,7 +162,7 @@ span.nmbr {
               <li class="{% if 'impact' in request.path %}active{% elif icn.impact_set.all %}completed{% elif not icn %}nav-link disabled{% endif %}"><a href="/conceptnote/intervention/{{icn.id}}/impact/" {% if 'impact' in request.path %}data-toggle="tab" class="active"{% endif%} ><span class="nmbr">2</span>Impact/Target</a></li>
                <li class="{% if 'submission' in request.path %}active{% elif not icn %}nav-link disabled{% elif icn.status == True %}completed{% endif %}"><a href="/conceptnote/intervention/{{icn.id}}/submission/"><span class="nmbr">3</span>Submission</a></li>
              <li class="{% if 'approval' in request.path %}active{% elif icn.approval_status == '100% Approved' %}completed{% elif not icnsubmit or icnsubmit.submission_status != 2 or icn.status == False  %}nav-link disabled{% endif %}"><a href="/conceptnote/intervention/{{icn.id}}/approval/"><span class="nmbr">4</span>Approval</a></li>
-               <li class="{% if 'report' in request.path %}active{% elif icn.approval_status == '100% Approved' %}completed{% else %}nav-link disabled{% endif %}"><a href="/conceptnote/intervention/{{icn.id}}/report/"><span class="nmbr">5</span>Report</a></li>
+               <li class="{% if 'report' in request.path %}active{% elif icn.approval_status == '100% Approved' %}completed{% else %}nav-link disabled{% endif %}"><a href="/conceptnote/intervention/{{icn.id}}/report/"><span class="nmbr">5</span>Approval Report</a></li>
 
             </ul>
         </div>

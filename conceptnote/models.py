@@ -199,7 +199,7 @@ class IcnSubmitApproval_T(models.Model):
     STATUS = (
         (Pending_Review, 'Pending Review'),
         (Require_Doc_Update, 'Require Doc Update'),
-        (Approved, 'Request Approved'),
+        (Approved, 'Request Endorsed'),
         (Rejected, 'Request Rejected'),
         )
 
@@ -271,7 +271,7 @@ class IcnSubmitApproval_F(models.Model):
     STATUS = (
         (Pending_Review, 'Pending Review'),
         (Require_Doc_Update, 'Require Doc Update'),
-        (Approved, 'Request Approved'),
+        (Approved, 'Request Endorsed'),
         (Rejected, 'Request Rejected'),
         )
 

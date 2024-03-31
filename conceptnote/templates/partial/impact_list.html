@@ -34,9 +34,14 @@
                 
                 </td>
                 <td class="vertical-align-mid">
-
+                  <a class="btn btn-sm btn-info source" {% if icn.status == True or icn.user != request.user %} IareaListChanged from:body, onclick="new PNotify({
+                                  title: 'Permission',
+                                  text: 'Current User doesnot match with ICN Owner and/or ICN submission status should be Draft;',
+                                  type: 'info',
+                                  styling: 'bootstrap3'
+                              });" {% else %} hx-get="{% url 'icn_edit_impact' pk=impact.pk %} {% endif %}" hx-target="#dialog" ><i class="fa fa-edit m-right-xs"></i></a>
                    
-                    <button class="btn btn-info btn-sm" hx-get="{% url 'icn_edit_impact' pk=impact.pk %}" hx-target="#dialog"><i class="fa fa-edit"></i></button>
+                 
                     
                     
                     

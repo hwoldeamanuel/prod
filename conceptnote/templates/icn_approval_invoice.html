@@ -183,12 +183,12 @@
                                 </tr>
                                 <tr>
                                   <th>Cost Share contributions</th>
-                                  <td>{% if icn.cost_share_budget %} {{ icn.cost_share_budget|floatformat:2|intcomma }}{{icn.get_cs_currency_display }}{% endif %}</td>
+                                  <td>{% if icn.cost_share_budget %} {{ icn.cost_share_budget|intcomma|floatformat:2 }}{{icn.get_cs_currency_display }}{% endif %}</td>
                                 </tr>
                                
                                 <tr>
                                   <th>Total:</th>
-                                  <td> {{ icn.mc_budget|floatformat:2|intcomma }}{{icn.get_mc_currency_display }}</td>
+                                  <td> {{ icn.mc_budget|add:icn.cost_share_budget|intcomma }}</td>
                                 </tr>
                               </tbody>
                             </table>
