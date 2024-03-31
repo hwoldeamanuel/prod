@@ -10,20 +10,22 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 
 """
-import dj_database_url
+
 import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
+import environ
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-import environ
+
 
 env = environ.Env()
 
-environ.Env.read_env()
+import dj_database_url
 
 
 # Quick-start development settings - unsuitable for production
@@ -35,8 +37,11 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
-
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
+if os.environ.get("ALLOWED_HOSTS") is None:
+    # do something reasonable such as:
+    ALLOWED_HOSTS = [ ] # empty list
+else:
+    ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 
 
 
@@ -66,10 +71,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-   
+    
    
     'widget_tweaks',
- 
+    'whitenoise.runserver_nostatic',  
   
     
 ]
@@ -181,7 +186,7 @@ LOGOUT_REDIRECT_URL = 'login'
 
 
 
-USE_THOUSAND_SEPARATOR = True
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Africa/Addis_Ababa'
