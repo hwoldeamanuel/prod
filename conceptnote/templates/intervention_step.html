@@ -4,9 +4,11 @@
 {% block content_page_css %}
 {% load static %}
 
+
 <link href="{% static 'vendors/pnotify/dist/pnotify.css' %}" rel="stylesheet">
     <link href="{% static 'vendors/pnotify/dist/pnotify.buttons.css' %}" rel="stylesheet">
     <link href="{% static 'vendors/pnotify/dist/pnotify.nonblock.css' %}" rel="stylesheet">
+
 
 
    
@@ -172,11 +174,8 @@ span.nmbr {
 
 {% endblock %}
 {% block content_page_js %}
-<script src="{% static 'vendors/pnotify/dist/pnotify.js' %}"></script>
-    <script src="{% static 'vendors/pnotify/dist/pnotify.buttons.js' %}"></script>
-    <script src="{% static 'vendors/pnotify/dist/pnotify.nonblock.js' %}"></script>
-<script>
 
+<script >
 $('.wizard li').click(function() {
  $(this).prevAll().addClass("completed");
   $(this).nextAll().removeClass("completed");
@@ -184,10 +183,12 @@ $('.wizard li').click(function() {
 
 });
 </script>
-<script >
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-</script>
+  <!-- PNotify -->
+    <script src="{% static 'vendors/pnotify/dist/pnotify.js' %}"></script>
+    <script src="{% static 'vendors/pnotify/dist/pnotify.buttons.js' %}"></script>
+    <script src="{% static 'vendors/pnotify/dist/pnotify.nonblock.js' %}"></script>
 
 {% endblock %}
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>

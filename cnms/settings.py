@@ -16,16 +16,15 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
-import environ
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+import environ
 
 env = environ.Env()
 
-import dj_database_url
+environ.Env.read_env()
 
 
 # Quick-start development settings - unsuitable for production
@@ -37,11 +36,8 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
-if os.environ.get("ALLOWED_HOSTS") is None:
-    # do something reasonable such as:
-    ALLOWED_HOSTS = [ ] # empty list
-else:
-    ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
+
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 
 
 
@@ -71,10 +67,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+   
    
     'widget_tweaks',
-    'whitenoise.runserver_nostatic',  
+ 
   
     
 ]
