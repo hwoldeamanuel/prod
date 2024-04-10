@@ -16,7 +16,7 @@
   <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.approval_status.id_for_label }}">approval Status <span class="required">*</span>
   </label>
   <div class="col-md-4 col-sm-4">
-    {%  render_field form.approval_status class+="form-control form-control-sm required" %}
+    {%  render_field form.approval_status|attr:"readonly:True" class+="form-control form-control-sm required"  %}
     <div class="invalid-feedback">{{ form.approval_status.errors|first }}</div>
 </div>
 </div>          
@@ -30,7 +30,7 @@
     <div class="invalid-feedback">{{ form.document.errors|first }}</div>
 </div>
   <div class="col-md-3 col-sm-3">
- <button type="button" hx-get="/conceptnote/icn_submit_document/{{icn.id}}/" hx-target="#dialog" class="btn btn-info btn-sm" ><i class="fa fa-paperclip"></i>Version</button>
+ <button type="button" {% if did != 2 %} disabled{% endif %} hx-get="/conceptnote/icn_submit_document/{{icn.id}}/" hx-target="#dialog" class="btn btn-info btn-sm" ><i class="fa fa-paperclip"></i> New Version</button>
    
 </div>
 

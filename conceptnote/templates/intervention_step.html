@@ -2,6 +2,7 @@
 {% extends "base.html" %}
 
 {% block content_page_css %}
+
 {% load static %}
 
 
@@ -90,7 +91,7 @@ span.nmbr {
     position: relative;
     padding: 0;
     margin: 4px 4px 4px 0;
-    width: 19.6%;
+    width: 16.2%;
     float: left;
     text-align: center;
   }
@@ -154,15 +155,16 @@ span.nmbr {
 			<div class="right_col" role="main">
 				<div class="">
 					<div class="clearfix"></div>
-					<div class="row tabbable">
-						
+					<div class="row tabbable" >
+						  
 							
             <ul class="nav nav-tabs wizard">
-              <li  class="{% if 'profile' in request.path %}active{% elif icn %}completed{% endif %}"><a href="/conceptnote/intervention/{{icn.id}}/profile/"><span class="nmbr">1</span>Profile</a></li>
-              <li class="{% if 'impact' in request.path %}active{% elif icn.impact_set.all %}completed{% elif not icn %}nav-link disabled{% endif %}"><a href="/conceptnote/intervention/{{icn.id}}/impact/" {% if 'impact' in request.path %}data-toggle="tab" class="active"{% endif%} ><span class="nmbr">2</span>Impact/Target</a></li>
-               <li class="{% if 'submission' in request.path %}active{% elif not icn %}nav-link disabled{% elif icn.status == True %}completed{% endif %}"><a href="/conceptnote/intervention/{{icn.id}}/submission/"><span class="nmbr">3</span>Submission</a></li>
-             <li class="{% if 'approval' in request.path %}active{% elif icn.approval_status == '100% Approved' %}completed{% elif not icnsubmit or icnsubmit.submission_status != 2 or icn.status == False  %}nav-link disabled{% endif %}"><a href="/conceptnote/intervention/{{icn.id}}/approval/"><span class="nmbr">4</span>Approval</a></li>
-               <li class="{% if 'report' in request.path %}active{% elif icn.approval_status == '100% Approved' %}completed{% else %}nav-link disabled{% endif %}"><a href="/conceptnote/intervention/{{icn.id}}/report/"><span class="nmbr">5</span>Approval Report</a></li>
+              <li  class="{% if 'profile' in request.path and 'conceptnote' in request.path %}active{% elif icn %}completed{% endif %}"><a href="/conceptnote/intervention/{{icn.id}}/profile/"><span class="nmbr">1</span>Intervention</a></li>
+              <li class="{% if 'impact' in request.path and 'Conceptnote' in request.path %}active{% elif icn.impact_set.count > 0 %}completed{% elif not icn %}nav-link disabled{% endif %}"><a href="/conceptnote/intervention/{{icn.id}}/impact/" ><span class="nmbr">2</span>Impact/Target</a></li>
+             <li class="{% if 'conceptnote' in request.path and 'approval' in request.path %}active{% elif not icn or icn.impact_set.count == 0 %}nav-link disabled{% elif icn.approval_status == '100% Approved' %}completed{%endif %}"><a href="/conceptnote/intervention/{{icn.id}}/approval/"><span class="nmbr">3</span>Approval</small></a></li>
+             <li class="{% if 'report' in request.path and 'profile' in request.path %}active{% elif icn.approval_status != '100% Approved' %}nav-link disabled{% endif %}"><a href="/report/intervention/{{icn.id}}/"><span class="nmbr">4</span>Report</small></a></li>
+              <li class="{% if  'report' in request.path and 'impact' in request.path  %}active{% elif icnreport.impact_set.count > 0 %}completed{% elif not icnreport %}nav-link disabled{% endif %}"><a href="/report/intervention/{{icn.id}}/impact/" ><span class="nmbr">5</span>Actual Impact</a></li>
+                <li class="{% if 'report' in request.path and 'approval' in request.path %}active{% elif not icnreportsubmit or icnreportsubmit.submission_status != 2 or icnreport.status == False %}nav-link disabled{% elif icnreport.approval_status == '100% Approved' %}completed{%endif %}"><a href="/report/intervention/{{icn.id}}/approval/"><span class="nmbr">6</span>Approval</small></a></li>
 
             </ul>
         </div>
@@ -175,14 +177,7 @@ span.nmbr {
 {% endblock %}
 {% block content_page_js %}
 
-<script >
-$('.wizard li').click(function() {
- $(this).prevAll().addClass("completed");
-  $(this).nextAll().removeClass("completed");
-  
 
-});
-</script>
   <!-- PNotify -->
     <script src="{% static 'vendors/pnotify/dist/pnotify.js' %}"></script>
     <script src="{% static 'vendors/pnotify/dist/pnotify.buttons.js' %}"></script>

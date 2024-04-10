@@ -1,6 +1,6 @@
   {% load static %}
 
-                  <style>
+               <style>
     th {
       text-align: center;
 
@@ -16,14 +16,14 @@
                         <tr>
                     <th style="width:">#</th>
                      
-                    <th style="width: 20%">Intervention Title</th>
-                    <th style="width: 20%">Activity Title</th>
+                    <th style="width: 10%">Intervention</th>
+                    <th style="width: 30%">Activity</th>
                     <th style="width: 18%">Team Members</th>
                
-                    <th style="width: 12%">Dates</th>
+                    <th style="width: 14%">Dates</th>
                     <th>Submission</th>
                      <th>Approval</th>
-                     <th style="width:25%">Action</th>
+                     <th style="width: 11%"></th>
                      </tr>
                 </thead>
                 <tbody>
@@ -31,12 +31,14 @@
                     {% for activity in activities %}
                   <tr>
                     <td>{{ forloop.counter }}</td>
-<td> {{ activity.icn }}</br>
-<small>{{ activity.icn.program }}</small></td>
+<td> {{ activity.icn.icn_number }}</br>
+<small>{{ activity.icn.program}}</small></br>
+<small>{{ activity.icn.program.portfolio}}</small>
+</td>
                     <td>
                       <a>{{ activity.title }}</a>
                       <br />
-                      <small>{{ activity.created_at }}</small>
+                      <small>{{ activity.icn}}</small>
                     </td>
                     <td>
                       <ul class="list-inline">
@@ -70,8 +72,11 @@
                     </td>
                     
                     <td>
-                      <a href="{% url 'activity_detail' activity.id %}" class="btn btn-sm btn-primary btn-xs"><i class="fa fa-eye"></i> View </a>
-                      <a href="{% url 'activity_submit_approval' activity.id %}" class="btn btn-sm btn-info btn-xs"><i class="fa fa-flash"></i> Approval</a>
+
+                      <a button class="btn btn-sm btn-info" href="{% url 'activity_detail' activity.id %}"><span><i class="fa fa-eye"></i></span>View</a>
+                      
+                      
+                     
                      
                     </td>
                   </tr>

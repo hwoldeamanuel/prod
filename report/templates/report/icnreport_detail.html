@@ -1,45 +1,31 @@
+{% extends "intervention_step.html" %}
 
-{% extends 'base.html' %}
-{% load static %}
-
-
-{% block content_page_css %}
-
-<link href="{% static 'vendors/pnotify/dist/pnotify.css' %}" rel="stylesheet">
-    <link href="{% static 'vendors/pnotify/dist/pnotify.buttons.css' %}" rel="stylesheet">
-    <link href="{% static 'vendors/pnotify/dist/pnotify.nonblock.css' %}" rel="stylesheet">
-
-
-   
-
-{% endblock %}
-
-{% block content %}
+{% block content_intervention_step %}
 {% load humanize%}
-        <!-- page content -->
-        <div class="right_col" role="main">
-           <div class="">
-            <div class="page-title">
-              <div class="title_left">
-                <h3>Concept Note Report</h3>
-              </div>
-
-              
-            </div>
-      
-
-              
-              <div class="clearfix"></div>
+<div class="row">
+              <div class="col-md-12 col-sm-12  ">
+                <div class="x_panel">
+                  <div class="x_title">
+                   <h2>Intervention<small>Profile</small></h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="#">Settings 1</a>
+                            <a class="dropdown-item" href="#">Settings 2</a>
+                          </div>
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
   
-              <div class="row">
-                <div class="col-md-12 col-sm-12 ">
-                  <div class="x_panel">
-                    <div class="x_title">
-                    <h2 class="green"><i class="fa fa-paint-brush"></i> {{ icnreport.icn.title }}</h2>
-    
-                      <div class="clearfix"></div>
-                    </div>
-                    <div class="x_content">
+
+								</div>
+								<div class="x_content">
                        
                 
                       <div class="col-md-12 col-sm-12">
@@ -163,12 +149,7 @@
   <!-- /page content -->
   {% endblock %}
 
-{% block content_page_js %}
 
-<script src="{% static 'vendors/pnotify/dist/pnotify.js' %}"></script>
-    <script src="{% static 'vendors/pnotify/dist/pnotify.buttons.js' %}"></script>
-    <script src="{% static 'vendors/pnotify/dist/pnotify.nonblock.js' %}"></script>
-{% endblock %}
 
 
 

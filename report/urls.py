@@ -8,14 +8,16 @@ from . import views
 urlpatterns = [
    
     path('', views.icnreports, name='icnsreport'),
+  
     path('intervention/', views.icnreports, name='icnsreport'),
-    path('intervention/<int:id>/new/', views.icnreport_add, name='icnreport_add'),
-    path('intervention/<int:id>/edit/', views.icnreport_edit, name='icnreport_edit'),
+    path('intervention/<int:id>/new/profile/', views.icnreport_add, name='icnreport_add'),
+    path('intervention/<int:id>/profile/edit/', views.icnreport_edit, name='icnreport_edit'),
+    path('intervention/<int:id>/impact/', views.icnreport_step_impact, name='icnreport_step_impact'),
 
 
     
-    path('intervention/<int:pk>/', views.icnreport_detail, name='icnreport_detail'),
-    path('intervention/<int:pk>/approval/', views.icnreport_submit_approval, name='icnreport_submit_approval'),
+    path('intervention/<int:id>/profile/', views.icnreport_detail, name='icnreport_detail'),
+    path('intervention/<int:id>/approval/', views.icnreport_submit_approval, name='icnreport_submit_approval'),
     path('activity/<int:pk>/approval/', views.activityreport_submit_approval, name='activityreport_submit_approval'),
     path('downloadi/<int:id>/', views.download, name='downloadi'),
     path('downloada/<int:id>/', views.downloada, name='downloada'),

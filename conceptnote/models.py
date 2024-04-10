@@ -9,7 +9,7 @@ import os
 from django.db.models import Max, Avg,Sum,Count,F
 from uuid import uuid4
 # Create your models here.
-from app_admin.models import Country as NCountry, Region as NRegion, Zone as NZone, Woreda as NWoreda
+from app_admin.models import Country as NCountry, Region as NRegion, Zone as NZone, Woreda as NWoreda, Approvalt_Status, Approvalf_Status, Submission_Status
 from django.contrib.auth.models import User
 from portfolio.models import Portfolio
 from program.models import ImplementationArea
@@ -111,7 +111,7 @@ def path_and_rename(instance, filename):
 
 class Document(models.Model):
     user = models.ForeignKey(User, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='uploaded_by')
-    icn = models.ForeignKey(Icn, on_delete=models.CASCADE, default=2,  blank=True)
+    icn = models.ForeignKey(Icn, on_delete=models.CASCADE,  blank=True)
     description = models.TextField(blank=True, null=True)
     document = models.FileField(null=True,  blank=True, max_length=500, upload_to=path_and_rename)
     ver = models.TextField(blank=True, null=True)
@@ -132,19 +132,12 @@ class Document(models.Model):
     
 
 class IcnSubmit(models.Model):
-    Draft = 1
-    Submit = 2
-    
-    SSTATUS = (
-        (Draft, 'Draft'),
-        (Submit, 'Request Submitted'),
-     
-        )
+   
     id = models.AutoField(primary_key=True)
     icn =  models.ForeignKey(
         Icn, on_delete=models.CASCADE, null=True, blank=True)
     submission_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)
-    submission_status = models.PositiveSmallIntegerField(choices=SSTATUS, default = 2, blank=True, null=True)
+    submission_status = models.ForeignKey(Submission_Status, on_delete=models.CASCADE)
     submission_note = models.TextField(null=True,  blank=True)
 
     document = models.ForeignKey(Document, on_delete=models.CASCADE, null=True, blank=True)
@@ -208,7 +201,7 @@ class IcnSubmitApproval_T(models.Model):
     submit_id = models.OneToOneField(IcnSubmit, on_delete=models.CASCADE)
     approval_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)
     approval_note = models.TextField(null=True,  blank=True)
-    approval_status = models.PositiveSmallIntegerField(choices=STATUS, default=1, blank=True, null=True)
+    approval_status = models.ForeignKey(Approvalt_Status, on_delete=models.CASCADE)
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
     
     def __init__(self, *args, **kwargs):
@@ -244,8 +237,8 @@ class IcnSubmitApproval_P(models.Model):
     submit_id = models.OneToOneField(IcnSubmit, on_delete=models.CASCADE)
     approval_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)
     approval_note = models.TextField(null=True,  blank=True)
-    approval_status = models.PositiveSmallIntegerField(choices=STATUS, default=1, blank=True, null=True)
-    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    approval_status = models.ForeignKey(Approvalf_Status, on_delete=models.CASCADE)
+    document = models.ForeignKey(Document, on_delete=models.CASCADE ,null=True,  blank=True)
     
     def __init__(self, *args, **kwargs):
         super(IcnSubmitApproval_P, self).__init__(*args, **kwargs)
@@ -280,7 +273,7 @@ class IcnSubmitApproval_F(models.Model):
     submit_id = models.OneToOneField(IcnSubmit, on_delete=models.CASCADE)
     approval_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)
     approval_note = models.TextField(null=True,  blank=True)
-    approval_status = models.PositiveSmallIntegerField(choices=STATUS, default=1, blank=True, null=True)
+    approval_status = models.ForeignKey(Approvalt_Status, on_delete=models.CASCADE)
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
     
     def __init__(self, *args, **kwargs):
@@ -532,3 +525,10 @@ class ActivitySubmitApproval_F(models.Model):
     
     def __str__(self):
         return str(self.id)
+    
+
+
+
+    
+    
+    

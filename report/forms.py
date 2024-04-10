@@ -56,9 +56,11 @@ class IcnReportForm(forms.ModelForm):
             'technical_lead',
             'finance_lead',
            
-            'actual_mc_budget_usd',
+            'actual_mc_budget',
            
-            'actual_cost_sharing_budget_usd',
+            'actual_cost_sharing_budget',
+            'cs_currency',
+            'mc_currency', 
             
            
             
@@ -76,13 +78,13 @@ class IcnReportForm(forms.ModelForm):
         
     
 
-        self.fields['actual_mc_budget_usd'].widget = forms.widgets.NumberInput(
+        self.fields['actual_mc_budget'].widget = forms.widgets.NumberInput(
             attrs={
                 'type': 'number', 
                 'class': 'form-control form-control-sm'
                 }
             )
-        self.fields['actual_cost_sharing_budget_usd'].widget = forms.widgets.NumberInput(
+        self.fields['actual_cost_sharing_budget'].widget = forms.widgets.NumberInput(
             attrs={
                 'type': 'number', 
                 'class': 'form-control form-control-sm'
@@ -135,11 +137,13 @@ class IcnReportForm(forms.ModelForm):
             'technical_lead',
             'finance_lead',
            
-            'actual_mc_budget_usd',
+            'actual_mc_budget',
            
-            'actual_cost_sharing_budget_usd',
+            'actual_cost_sharing_budget',
             
             'iworeda',
+            'cs_currency',
+            'mc_currency', 
            
            
           
@@ -395,10 +399,12 @@ class ActivityReportForm(forms.ModelForm):
             'technical_lead',
             'finance_lead',
            
-            'actual_mc_budget_usd',
+            'actual_mc_budget',
            
-            'actual_cost_sharing_budget_usd',
-            
+            'actual_cost_sharing_budget',
+            'cs_currency',
+            'mc_currency', 
+         
             
             
            
@@ -460,9 +466,11 @@ class ActivityReportForm(forms.ModelForm):
             'technical_lead',
             'finance_lead',
            
-            'actual_mc_budget_usd',
+            'actual_mc_budget',
            
-            'actual_cost_sharing_budget_usd',
+            'actual_cost_sharing_budget',
+            'cs_currency',
+            'mc_currency', 
             
           
            

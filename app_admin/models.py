@@ -57,3 +57,21 @@ class Portfolio_Category(models.Model):
     
     def __str__(self):
         return self.name
+
+class Approvalt_Status(models.Model):
+    name = models.CharField(max_length=255)
+    
+    def __int__(self):
+        return self.id
+
+class Approvalf_Status(models.Model):
+    name = models.CharField(max_length=255)
+    
+    def __int__(self):
+        return self.id
+
+class Submission_Status(models.Model):
+    name = models.CharField(max_length=255)
+    
+    def __int__(self):
+        return self.id

@@ -31,10 +31,20 @@ class IcnReport(models.Model):
     description = models.TextField(null=True, blank=True)
     iworeda = models.ManyToManyField(ImplementationArea,  blank=True, related_name='program_rworedas')
     
-    actual_mc_budget_usd = models.FloatField(null=True, blank=True)
+    actual_mc_budget= models.FloatField(null=True, blank=True)
     
-    actual_cost_sharing_budget_usd = models.FloatField(null=True, blank=True)
-    
+    actual_cost_sharing_budget = models.FloatField(null=True, blank=True)
+    USD = 1
+    ETB = 2
+    CURRENCY_CHOICES =   (
+        (USD, 'USD'),
+        (ETB, 'ETB'),
+     
+        )
+
+ 
+    mc_currency = models.PositiveSmallIntegerField(choices=CURRENCY_CHOICES, default = 1, blank=True, null=True)
+    cs_currency =  models.PositiveSmallIntegerField(choices=CURRENCY_CHOICES, default = 1, blank=True, null=True)
    
    
 
@@ -243,7 +253,8 @@ class IcnReportSubmitApproval_F(models.Model):
 class IcnReportImpact(models.Model):
     icnreport =  models.ForeignKey(
         IcnReport, on_delete=models.CASCADE, null=True, blank=True)
-    impact = models.ForeignKey(Impact, on_delete=models.CASCADE, null=True, blank=True)
+    impact = models.OneToOneField(Impact, on_delete=models.CASCADE, null=True, blank=True)
+    
     actual_impact_pilot  = models.IntegerField(null=True, blank=True)
     actual_impact_scaleup  = models.IntegerField(null=True, blank=True)
    
@@ -267,10 +278,21 @@ class ActivityReport(models.Model):
     description = models.TextField(null=True, blank=True)
    
     
-    actual_mc_budget_usd = models.FloatField(null=True, blank=True)
+    actual_mc_budget = models.FloatField(null=True, blank=True)
     
-    actual_cost_sharing_budget_usd = models.FloatField(null=True, blank=True)
-    
+    actual_cost_sharing_budget = models.FloatField(null=True, blank=True)
+    USD = 1
+    ETB = 2
+    CURRENCY_CHOICES =   (
+        (USD, 'USD'),
+        (ETB, 'ETB'),
+     
+        )
+
+ 
+    mc_currency = models.PositiveSmallIntegerField(choices=CURRENCY_CHOICES, default = 1, blank=True, null=True)
+    cs_currency =  models.PositiveSmallIntegerField(choices=CURRENCY_CHOICES, default = 1, blank=True, null=True)
+   
     
    
 

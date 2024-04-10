@@ -28,6 +28,12 @@ from django.template import Context
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from render_block import render_block_to_string
+from django_htmx.http import HttpResponseClientRedirect
+from django_htmx.http import HttpResponseClientRefresh
+from app_admin.models import Approvalt_Status, Approvalf_Status, Submission_Status
+
+    # ...
+    
 # Create your views here.
 
 @login_required(login_url='login')
@@ -87,6 +93,7 @@ def icn_edit(request, id):
 @login_required(login_url='login') 
 def icn_step_impact(request, id):
      icn = Icn.objects.get(pk=id)
+     
      impacts= Impact.objects.filter(icn_id=id)
      context = {'icn':icn, 'impacts': impacts}
      return render(request, 'intervention_step_impact.html', context)
@@ -130,14 +137,18 @@ def icn_step_approval(request, id):
     else:
         context = {'icn':icn}
     return render(request, 'intervention_step_approval.html', context)
+
 @login_required(login_url='login') 
 def icn_detail(request, pk):
     
     context ={}
- 
+    user = request.user
+    program = Program.objects.filter(users_role=user)
+   
+   
     # add the dictionary during initialization
-  
-    icn = Icn.objects.get(pk=pk)
+    
+    icn = get_object_or_404(Icn, pk=pk,program__in=program)
     
     form = IcnForm(instance=icn,  user=request.user) 
     for fieldname in form.fields:
@@ -271,9 +282,10 @@ def icn_delete(request, pk):
     return render(request, 'partial/icn_list.html', {'icns': icns})
 
 
-def icn_submit_form(request, id): 
+def icn_submit_form(request, id, sid): 
     icn = get_object_or_404(Icn, pk=id)
-    form = IcnSubmitForm(user=request.user,icn=icn)
+    form = IcnSubmitForm(user=request.user,icn=icn, sid=sid)
+    sid = sid
    
     
     subject = 'Request for Approval'
@@ -295,12 +307,12 @@ def icn_submit_form(request, id):
             
             icnsubmit = get_object_or_404(IcnSubmit, pk=instance.pk)
             #Document.objects.create(user = icn.user, document = instance.document,  icn=instance.icn, description = document_i)
-            if icnsubmit.submission_status == 2:
+            if icnsubmit.submission_status.name == 'Request Submitted':
                 Icn.objects.filter(pk=id).update(status=True)
                 Icn.objects.filter(pk=id).update(approval_status="Pending Approval")
-                IcnSubmitApproval_T.objects.create(user = icn.technical_lead,submit_id = instance, document = instance.document, approval_status=1)
-                IcnSubmitApproval_P.objects.create(user = icn.program_lead,submit_id = instance,document = instance.document, approval_status=1)
-                IcnSubmitApproval_F.objects.create(user = icn.finance_lead,submit_id = instance,document = instance.document, approval_status=1)
+                IcnSubmitApproval_T.objects.create(user = icn.technical_lead,submit_id = instance, document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
+                IcnSubmitApproval_P.objects.create(user = icn.program_lead,submit_id = instance,document = instance.document, approval_status=Approvalf_Status.objects.get(id=1))
+                IcnSubmitApproval_F.objects.create(user = icn.finance_lead,submit_id = instance,document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
                 context = {
                     "program": icn.program,
                     "title": icn.title,
@@ -326,7 +338,7 @@ def icn_submit_form(request, id):
                         "showMessage": f"{instance.id} added."
                     })
                 })
-            elif icnsubmit.submission_status == 1:
+            elif icnsubmit.submission_status.name == 'Request Canceled':
                 Icn.objects.filter(pk=id).update(status=False)
                 Icn.objects.filter(pk=id).update(approval_status="Pending Submission")
                 subject = 'Request withdrawn temporarly'
@@ -358,7 +370,7 @@ def icn_submit_form(request, id):
                 })
 
       
-    context = {'form':form, 'icn':icn}
+    context = {'form':form, 'icn':icn, 'sid':sid}
     return render(request, 'icn_submit_form copy.html', context)
 
 def icn_submit_detail(request, pk):
@@ -376,29 +388,37 @@ def icn_submit_detail(request, pk):
     return render(request, 'icnsubmit_detail.html', context)
 
  
-def icn_approvalt(request, id):
+def icn_approvalt(request, id, did):
      
     icnsubmitApproval_t = get_object_or_404(IcnSubmitApproval_T, submit_id_id=id)
     icnsubmit = get_object_or_404(IcnSubmit, pk=id)
-    
+    did=did
     icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
+
+   
       
     if request.method == "GET":
         icnsubmitApproval_t = get_object_or_404(IcnSubmitApproval_T, submit_id_id=id)
-        form = IcnApprovalTForm(instance=icnsubmitApproval_t)
-        context = {'icnsubmitapproval_t':icnsubmitApproval_t, 'form': form, 'icn':icn, }
+        if did != 2:
+            form = IcnApprovalTForm(instance=icnsubmitApproval_t, did=did)
+            form.fields['document'].choices = [
+                (document.pk, document) for document in Document.objects.filter(id=icnsubmitApproval_t.document.id)
+                ]
+        else:
+            form = IcnApprovalTForm(instance=icnsubmitApproval_t, did=did)
+         
+        context = {'icnsubmitapproval_t':icnsubmitApproval_t, 'form': form, 'icn':icn, 'did':did}
         return render(request, 'icn_approval_tform.html', context)
     
     elif request.method == "PUT":
         icnsubmitApproval_t = get_object_or_404(IcnSubmitApproval_T, submit_id_id=id)
         data = QueryDict(request.body).dict()
-        form = IcnApprovalTForm(data, instance=icnsubmitApproval_t)
+        form = IcnApprovalTForm(data, instance=icnsubmitApproval_t, did=did)
         if form.is_valid():
-            instance =form.save()
-            Icn.objects.filter(pk=id).update(status=True)
+            instance = form.save()
             icnsubmit = get_object_or_404(IcnSubmit, pk=id)
-            icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
             update_approval_status(icnsubmit.id)
+            icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
            
             subject = 'Approval Status changed'
             context = {
@@ -421,7 +441,7 @@ def icn_approvalt(request, id):
             email_from = None 
             recipient_list = [icn.user.email, icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
             send_mail(subject, message, email_from, recipient_list) 
-            context = {'icn':icn, 'icnsubmit':icnsubmit }
+            context = {'icn':icn, 'icnsubmit':icnsubmit , 'did':did}
             return HttpResponse(
                 status=204,
                 headers={
@@ -431,14 +451,14 @@ def icn_approvalt(request, id):
                     })
                 })
         
-        return render(request, 'icn_approval_tform.html', {'form':form})
+        return render(request, 'icn_approval_tform.html', {'form':form, 'did':did})
   
  
-def icn_approvalp(request, id):
+def icn_approvalp(request, id, did):
     
     icnsubmitApproval_p = get_object_or_404(IcnSubmitApproval_P, submit_id_id=id)
     icnsubmit = get_object_or_404(IcnSubmit, pk=id)
-    
+    did = did
     icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
     subject = 'Approval Status changed'
     message = 'Reviewed & status has been updated to this Concept Note has been submitted'
@@ -447,14 +467,21 @@ def icn_approvalp(request, id):
        
     if request.method == "GET":
         icnsubmitApproval_p = get_object_or_404(IcnSubmitApproval_P, submit_id_id=id)
-        form = IcnApprovalPForm(instance=icnsubmitApproval_p)
-        context = {'icnsubmitapproval_p':icnsubmitApproval_p, 'form': form, 'icn':icn, }
+        if did != 2:
+            form = IcnApprovalPForm(instance=icnsubmitApproval_p, did=did)
+            form.fields['document'].choices = [
+                (document.pk, document) for document in Document.objects.filter(id=icnsubmitApproval_p.document.id)
+                ]
+        else:
+            form = IcnApprovalPForm(instance=icnsubmitApproval_p, did=did)
+
+        context = {'icnsubmitapproval_p':icnsubmitApproval_p, 'form': form, 'icn':icn, 'did':did }
         return render(request, 'icn_approval_pform.html', context)
     
     elif request.method == "PUT":
         icnsubmitApproval_p = get_object_or_404(IcnSubmitApproval_P, submit_id_id=id)
         data = QueryDict(request.body).dict()
-        form = IcnApprovalPForm(data, instance=icnsubmitApproval_p)
+        form = IcnApprovalPForm(data, instance=icnsubmitApproval_p, did=did)
         if form.is_valid():
             instance = form.save()
             icnsubmit = get_object_or_404(IcnSubmit, pk=id)
@@ -482,7 +509,7 @@ def icn_approvalp(request, id):
             email_from = None 
             recipient_list = [icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
             send_mail(subject, message, email_from, recipient_list) 
-            context = {'icn':icn, 'icnsubmit':icnsubmit }
+            context = {'icn':icn, 'icnsubmit':icnsubmit, 'did':did }
             return HttpResponse(
                 status=204,
                 headers={
@@ -492,14 +519,14 @@ def icn_approvalp(request, id):
                     })
                 })
         
-        return render(request, 'icn_approval_pform.html', {'form':form})
+        return render(request, 'icn_approval_pform.html', {'form':form, 'did':did})
 
 
  
-def icn_approvalf(request, id):
+def icn_approvalf(request, id, did):
     icnsubmitApproval_f = get_object_or_404(IcnSubmitApproval_F, submit_id_id=id)
     icnsubmit = get_object_or_404(IcnSubmit, pk=id)
-    
+    did = did
     icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
     subject = 'Approval Status changed'
     message = 'Reviewed & status has been updated to this Concept Note has been submitted'
@@ -508,17 +535,23 @@ def icn_approvalf(request, id):
        
     if request.method == "GET":
         icnsubmitApproval_f = get_object_or_404(IcnSubmitApproval_F, submit_id_id=id)
-        form = IcnApprovalFForm(instance=icnsubmitApproval_f)
-        context = {'icnsubmitapproval_f':icnsubmitApproval_f, 'form': form, 'icn':icn, }
+        if did != 2:
+            form = IcnApprovalFForm(instance=icnsubmitApproval_f, did=did)
+            form.fields['document'].choices = [
+                (document.pk, document) for document in Document.objects.filter(id=icnsubmitApproval_f.document.id)
+                ]
+        else:
+            form = IcnApprovalFForm(instance=icnsubmitApproval_f, did=did)
+        context = {'icnsubmitapproval_f':icnsubmitApproval_f, 'form': form, 'icn':icn, 'did':did }
         return render(request, 'icn_approval_fform.html', context)
     
     elif request.method == "PUT":
         icnsubmitApproval_f = get_object_or_404(IcnSubmitApproval_F, submit_id_id=id)
         data = QueryDict(request.body).dict()
-        form = IcnApprovalFForm(data, instance=icnsubmitApproval_f)
+        form = IcnApprovalFForm(data, instance=icnsubmitApproval_f, did=did)
         if form.is_valid():
             instance = form.save()
-            icnsubmit = get_object_or_404(IcnSubmit, pk=id)
+            icnsubmit = get_object_or_404(IcnSubmit, id=id)
             update_approval_status(icnsubmit.id)
             icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
             subject = 'Approval Status changed'
@@ -542,7 +575,7 @@ def icn_approvalf(request, id):
             email_from = None 
             recipient_list = [icn.user.email ,icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
             send_mail(subject, message, email_from, recipient_list) 
-            context = {'icn':icn, 'icnsubmit':icnsubmit }
+            context = {'icn':icn, 'icnsubmit':icnsubmit, 'did':did }
             return HttpResponse(
                 status=204,
                 headers={
@@ -552,7 +585,7 @@ def icn_approvalf(request, id):
                     })
                 })
         
-        return render(request, 'icn_approval_fform.html', {'form':form})
+        return render(request, 'icn_approval_fform.html', {'form':form, 'did':did})
 
 def icn_submit_approval(request, pk):
     icn = get_object_or_404(Icn, pk=pk)
@@ -686,7 +719,7 @@ def iarea_list(request, id):
 def icn_submit_approval_list(request, id):
    
 
-    icnsubmitlist = IcnSubmit.objects.filter(icn_id=id)[:10]
+    icnsubmitlist = IcnSubmit.objects.filter(icn_id=id, submission_status=2)[:10]
     context = {'icnsubmitlist':icnsubmitlist}
    
   
@@ -709,14 +742,17 @@ def update_approval_status(id):
     icnsubmitapproval_t = get_object_or_404(IcnSubmitApproval_T, submit_id_id=id)
     icnsubmitapproval_p = get_object_or_404(IcnSubmitApproval_P, submit_id_id=id)
     icnsubmitapproval_f = get_object_or_404(IcnSubmitApproval_F, submit_id_id=id)
-    
+   
     approval_t = icnsubmitapproval_t.approval_status
+    approval_t = int(approval_t)
     approval_p = icnsubmitapproval_p.approval_status
+    approval_p = int(approval_p)
     approval_f = icnsubmitapproval_f.approval_status
+    approval_f = int(approval_f)
     
     if approval_t == 4 or approval_p== 4 or approval_f== 4:
         Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="100% Rejected")
-    elif approval_t < 3 and approval_p < 3 and approval_p < 3:
+    elif approval_t < 3 and approval_p < 3 and approval_f < 3:
         Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="Pending Approval")
     elif approval_t == 3 and approval_p ==3 and approval_f==3:
          Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="100% Approved")
@@ -730,6 +766,7 @@ def update_approval_status(id):
     
 def add_impact(request, id):
     icn = get_object_or_404(Icn, pk=id)
+    
     program = get_object_or_404(Program, pk=icn.program_id)
     
     if request.method == "POST":
@@ -741,15 +778,18 @@ def add_impact(request, id):
             items = Indicator.objects.filter(id__in=selected_indicators)
             instance.save()
             instance.indicators.add(*items)
-               
-            return HttpResponse(
-                status=204,
-                headers={
-                    'HX-Trigger': json.dumps({
-                        "ImpactListChanged": None,
-                        "showMessage": f"{instance.icn} added."
-                    })
-                })
+            icn = get_object_or_404(Icn,id=id)
+            if Impact.objects.filter(icn=icn).count() == 0 or Impact.objects.filter(icn=icn).count() == 1:
+                return HttpResponseClientRedirect('/conceptnote/intervention/'+str(icn.id)+'/impact/')
+            else:
+                return HttpResponse(
+                        status=204,
+                        headers={
+                            'HX-Trigger': json.dumps({
+                            "ImpactListChanged": None,
+                            "showMessage": f"{instance.icn} added."
+                         })
+                         })
     else:
         iform = ImpactForm(program=program)
     return render(request, 'partial/impact_form.html', {
@@ -758,9 +798,12 @@ def add_impact(request, id):
 
 
 def impact_list(request, id):
-    return render(request, 'partial/impact_list.html', {
-        'impacts': Impact.objects.filter(icn_id=id),
-    })
+       
+    impacts = Impact.objects.filter(icn_id=id)
+    
+    context = {'impacts': impacts}
+
+    return render(request, 'partial/impact_list.html', context)
 
 def icn_edit_impact(request, pk):
     impact = get_object_or_404(Impact, pk=pk)
@@ -788,17 +831,24 @@ def icn_edit_impact(request, pk):
     })
 
 def remove_impact(request, pk):
+    redirect_url = request.get_full_path()
     impact = get_object_or_404(Impact, pk=pk)
+    icn_id = impact.icn_id
     impact.delete()
-    return HttpResponse(
-        status=204,
-        headers={
-            'HX-Trigger': json.dumps({
+    icn = get_object_or_404(Icn,id=icn_id)
+   
+    if Impact.objects.filter(icn=icn).count() != 0:
+        return HttpResponse(
+            status=204,
+            headers={
+                'HX-Trigger': json.dumps({
                 "ImpactListChanged": None,
                 "showMessage": f"{impact.title} deleted."
+              })
             })
-        })
-
+    else:
+        return HttpResponseClientRedirect('/conceptnote/intervention/'+str(icn.id)+'/impact/')
+       
 
 def download_env_att(request, id):
     document = get_object_or_404(Icn, id=id)
@@ -809,6 +859,13 @@ def download_env_att(request, id):
 def icn_submit_form_partial(request, id): 
     icn = get_object_or_404(Icn, pk=id)
     form = IcnSubmitForm(user=request.user,icn=icn)
+    
+    context = {'form':form, 'icn':icn}
+    return render(request, 'partial/partial_doc_form.html', context)
+
+def icn_approvalp_form_partial(request, id): 
+    icn = get_object_or_404(Icn, pk=id)
+    form = IcnApprovalPForm(user=request.user,icn=icn)
     
     context = {'form':form, 'icn':icn}
     return render(request, 'partial/partial_doc_form.html', context)
@@ -1426,3 +1483,13 @@ def program_changes(request):
                        
                     })
                 })
+
+def intervention_step(request, id):
+   
+ 
+    # add the dictionary during initialization
+    icn = Icn.objects.get(pk=id)
+    
+    context = {'icn':icn}
+    return render(request, 'intervention_step.html', context)
+    

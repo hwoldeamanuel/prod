@@ -8,7 +8,7 @@ from portfolio.models import Portfolio
 from datetime import datetime
 from django.forms.models import modelformset_factory
 from django_select2 import forms as s2forms
-from app_admin.models import Country , Region , Zone , Woreda 
+from app_admin.models import Country , Region , Zone , Woreda , Approvalt_Status, Approvalf_Status, Submission_Status
 from django.contrib.auth.models import User
 from django.forms import inlineformset_factory
 CHOICE1 =(
@@ -229,20 +229,27 @@ class IcnAreaFormE(forms.ModelForm):
             exclude=  ['icn']
 
 class IcnSubmitForm(forms.ModelForm):
-     submission_status = forms.ChoiceField(choices= IcnSubmit._meta.get_field('submission_status').choices, initial=2, disabled=False)
-     #document = forms.ChoiceField(
-         #choices=[(document.id, document.document) for document in Document.objects.all()]
-#)
-
+     
      def __init__(self, *args, **kwargs):
          user = kwargs.pop('user', None)
          icn = kwargs.pop('icn', None)
+         sid = kwargs.pop('sid', None)
          super(IcnSubmitForm, self).__init__(*args, **kwargs)
 
+
+        
+         self.fields['submission_status'].choices = [
+            (submission_status.id, submission_status.name) for submission_status in Submission_Status.objects.filter(id=sid)
+        ]
+
          self.fields['document'].choices = [
-             (document.pk, document) for document in Document.objects.filter(user=user, icn=icn)
-         ]
-             
+                (document.pk, document) for document in Document.objects.filter(user=user, icn=icn)
+            ]     
+         if sid==2:
+               self.fields['document'].choices = [
+                (document.pk, document) for document in Document.objects.none()
+            ] 
+              
       # invalid input from the client; ignore and fallback to empty City queryset
         
 
@@ -286,42 +293,86 @@ class IcnDocumentForm(forms.ModelForm):
 
 
 class IcnApprovalTForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3'  }    )
+     def __init__(self, *args, **kwargs):
+          did = kwargs.pop('did', None)
+          super(IcnApprovalTForm, self).__init__(*args, **kwargs)
+       
+    
+     
         
+          self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3'  }    )
+          self.fields['approval_status'].choices = [
+             (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalt_Status.objects.filter(id=did)
+         ]
+          
+          if did == 2:
+               self.fields['document'].choices = [
+             (document.pk, document) for document in Document.objects.none()
+         ]
+       
+          if did == 3:
+               self.fields['document'].widget.attrs['readonly'] = True
         
-    class Meta:
+     class Meta:
             model = IcnSubmitApproval_T
             fields = ('approval_note','approval_status','document')
+            readonly_fields = ('approval_status',)
 
             exclude=  ['icn','user',]
             
 
 
 class IcnApprovalFForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+     def __init__(self, *args, **kwargs):
+          did = kwargs.pop('did', None)
+          super(IcnApprovalFForm, self).__init__(*args, **kwargs)
 
-        self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
+          self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
+          self.fields['approval_status'].choices = [
+             (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalt_Status.objects.filter(id=did)
+             ]
+          
+          if did == 2:
+               self.fields['document'].choices = [
+             (document.pk, document) for document in Document.objects.none()
+            ]
+
+          if did == 3:
+               self.fields['document'].widget.attrs['readonly'] = True    
         
-        
-    class Meta:
+     class Meta:
             model = IcnSubmitApproval_F
             fields =  ('approval_note','approval_status','document')
 
             exclude=  ['icn','user']
 
 class IcnApprovalPForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+     def __init__(self, *args, **kwargs):
+          
+           did = kwargs.pop('did', None)
+           super(IcnApprovalPForm, self).__init__(*args, **kwargs)
 
-        self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
-        
+           self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
+           self.fields['approval_status'].choices = [
+             (approvalf_status.id, approvalf_status.name) for approvalf_status in Approvalf_Status.objects.filter(id=did)
+            ]
+             
+      
+
+           
+       
+           if did == 2:
+               self.fields['document'].choices = [
+             (document.pk, document) for document in Document.objects.none()
+            ]
+
+           if did == 3:
+               self.fields['document'].widget.attrs['readonly'] = True  
+                
+           
     
                
-    class Meta:
+     class Meta:
             model = IcnSubmitApproval_P
             fields =  ('approval_note','approval_status','document')
 
@@ -367,7 +418,7 @@ class ActivityForm(forms.ModelForm):
             self.fields['technical_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_technical_approver=True).exclude(user=user).first()
             self.fields['finance_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user)
             self.fields['finance_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user).first()
-       
+            self.fields['icn'].queryset = Icn.objects.filter(program__in=program, approval_status="100% approved")
            
         myfield = ['title',
             'icn',

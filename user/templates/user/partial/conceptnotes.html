@@ -21,15 +21,15 @@
        <td>{{ cn.get_name }}</td>
        <td>{% if cn.get_name == "Intervention" %} <a href="{% url 'icn_detail' cn.id %}">{{ cn.title }}{% elif cn.get_name == "Activity" %}<a href="{% url 'activity_detail' cn.id %}">{{cn.title}} {% endif %} </a></td>
        <td> {% if cn.user == request.user %}Initiator
-            {% elif cn.technical_lead.user == request.user %} Technical Lead 
-            {% elif cn.program_lead.user == request.user %} Program Lead 
-            {% elif cn.finance_lead.user == request.user %} Finance Lead 
+            {% elif cn.technical_lead.user == request.user %}Technical.L 
+            {% elif cn.program_lead.user == request.user %}Program.L
+            {% elif cn.finance_lead.user == request.user %}Finance.L
             {% endif%}
             
         </td>
 
        <td>
-       {{cn.approval_status}}
+       <span class="badge {% if 'Rejected' in cn.approval_status %} bg-red {% elif 'Approved' in cn.approval_status %} bg-green {% else %} bg-warning {% endif %}">{% if cn.approval_status %} {{ cn.approval_status}} {% else %}Pending Submission{% endif %}</span>
        </td>
        
      </tr>

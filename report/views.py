@@ -42,7 +42,7 @@ def icnreports(request):
 
 def icnreport_add(request, id): 
     icn = Icn.objects.get(pk=id)
-    impacts =  Impact.objects.filter(icn_id=2)
+   
     if request.method == "POST":
         form = IcnReportForm(request.POST,request.FILES, user=request.user, icn=icn)
         if form.is_valid():
@@ -51,18 +51,16 @@ def icnreport_add(request, id):
             
             instance.save()
            
-            for impact in impacts:
-                 IcnReportImpact.objects.create(icnreport=instance, impact=impact)
             return redirect('icnreport_detail',instance.pk) 
         
         
         form = IcnReportForm(request.POST,request.FILES, user=request.user, icn=icn)   
         context = {'form':form}
-        return render(request, 'report/icnreport_add.html', context)
+        return render(request, 'report/icnreport_step_profile_new.html', context)
     
     form = IcnReportForm(user=request.user, icn=icn)   
     context = {'form':form, 'icn':icn}
-    return render(request, 'report/icnreport_add.html', context)
+    return render(request, 'report/icnreport_step_profile_new.html', context)
 
 
 
@@ -82,38 +80,50 @@ def icnreport_edit(request, id):
         
         form = IcnReportForm(request.POST, request.FILES, instance=icnreport, user=request.user, icn=icn) 
         context = {'form':form, 'icn':icn, 'icnreport':icnreport}
-        return render(request, 'report/icnreport_add.html', context)
+        return render(request, 'report/icnreport_step_profile_new.html', context)
             
     elif request.method == "GET" and icnreport.status == False:    
 
         form = IcnReportForm(instance=icnreport,  user=request.user, icn=icn) 
         context = {'form':form, 'icn':icn, 'icnreport':icnreport}
-        return render(request, 'report/icnreport_add.html', context)
+        return render(request, 'report/icnreport_step_profile_new.html', context)
     else:
         return HttpResponseRedirect(request.path_info)
                 
 
 
  
-def icnreport_detail(request, pk):
-    
+def icnreport_detail(request, id):
+    icn = Icn.objects.get(id=id)
+
     context ={}
  
     # add the dictionary during initialization
-  
-    icnreport = IcnReport.objects.get(pk=pk)
+    if IcnReport.objects.filter(id=id).exists():
+         
+        icnreport = IcnReport.objects.get(id=id)
    
-    if IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).exists():
-        icnreportsubmit = IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).latest('id')
-        context = {'icnreport':icnreport, 'icnreportsubmit':icnreportsubmit}
-    else:
-        context = {'icnreport':icnreport}
+        if IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).exists():
+            icnreportsubmit = IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).latest('id')
+            context = {'icn':icn,'icnreport':icnreport, 'icnreportsubmit':icnreportsubmit}
+        else:
+            context = {'icn': icn, 'icnreport':icnreport}
+        
+        return render(request, 'report/icnreport_step_profile_detail.html', context)
     
-    #icnsubmit= IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).latest('id')
-    #icnsubmit = get_object_or_404(IcnReportSubmit, icnreport_id=icnreport.id).latest('id')
+    return redirect('icnreport_add',id=id) 
+    
+@login_required(login_url='login') 
+def icnreport_step_impact(request, id):
+    icn = Icn.objects.get(id=id)
+    icnreport = IcnReport.objects.filter(icn_id=id)
+    impacts = Impact.objects.filter(icn_id=id)
+    context = {'icn':icn, 'icnreport':icnreport, 'impacts': impacts}
 
+    return render(request, 'report/icnreport_step_impact.html', context)
+    
 
-    return render(request, 'report/icnreport_detail.html', context)
+        
 
 
  
@@ -313,20 +323,21 @@ def icnreport_approvalf(request, id):
         
         return render(request, 'report/icnreport_approval_fform.html', {'form':form})
 
-def icnreport_submit_approval(request, pk):
-    icnreport = get_object_or_404(IcnReport, pk=pk)
+def icnreport_submit_approval(request, id):
+    icn = get_object_or_404(Icn, id=id)
+    icnreport = get_object_or_404(IcnReport, id=id)
     context ={}
  
     # add the dictionary during initialization
-    icnreport = IcnReport.objects.get(pk=pk)
+    icnreport = IcnReport.objects.get(id=id)
     if IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).exists():
         icnreportsubmit = IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).latest('id')
-        context = {'icnreport':icnreport, 'icnreportsubmit':icnreportsubmit}
+        context = {'icn':icn, 'icnreport':icnreport, 'icnreportsubmit':icnreportsubmit}
     else:
-        context = {'icnreport':icnreport}
+        context = {'icn':icn, 'icnreport':icnreport}
     
 
-    return render(request, 'report/icnreport_submit_approval.html', context)
+    return render(request, 'report/icnreport_step_approval.html', context)
 
  
 def icnreport_submit_list(request, id):
@@ -476,39 +487,34 @@ def update_approval_status(id):
 
     
 def add_icnreport_impact(request, id):
-    icnreport = get_object_or_404(IcnReport, pk=id)
-   
-    
+    impact = Impact.objects.get(id=id)
+    icn = Icn.objects.get(id=impact.icn_id)
+    icnreport = IcnReport.objects.get(id=icn.id)
     if request.method == "POST":
-        myformset = formset_factory(IcnReportImpactForm) 
-        formset = myformset() 
-        formset = formset(request.POST or None)
-        if formset.is_valid():
-            for form in formset:
-                instance = form.save(commit=False)
-                instance.icnreport = icnreport
-                instance.save()
-            
-               
+       
+        form = IcnReportImpactForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.impact = impact
+            instance.icnreport = icnreport
+            instance.save()
             return HttpResponse(
                 status=204,
                 headers={
                     'HX-Trigger': json.dumps({
                         "ImpactListChanged": None,
-                        "showMessage": f"{instance.icnreport} added."
+                        "showMessage": f"{instance.pk} updated."
                     })
                 })
     else:
-        myformset = formset_factory(IcnReportImpactForm) 
-        formset = myformset() 
-        formset = formset()
-    return render(request, 'partial/impact_form.html', {
-        'formset': formset,
+        form = IcnReportImpactForm()
+    return render(request, 'report/partial/icnreport_impact_form.html', {
+        'form': form,
+        'impact': impact,
     })
 
-
 def icnreport_impact_list(request, id):
-    impacts = IcnReportImpact.objects.filter(icnreport_id=id)
+    impacts = Impact.objects.filter(icn_id=id)
     context = {'impacts':impacts}
     return render(request, 'report/partial/impact_list.html', context)
 
@@ -533,7 +539,7 @@ def edit_impact(request, pk):
                 })
     else:
         form = IcnReportImpactForm(instance=impact)
-    return render(request, 'report/partial/impact_form_edit.html', {
+    return render(request, 'report/partial/icnreport_impact_form_edit.html', {
         'form': form,
         'impact': impact,
     })

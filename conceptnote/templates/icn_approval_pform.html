@@ -2,7 +2,7 @@
                       {% load widget_tweaks %}
                       {% with WIDGET_ERROR_CLASS='is-invalid' %}
 
-<form  hx-put="{{ request.path }}" hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}' hx-target="#SubmitList">
+<form  hx-put="{{ request.path }}" hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}' hx-target="#SubmitList" >
     {% csrf_token %}
  <div class="form-group row">
   <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.approval_note.id_for_label }}">Approval Note <span class="required">*</span>
@@ -29,9 +29,9 @@
     </div>
     <div class="invalid-feedback">{{ form.document.errors|first }}</div>
 </div>
-  <div class="col-md-3 col-sm-3">
- <button type="button" hx-get="/conceptnote/icn_submit_document/{{icn.id}}/" hx-target="#dialog" class="btn btn-info btn-sm" ><i class="fa fa-paperclip"></i>Version</button>
-   
+  <div class="col-md-3 col-sm-3">{% if did == 2 %} 
+ <button type="button"  hx-get="/conceptnote/icn_submit_document/{{icn.id}}/" hx-target="#dialog" class="btn btn-info btn-sm" ><i class="fa fa-paperclip"></i> New Version</button>
+   {% endif %}
 </div>
 
 </div>

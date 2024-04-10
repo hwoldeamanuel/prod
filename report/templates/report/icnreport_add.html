@@ -1,38 +1,30 @@
-{% extends 'base.html' %}
+{% extends "intervention_step.html" %}
 
-{% block content %}
-{% load static %}
-
-{% load humanize%}
-<div class="right_col" role="main">
-       <div class="">
-      <div class="page-title">
-        <div class="title_left">
-          <h3>Intervention Report</h3>
-        </div>
-      </div>
-      
-      <div class="clearfix"></div>
-
-      <div class="row">
-        <div class="col-md-12">
-          <div class="x_panel">
-           
-
-            <div class="x_content">
-
-              <div class="col-md-9 col-sm-9  ">
-                <div class="x_title">
-                 <h2> Report Basic Info </h2>
-                  <div class="clearfix"></div>
-                 </div>
-                 <div class="x_content">
-
-                   
-            
-                
-
-                     <div class="col-md-12 col-sm-12">
+{% block content_intervention_step %}
+<div class="row">
+						<div class="col-md-12 col-sm-12 ">
+							<div class="x_panel">
+								<div class="x_title">
+									<h2>Profile New <small>Intervention</small></h2>
+									<ul class="nav navbar-right panel_toolbox">
+										<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+										</li>
+										<li class="dropdown">
+											<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+											<ul class="dropdown-menu" role="menu">
+												<li><a class="dropdown-item" href="#">Settings 1</a>
+												</li>
+												<li><a class="dropdown-item" href="#">Settings 2</a>
+												</li>
+											</ul>
+										</li>
+										<li><a class="close-link"><i class="fa fa-close"></i></a>
+										</li>
+									</ul>
+									<div class="clearfix"></div>
+								</div>
+								<div class="x_content">
+									
                       <!-- Tab panes -->
                      
                      
@@ -167,56 +159,7 @@
                                               </div>   
 
               <!-- start project-detail sidebar -->
-              <div class="col-md-3 col-sm-3  ">
-
-                <section class="panel">
-
-                  <div class="x_title">
-                    <h2>Concept Note Details</h2>
-                    <div class="clearfix"></div>
-                  </div>
-                  <div class="panel-body">
-                    
-
-                    <h5 class="green"><i class="fa fa-paint-brush"></i> {{ icn.title }}</h5>
-               
-
-                    <div class="project_detail">
-                     <p>Program:<strong> {{icn.program}}</strong></p>
-
-                      <p class="">Lead Agency:<strong> {{icn.ilead_agency}}</strong></p>
-                      <p>Co-Lead Agency:
-                      {% for colead in icn.ilead_co_agency.all %}
-                      <strong>{{colead}},</strong>
-                      {% endfor %}</p>
-                      <p class="">Proposed Start Date<strong>
-                      {{icn.proposed_start_date}}</strong></p>
-                      <p class="">Proposed End Date<strong>
-                      {{icn.proposed_end_date}}</strong></p>
-                    <p class="">Report Due Date<strong>
-                      {{icn.final_report_due_date}}</strong></p>
-
-                  
-
-                      <p>Environmnetal Impact: {% if icn.eniromental_impact == '3' %}High{% elif icn.eniromental_impact == '2' %}<strong>Medium</strong>{% elif icn.eniromental_impact == '1' %}<strong>Low</strong>{% endif %}</p>
-                               <p>Environmnetal Impact Doc <i class="fa fa-paperclip"></i>:<strong>{% if icn.environmental_assessment_att %}<a href="#"><i class="fa fa-paperclip"></i>  down </a> {% else %}NA{% endif%} </strong></p>
-
-                              <p>Total Mercy Corps budget:<strong> ${{ icn.mc_budget_usd|intcomma }}</strong></p>
-                              <p>Cost-share contributions:<strong>  ${{ icn.cost_sharing_budget_usd|intcomma }}</strong></p>
-             <p># of Implementation Woreda: <strong> {{ icn.icnimplementationarea_set.count }}</strong></p>
-                             <p># of Impact/Target: <strong> {{ icn.impact_set.count }}</strong></p>
-                             <p># of Program Indicators: <strong> {{ icn.get_num_indicator }}</strong></p>
-                    <br />
-  </div>
-                    <div class="text-center mtop20">
-                      
-                          <a href="{% url 'icn_detail' icn.id %}" class="btn btn-sm  btn-primary btn-xs"><i class="fa fa-eye"></i> View Details</a>
-                    </div>
-                  </div>
-
-                </section>
-
-              </div>
+             
               <!-- end project-detail sidebar -->
 
             </div>

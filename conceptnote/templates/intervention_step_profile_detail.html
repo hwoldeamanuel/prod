@@ -7,7 +7,7 @@
               <div class="col-md-12 col-sm-12  ">
                 <div class="x_panel">
                   <div class="x_title">
-                   <h2>Profile <small>Intervention</small></h2>
+                   <h2>Intervention<small>Profile</small></h2>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                       </li>
@@ -26,24 +26,19 @@
   
                
                   
-                    <div class="x_content">
-                       
-                
-                      <div class="col-md-12 col-sm-12">
-
-                        <!-- start of user-activity-graph -->
-                        <div  style="width:100%; height:300px;">
-                          <div class="panel-body">
-                            <p>Program:<strong>  {{ icn.program }}</strong></p>
+                    <div class="panel-body">
+                     
+                         
                           <p>Title:<strong> {{ icn.title }}</strong></p>
-                          <p>ID: <strong>{{ icn.icn_number }}</strong></p> 
+                          <p>Program:<strong>  {{ icn.program }}</strong></p>
+                          <p>ID:<strong> {{ icn.icn_number }}</strong></p>
                             <p><strong>Description: </strong> {{ icn.description }}</p>
-                          
-  
-                            <div class="col-md-4 col-sm-4 project_detail">
-                           
 
-                             <p>Lead Agency:<strong> {{ icn.ilead_agency }}</strong></p>
+                          
+
+                          <div class="col-md-4 col-sm-4 project_detail">
+
+                           <p>Lead Agency:<strong> {{ icn.ilead_agency }}</strong></p>
                               <p>Co-Lead Agency:
                       {% for colead in icn.ilead_co_agency.all %}
                       <strong>{{colead}},</strong>
@@ -54,81 +49,51 @@
                       {{icn.proposed_end_date}}</strong></p>
                       <p>Final Report due date: <strong>  {{ icn.final_report_due_date}}</strong></p>
                             
-                            
-                              
-                            </div>
-                       
-                          
-                            <div class="col-md-4 col-sm-4 project_detail">
-                              <p>Intervention Woredas:
+                          </div>
+  <div class="col-md-4 col-sm-4 project_detail">
+  <p>Implementation Woredas:
                       {% for woreda in icn.iworeda.all %}
                       <strong>{{woreda}},</strong>
                       {% endfor %}</p>
                               <p>Environmnetal Impact: {% if icn.eniromental_impact == '3' %}High{% elif icn.eniromental_impact == '2' %}<strong>Medium</strong>{% elif icn.eniromental_impact == '1' %}<strong>Low</strong>{% endif %}</p>
                               <p>Environmnetal Impact Doc <i class="fa fa-paperclip"></i>:<strong>{% if icn.environmental_assessment_att %}<a href="{% url 'download_env_att' icn.id %}"><i class="fa fa-paperclip"></i>  download </a> {% else %}NA{% endif%} </strong></p>
 
-                              <p>Total Mercy Corps budget:<strong> {{ icn.mc_budget|intcomma }} {{icn.get_mc_currency_display }}</strong></p>
-                              <p>Cost-share budget:<strong> {% if icn.cost_share_budget %} {{ icn.cost_share_budget|intcomma }} {{icn.get_cs_currency_display }} {% else %} 0.0 {{icn.get_mc_currency_display}} {% endif %}</strong></p>
+                              <p>Total Mercy Corps budget:<strong> {{ icn.mc_budget|floatformat:2|intcomma }}</strong>{{icn.get_mc_currency_display }}</p>
+                              <p>Cost-share budget:<strong> {{ icn.cost_sharing_budget|floatformat:2|intcomma }}</strong>{{icn.get_cs_currency_display }}</p>
                               
- 
-
-                           
-                            </div>
-                            <div class="col-md-4 col-sm-4 project_detail">
-  
-                              <p>Initited By: <strong>  {{ icn.user }}</strong></p>
-                              <p>Technical Lead: <strong>  {{ icn.technical_lead }}</strong></p>
-                              <p>Program Lead: <strong> {{ icn.program_lead }}</strong></p>
-                                <p>Finance Lead: <strong> {{ icn.finance_lead }}</strong></p>
-                                
-                              <p >Submission Status: <strong>{{ icn.get_status_display }}</strong></p> 
-                              
-
-
-                           
-                       
-  
+ </div>
                          
-                            
-  
-                    
-                     
+                         
+                          <ul class="list-unstyled project_detail">
+                            <p>Initited By:<strong> {{ icn.user.profile.full_name }}</strong>
+                            </p>
+                             <p>Technical Lead:<strong> {{ icn.technical_lead.user.profile.full_name }}</strong>
+                            </p>
+                            </p>
+                             <p>Finance Lead:<strong> {{ icn.finance_lead.user.profile.full_name }}</strong>
+                            </p>
+                             <p>Program Lead:<strong> {{ icn.program_lead.user.profile.full_name }}</strong>
+                            </p>
+                            <p >Submission Status: <strong>{{ icn.get_status_display }}</strong>
+                            </p>
+                          </ul>
                           
-                        
-                        <!-- end of user-activity-graph -->
-         
-                      
-                       
-                            
-  
-                            </div>
-                            
-                            </div>
-                          </div>
-                         
-                       
-                                               <div class="ln_solid"></div>
-                        </div>
-                      </div>
-                      
-                        <div class="col-md-12 col-sm-12">
-<div class="col-md-5 col-sm-5">
-</div>
-
-                          <a class="btn btn-success source" {% if icn.status == True or icn.user != request.user %} IareaListChanged from:body, onclick="new PNotify({
+<div class="ln_solid"></div>
+                          <div class="text-center mtop20">
+                            <a class="btn btn-success source" {% if icn.status == True or icn.user != request.user %} onclick="new PNotify({
                                   title: 'Permission',
                                   text: 'Current User doesnot match with ICN Owner and/or ICN submission status should be Draft;',
                                   type: 'info',
                                   styling: 'bootstrap3'
                               });" {% else %} href="{% url 'icn_edit' icn.id %} {% endif %}" ><i class="fa fa-edit m-right-xs"></i>Edit Profile</a>
-                         
-                        </div>
-
+                           
+                          </div>
                         </div>
                         
-                
-                    </div>
-                  </div>
+                </div>
+      
+                   </div>
+                     </div>
                 </div>
               </div>
             </div>

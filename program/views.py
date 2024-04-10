@@ -24,7 +24,17 @@ from django.contrib.auth.decorators import permission_required
 
 @login_required(login_url='login')
 def program(request):
-    programs = Program.objects.all().order_by('-id')
+    user = request.user
+    if user.is_superuser:
+        programs = Program.objects.all().order_by('-id')
+    elif Program.objects.filter(users_role=user).count() == 1:
+        program = Program.objects.get(users_role=user)
+        return redirect('program_detail',pk=program.id) 
+    
+    else:
+        programs =  program = Program.objects.filter(users_role=user)
+    
+   
     context = {'programs': programs}
     return render(request, 'programs.html', context)
 

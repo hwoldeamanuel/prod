@@ -2,7 +2,7 @@
                       {% load widget_tweaks %}
                       {% with WIDGET_ERROR_CLASS='is-invalid' %}
 
-<form  hx-put="{{ request.path }}" hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}' hx-target="#SubmitList">
+<form  hx-put="{{ request.path }}" hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}' hx-target="#SubmitList" >
     {% csrf_token %}
  <div class="form-group row">
   <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.approval_note.id_for_label }}">Approval Note <span class="required">*</span>
