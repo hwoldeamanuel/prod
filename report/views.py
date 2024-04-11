@@ -139,7 +139,7 @@ def icnreport_submit_form(request, id, sid):
     icnreport = IcnReport.objects.get(icn_id=icn.id)
     form = IcnReportSubmitForm(user=request.user,icnreport=icnreport, sid=sid)
     
-    subject = 'Request for Approval'
+    subject = 'Request for Report Approval'
     
     message = 'A new Intervention Concept Note has been submitted'
     email_from = None 
@@ -159,8 +159,8 @@ def icnreport_submit_form(request, id, sid):
             icnreportsubmit = get_object_or_404(IcnReportSubmit, pk=instance.pk)
             #Document.objects.create(user = icnreport.user, document = instance.document,  icnreport=instance.icnreport, description = document_i)
             if icnreportsubmit.submission_status.name == 'Request Submitted':
-                IcnReport.objects.filter(pk=id).update(status=True)
-                IcnReport.objects.filter(pk=id).update(approval_status="Pending")
+                IcnReport.objects.filter(icn_id=icn.id).update(status=True)
+                IcnReport.objects.filter(icn_id=icn.id).update(approval_status="Pending Submission")
                 IcnReportSubmitApproval_T.objects.create(user = icnreport.technical_lead,submit_id = instance, document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
                 IcnReportSubmitApproval_P.objects.create(user = icnreport.program_lead,submit_id = instance,document = instance.document, approval_status=Approvalf_Status.objects.get(id=1))
                 IcnReportSubmitApproval_F.objects.create(user = icnreport.finance_lead,submit_id = instance,document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
