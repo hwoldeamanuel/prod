@@ -26,6 +26,9 @@ from conceptnote.models import Icn, Activity, IcnImplementationArea
 from django.forms import formset_factory 
 from django.views.generic.edit import CreateView
 from django.utils import timezone
+from django_htmx.http import HttpResponseClientRedirect
+from django_htmx.http import HttpResponseClientRefresh
+from app_admin.models import Approvalf_Status, Approvalt_Status, Submission_Status
 # Create your views here.
 
 
@@ -66,8 +69,9 @@ def icnreport_add(request, id):
 
  
 def icnreport_edit(request, id): 
-    icnreport = IcnReport.objects.get(pk=id)
-    icn = Icn.objects.get(pk=id)
+    icn = Icn.objects.get(id=id)
+    icnreport = IcnReport.objects.get(icn_id=icn.id)
+   
     impacts = Impact.objects.filter(icn_id=id)
     
     if request.method == "POST":
@@ -76,7 +80,7 @@ def icnreport_edit(request, id):
         if form.is_valid():
             instance = form.save()
             
-            return redirect('icnreport_detail',instance.pk) 
+            return redirect('icnreport_detail',instance.icn_id) 
         
         form = IcnReportForm(request.POST, request.FILES, instance=icnreport, user=request.user, icn=icn) 
         context = {'form':form, 'icn':icn, 'icnreport':icnreport}
@@ -99,9 +103,9 @@ def icnreport_detail(request, id):
     context ={}
  
     # add the dictionary during initialization
-    if IcnReport.objects.filter(id=id).exists():
+    if IcnReport.objects.filter(icn_id=icn.id).exists():
          
-        icnreport = IcnReport.objects.get(id=id)
+        icnreport = IcnReport.objects.get(icn_id=icn.id)
    
         if IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).exists():
             icnreportsubmit = IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).latest('id')
@@ -130,9 +134,10 @@ def icnreport_step_impact(request, id):
 
 
 
-def icnreport_submit_form(request, id): 
-    icnreport = get_object_or_404(IcnReport, pk=id)
-    form = IcnReportSubmitForm(user=request.user,icnreport=icnreport)
+def icnreport_submit_form(request, id, sid): 
+    icn = Icn.objects.get(id=id)
+    icnreport = IcnReport.objects.get(icn_id=icn.id)
+    form = IcnReportSubmitForm(user=request.user,icnreport=icnreport, sid=sid)
     
     subject = 'Request for Approval'
     
@@ -153,12 +158,12 @@ def icnreport_submit_form(request, id):
             
             icnreportsubmit = get_object_or_404(IcnReportSubmit, pk=instance.pk)
             #Document.objects.create(user = icnreport.user, document = instance.document,  icnreport=instance.icnreport, description = document_i)
-            if icnreportsubmit.submission_status == 2:
+            if icnreportsubmit.submission_status.name == 'Request Submitted':
                 IcnReport.objects.filter(pk=id).update(status=True)
                 IcnReport.objects.filter(pk=id).update(approval_status="Pending")
-                IcnReportSubmitApproval_T.objects.create(user = icnreport.technical_lead,submit_id = instance, document = instance.document, approval_status=1)
-                IcnReportSubmitApproval_P.objects.create(user = icnreport.program_lead,submit_id = instance,document = instance.document, approval_status=1)
-                IcnReportSubmitApproval_F.objects.create(user = icnreport.finance_lead,submit_id = instance,document = instance.document, approval_status=1)
+                IcnReportSubmitApproval_T.objects.create(user = icnreport.technical_lead,submit_id = instance, document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
+                IcnReportSubmitApproval_P.objects.create(user = icnreport.program_lead,submit_id = instance,document = instance.document, approval_status=Approvalf_Status.objects.get(id=1))
+                IcnReportSubmitApproval_F.objects.create(user = icnreport.finance_lead,submit_id = instance,document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
 
                 send_mail(subject, message, email_from, recipient_list)
                 return HttpResponse(
@@ -169,7 +174,7 @@ def icnreport_submit_form(request, id):
                         "showMessage": f"{instance.id} added."
                     })
                 })
-            elif icnreportsubmit.submission_status == 1:
+            elif icnreportsubmit.submission_status.name == 'Request Canceled':
                 IcnReport.objects.filter(pk=id).update(status=False)
                 IcnReport.objects.filter(pk=id).update(approval_status="Pending Submission")
                 subject = 'Request withdrawn temporarly'
@@ -203,7 +208,7 @@ def icnreport_submit_detail(request, pk):
     return render(request, 'report/icnreportsubmit_detail.html', context)
 
  
-def icnreport_approvalt(request, id):
+def icnreport_approvalt(request, id, did):
      
     icnreportsubmitApproval_t = get_object_or_404(IcnReportSubmitApproval_T, submit_id_id=id)
     icnreportsubmit = get_object_or_404(IcnReportSubmit, pk=id)
@@ -216,14 +221,14 @@ def icnreport_approvalt(request, id):
        
     if request.method == "GET":
         icnreportsubmitApproval_t = get_object_or_404(IcnReportSubmitApproval_T, submit_id_id=id)
-        form = IcnReportApprovalTForm(instance=icnreportsubmitApproval_t)
+        form = IcnReportApprovalTForm(instance=icnreportsubmitApproval_t, did=did)
         context = {'icnreportsubmitapproval_t':icnreportsubmitApproval_t, 'form': form, 'icnreport':icnreport, }
         return render(request, 'report/icnreport_approval_tform.html', context)
     
     elif request.method == "PUT":
         icnreportsubmitApproval_t = get_object_or_404(IcnReportSubmitApproval_T, submit_id_id=id)
         data = QueryDict(request.body).dict()
-        form = IcnReportApprovalTForm(data, instance=icnreportsubmitApproval_t)
+        form = IcnReportApprovalTForm(data, instance=icnreportsubmitApproval_t, did=did)
         if form.is_valid():
             instance =form.save()
             IcnReport.objects.filter(pk=id).update(status=True)
@@ -244,7 +249,7 @@ def icnreport_approvalt(request, id):
         return render(request, 'report/icnreport_approval_tform.html', {'form':form})
   
 
-def icnreport_approvalp(request, id):
+def icnreport_approvalp(request, id, did):
     
     icnreportsubmitApproval_p = get_object_or_404(IcnReportSubmitApproval_P, submit_id_id=id)
     icnreportsubmit = get_object_or_404(IcnReportSubmit, pk=id)
@@ -257,14 +262,14 @@ def icnreport_approvalp(request, id):
        
     if request.method == "GET":
         icnreportsubmitApproval_p = get_object_or_404(IcnReportSubmitApproval_P, submit_id_id=id)
-        form = IcnReportApprovalPForm(instance=icnreportsubmitApproval_p)
+        form = IcnReportApprovalPForm(instance=icnreportsubmitApproval_p, did=did)
         context = {'icnreportsubmitapproval_p':icnreportsubmitApproval_p, 'form': form, 'icnreport':icnreport, }
         return render(request, 'report/icnreport_approval_pform.html', context)
     
     elif request.method == "PUT":
         icnreportsubmitApproval_p = get_object_or_404(IcnReportSubmitApproval_P, submit_id_id=id)
         data = QueryDict(request.body).dict()
-        form = IcnReportApprovalPForm(data, instance=icnreportsubmitApproval_p)
+        form = IcnReportApprovalPForm(data, instance=icnreportsubmitApproval_p, did=did)
         if form.is_valid():
             instance = form.save()
             icnreportsubmit = get_object_or_404(IcnReportSubmit, pk=id)
@@ -285,7 +290,7 @@ def icnreport_approvalp(request, id):
 
 
  
-def icnreport_approvalf(request, id):
+def icnreport_approvalf(request, id, did):
     icnreportsubmitApproval_f = get_object_or_404(IcnReportSubmitApproval_F, submit_id_id=id)
     icnreportsubmit = get_object_or_404(IcnReportSubmit, pk=id)
     
@@ -297,14 +302,14 @@ def icnreport_approvalf(request, id):
        
     if request.method == "GET":
         icnreportsubmitApproval_f = get_object_or_404(IcnReportSubmitApproval_F, submit_id_id=id)
-        form = IcnReportApprovalFForm(instance=icnreportsubmitApproval_f)
+        form = IcnReportApprovalFForm(instance=icnreportsubmitApproval_f, did=did)
         context = {'icnreportsubmitapproval_f':icnreportsubmitApproval_f, 'form': form, 'icnreport':icnreport, }
         return render(request, 'report/icnreport_approval_fform.html', context)
     
     elif request.method == "PUT":
         icnreportsubmitApproval_f = get_object_or_404(IcnReportSubmitApproval_F, submit_id_id=id)
         data = QueryDict(request.body).dict()
-        form = IcnReportApprovalFForm(data, instance=icnreportsubmitApproval_f)
+        form = IcnReportApprovalFForm(data, instance=icnreportsubmitApproval_f, did=did)
         if form.is_valid():
             instance = form.save()
             icnreportsubmit = get_object_or_404(IcnReportSubmit, pk=id)
@@ -324,12 +329,11 @@ def icnreport_approvalf(request, id):
         return render(request, 'report/icnreport_approval_fform.html', {'form':form})
 
 def icnreport_submit_approval(request, id):
-    icn = get_object_or_404(Icn, id=id)
-    icnreport = get_object_or_404(IcnReport, id=id)
-    context ={}
+    icn = Icn.objects.get(id=id)
+    
  
     # add the dictionary during initialization
-    icnreport = IcnReport.objects.get(id=id)
+    icnreport = IcnReport.objects.get(icn_id=icn.id)
     if IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).exists():
         icnreportsubmit = IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).latest('id')
         context = {'icn':icn, 'icnreport':icnreport, 'icnreportsubmit':icnreportsubmit}
@@ -344,7 +348,7 @@ def icnreport_submit_list(request, id):
     context ={}
  
     # add the dictionary during initialization
-  
+    
     icnreport = IcnReport.objects.get(pk=id)
     if IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).exists():
         icnsubmit = IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).latest('id')
@@ -401,7 +405,9 @@ def icnreport_submit_document(request, id):
    
        
 def document_list(request, id):
-    documents = IcnReportDocument.objects.filter(icnreport_id=id)
+    icn = Icn.objects.get(id=id)
+    icnreport = IcnReport.objects.get(icn_id=icn.id)
+    documents = IcnReportDocument.objects.filter(icnreport_id=icnreport.id)
     context = {'documents':documents}
            
           
@@ -445,51 +451,61 @@ def icnreport_filter(request):
 
 
 def submit_approval_list(request, id):
-    icnreport_submit_list = IcnReportSubmit.objects.filter(icnreport_id = id, submission_status=2)
+    icn = Icn.objects.get(id=id)
+    icnreport = get_object_or_404(IcnReport,icn_id=icn.id)
+    icnreport_submit_list = IcnReportSubmit.objects.filter(icnreport_id = icnreport.id, submission_status=2)
     
     context = {'icnreport_submit_list': icnreport_submit_list }
     return render(request, 'report/partial/icnreport_submit_approval_list.html', context )
 
 def current_submit_approval_list(request, id):
-    
-    icnreport = IcnReport.objects.get(pk=id)
-    if IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).exists():
-        icnreportsubmit = IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).latest('id')
-        context = {'icnreport':icnreport, 'icnreportsubmit':icnreportsubmit}
+    icn = Icn.objects.get(id=id)
+    if IcnReport.objects.filter(icn_id=icn.id).exists():
+        icnreport = IcnReport.objects.get(icn_id=icn.id)
+        if IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).exists():
+            icnreportsubmit = IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).latest('id')
+            context = {'icn':icn, 'icnreport':icnreport, 'icnreportsubmit':icnreportsubmit}
+        else:
+            context = {'icn':icn, 'icnreport':icnreport}
     else:
-        context = {'icnreport':icnreport}
+        context = {'icn':icn}
   
     
     return render(request, 'report/partial/icnreport_submit_list.html', context)
 
 def update_approval_status(id):
-    icnsubmit = get_object_or_404(IcnReportSubmit, pk=id)
+    icnreportsubmit = get_object_or_404(IcnReportSubmit, pk=id)
     icnsubmitapproval_t = get_object_or_404(IcnReportSubmitApproval_T, submit_id_id=id)
     icnsubmitapproval_p = get_object_or_404(IcnReportSubmitApproval_P, submit_id_id=id)
     icnsubmitapproval_f = get_object_or_404(IcnReportSubmitApproval_F, submit_id_id=id)
     
     approval_t = icnsubmitapproval_t.approval_status
+    approval_t = int(approval_t)
     approval_p = icnsubmitapproval_p.approval_status
+    approval_p = int(approval_p)
     approval_f = icnsubmitapproval_f.approval_status
-    
+    approval_f = int(approval_f)
+        
     if approval_t == 4 or approval_p== 4 or approval_f== 4:
-        IcnReport.objects.filter(pk=icnsubmit.icnreport_id).update(approval_status="Rejected")
+        IcnReport.objects.filter(pk=icnreportsubmit.icnreport_id).update(approval_status="Rejected")
     elif approval_t < 3 and approval_p < 3 and approval_p < 3:
-        IcnReport.objects.filter(pk=icnsubmit.icnreport_id).update(approval_status="Pending Approval")
+        IcnReport.objects.filter(pk=icnreportsubmit.icnreport_id).update(approval_status="Pending Approval")
     elif approval_t == 3 and approval_p ==3 and approval_f==3:
-         IcnReport.objects.filter(pk=icnsubmit.icnreport_id).update(approval_status="100% Approved")
+         IcnReport.objects.filter(pk=icnreportsubmit.icnreport_id).update(approval_status="100% Approved")
     elif (approval_t == 3 and approval_p ==3 and approval_f !=3) or (approval_t == 3 and approval_p !=3 and approval_f ==3) or (approval_t != 3 and approval_p ==3 and approval_f ==3):
-        IcnReport.objects.filter(pk=icnsubmit.icnreport_id).update(approval_status="67% Approved")
+        IcnReport.objects.filter(pk=icnreportsubmit.icnreport_id).update(approval_status="67% Approved")
     elif (approval_t == 3 and approval_p !=3 and approval_f !=3) or (approval_t != 3 and approval_p ==3 and approval_f !=3) or (approval_t != 3 and approval_p !=3 and approval_f ==3):
-        IcnReport.objects.filter(pk=icnsubmit.icnreport_id).update(approval_status="33% Approved") 
+        IcnReport.objects.filter(pk=icnreportsubmit.icnreport_id).update(approval_status="33% Approved") 
         
     
 
     
 def add_icnreport_impact(request, id):
-    impact = Impact.objects.get(id=id)
+    impact = Impact.objects.get(pk=id)
     icn = Icn.objects.get(id=impact.icn_id)
-    icnreport = IcnReport.objects.get(id=icn.id)
+    
+    
+    icnreport = IcnReport.objects.get(icn_id=icn.id)
     if request.method == "POST":
        
         form = IcnReportImpactForm(request.POST)
@@ -498,7 +514,13 @@ def add_icnreport_impact(request, id):
             instance.impact = impact
             instance.icnreport = icnreport
             instance.save()
-            return HttpResponse(
+            
+            
+            if IcnReportImpact.objects.filter(icnreport_id=instance.icnreport_id).count() == 1:
+                return HttpResponseClientRedirect('/report/intervention/'+str(icn.id)+'/impact/')
+            else:
+                return HttpResponse(
+           
                 status=204,
                 headers={
                     'HX-Trigger': json.dumps({

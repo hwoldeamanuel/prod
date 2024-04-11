@@ -9,7 +9,7 @@ import os
 from django.db.models import Max, Avg,Sum,Count,F
 from uuid import uuid4
 # Create your models here.
-from app_admin.models import Country as NCountry, Region as NRegion, Zone as NZone, Woreda as NWoreda
+from app_admin.models import Country as NCountry, Region as NRegion, Zone as NZone, Woreda as NWoreda, Submission_Status, Approvalf_Status,Approvalt_Status
 from django.contrib.auth.models import User
 from portfolio.models import Portfolio
 from conceptnote.models import Icn, Activity, Impact, ActivityImpact
@@ -110,19 +110,12 @@ class IcnReportDocument(models.Model):
     
 
 class IcnReportSubmit(models.Model):
-    Draft = 1
-    Submit = 2
-    
-    SSTATUS = (
-        (Draft, 'Draft'),
-        (Submit, 'Request Submitted'),
-     
-        )
+
     id = models.AutoField(primary_key=True)
     icnreport =  models.ForeignKey(
         IcnReport, on_delete=models.CASCADE, null=True, blank=True)
     submission_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)
-    submission_status = models.PositiveSmallIntegerField(choices=SSTATUS, default = 2, blank=True, null=True)
+    submission_status = models.ForeignKey(Submission_Status, on_delete=models.CASCADE)
     submission_note = models.TextField(null=True,  blank=True)
 
     document = models.ForeignKey(IcnReportDocument, on_delete=models.CASCADE, null=True, blank=True)
@@ -144,23 +137,12 @@ class IcnReportSubmit(models.Model):
 
 
 class IcnReportSubmitApproval_T(models.Model):
-    Pending_Review = 1
-    Require_Doc_Update = 2
-    Approved = 3
-    Rejected = 4
-    STATUS = (
-        (Pending_Review, 'Pending Review'),
-        (Require_Doc_Update, 'Require Doc Update'),
-        (Approved, 'Request Approved'),
-        (Rejected, 'Request Rejected'),
-        )
-
-    
+        
     user = models.ForeignKey(UserRoles, on_delete=models.CASCADE)
     submit_id = models.OneToOneField(IcnReportSubmit, on_delete=models.CASCADE)
     approval_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)
     approval_note = models.TextField(null=True,  blank=True)
-    approval_status = models.PositiveSmallIntegerField(choices=STATUS, default=1, blank=True, null=True)
+    approval_status = models.ForeignKey(Approvalt_Status, on_delete=models.CASCADE)
     document = models.ForeignKey(IcnReportDocument, on_delete=models.CASCADE)
     
     def __init__(self, *args, **kwargs):
@@ -180,23 +162,13 @@ class IcnReportSubmitApproval_T(models.Model):
     
 
 class IcnReportSubmitApproval_P(models.Model):
-    Pending_Review = 1
-    Require_Doc_Update = 2
-    Approved = 3
-    Rejected = 4
-    STATUS = (
-        (Pending_Review, 'Pending Review'),
-        (Require_Doc_Update, 'Require Doc Update'),
-        (Approved, 'Request Approved'),
-        (Rejected, 'Request Rejected'),
-        )
-
+  
     
     user = models.ForeignKey(UserRoles, on_delete=models.CASCADE)
     submit_id = models.OneToOneField(IcnReportSubmit, on_delete=models.CASCADE)
     approval_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)
     approval_note = models.TextField(null=True,  blank=True)
-    approval_status = models.PositiveSmallIntegerField(choices=STATUS, default=1, blank=True, null=True)
+    approval_status = models.ForeignKey(Approvalf_Status, on_delete=models.CASCADE)
     document = models.ForeignKey(IcnReportDocument, on_delete=models.CASCADE)
     
     def __init__(self, *args, **kwargs):
@@ -216,23 +188,13 @@ class IcnReportSubmitApproval_P(models.Model):
         return str(self.id)
 
 class IcnReportSubmitApproval_F(models.Model):
-    Pending_Review = 1
-    Require_Doc_Update = 2
-    Approved = 3
-    Rejected = 4
-    STATUS = (
-        (Pending_Review, 'Pending Review'),
-        (Require_Doc_Update, 'Require Doc Update'),
-        (Approved, 'Request Approved'),
-        (Rejected, 'Request Rejected'),
-        )
 
     
     user = models.ForeignKey(UserRoles, on_delete=models.CASCADE)
     submit_id = models.OneToOneField(IcnReportSubmit, on_delete=models.CASCADE)
     approval_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)
     approval_note = models.TextField(null=True,  blank=True)
-    approval_status = models.PositiveSmallIntegerField(choices=STATUS, default=1, blank=True, null=True)
+    approval_status = models.ForeignKey(Approvalt_Status, on_delete=models.CASCADE)
     document = models.ForeignKey(IcnReportDocument, on_delete=models.CASCADE)
     
     def __init__(self, *args, **kwargs):

@@ -44,13 +44,13 @@ htmxpatterns = [
  path('icnreport_submit_list/<int:id>/', views.icnreport_submit_list, name='icnreport_submit_list'),
 
 
- path('icnreport_submit_form/<int:id>/', views.icnreport_submit_form, name='icnreport_submit_form'),
+ path('icnreport_submit_form/<int:id>/<int:sid>/', views.icnreport_submit_form, name='icnreport_submit_form'),
  path('activityreport_submit_form/<int:id>/', views.activityreport_submit_form, name='activityreport_submit_form'),
  path('icnreport_submit_document/<int:id>/', views.icnreport_submit_document, name='icnreport_submit_document'),
  path('activityreport_submit_document/<int:id>/', views.activityreport_submit_document, name='activityreport_submit_document'),
- path('icnreport_approvalp/<int:id>/', views.icnreport_approvalp, name='icnreport_approvalp'),
- path('icnreport_approvalf/<int:id>/', views.icnreport_approvalf, name='icnreport_approvalf'),
- path('icnreport_approvalt/<int:id>/', views.icnreport_approvalt, name='icnreport_approvalt'),
+ path('icnreport_approvalp/<int:id>/<int:did>/', views.icnreport_approvalp, name='icnreport_approvalp'),
+ path('icnreport_approvalf/<int:id>/<int:did>/', views.icnreport_approvalf, name='icnreport_approvalf'),
+ path('icnreport_approvalt/<int:id>/<int:did>/', views.icnreport_approvalt, name='icnreport_approvalt'),
  path('activityreport_approvalt/<int:id>/', views.activityreport_approvalt, name='activityreport_approvalt'),
  path('activityreport_approvalp/<int:id>/', views.activityreport_approvalp, name='activityreport_approvalp'),
  path('activityreport_approvalf/<int:id>/', views.activityreport_approvalf, name='activityreport_approvalf'),

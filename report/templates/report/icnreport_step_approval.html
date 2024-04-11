@@ -33,7 +33,7 @@
 
                 <div style="height:350px;">
                   <div class="row">
-                    <div class="table" id="SubmitList" hx-trigger="load, SubmitApprovalListChanged from:body" hx-get= "{% url 'icnreport_current_submit_approval_list' icnreport.id %}" hx-target="this" >
+                    <div class="table" id="SubmitList" hx-trigger="load, SubmitApprovalListChanged from:body" hx-get= "{% url 'icnreport_current_submit_approval_list' icn.id %}" hx-target="this" >
 
   
                     </div>
@@ -60,7 +60,7 @@
 
               
                 
-<div  hx-trigger="load, SubmitApprovalListChanged from:body" hx-get="{% url 'icnreport_submit_approval_list' icnreport.id %}" hx-target="this">
+<div  hx-trigger="load, SubmitApprovalListChanged from:body" hx-get="{% url 'icnreport_submit_approval_list' icn.id %}" hx-target="this">
             
 
                 
@@ -68,7 +68,7 @@
               </div>
                         </div>
                         <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                       <div id="documentlist" hx-trigger="load, SubmitApprovalListChanged from:body" hx-get="{% url 'icnreport_document_list' icnreport.id %}" hx-target="this">
+                       <div id="documentlist" hx-trigger="load, SubmitApprovalListChanged from:body" hx-get="{% url 'icnreport_document_list' icn.id %}" hx-target="this">
                         </div>
 </div>
                      

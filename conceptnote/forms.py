@@ -242,12 +242,14 @@ class IcnSubmitForm(forms.ModelForm):
             (submission_status.id, submission_status.name) for submission_status in Submission_Status.objects.filter(id=sid)
         ]
 
-         self.fields['document'].choices = [
-                (document.pk, document) for document in Document.objects.filter(user=user, icn=icn)
-            ]     
+            
          if sid==2:
                self.fields['document'].choices = [
                 (document.pk, document) for document in Document.objects.none()
+            ] 
+         else:
+               self.fields['document'].choices = [
+                (document.pk, document) for document in Document.objects.filter(user=user, icn=icn)
             ] 
               
       # invalid input from the client; ignore and fallback to empty City queryset

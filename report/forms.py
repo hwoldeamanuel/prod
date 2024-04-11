@@ -9,7 +9,7 @@ from portfolio.models import Portfolio
 from datetime import datetime
 from django.forms.models import modelformset_factory
 from django_select2 import forms as s2forms
-from app_admin.models import Country , Region , Zone , Woreda 
+from app_admin.models import Country , Region , Zone , Woreda , Approvalf_Status, Approvalt_Status, Submission_Status
 from django.contrib.auth.models import User
 from django.forms import inlineformset_factory
 from django.utils import timezone
@@ -61,6 +61,7 @@ class IcnReportForm(forms.ModelForm):
             'actual_cost_sharing_budget',
             'cs_currency',
             'mc_currency', 
+            'iworeda',
             
            
             
@@ -248,12 +249,16 @@ class IcnReportSubmitForm(forms.ModelForm):
      def __init__(self, *args, **kwargs):
          user = kwargs.pop('user', None)
          icnreport = kwargs.pop('icnreport', None)
+         sid = kwargs.pop('sid', None)
          super(IcnReportSubmitForm, self).__init__(*args, **kwargs)
 
          self.fields['document'].choices = [
              (document.pk, document) for document in IcnReportDocument.objects.filter(user=user, icnreport=icnreport)
          ]
-             
+
+         self.fields['submission_status'].choices = [
+            (submission_status.id, submission_status.name) for submission_status in Submission_Status.objects.filter(id=sid)
+        ]   
       # invalid input from the client; ignore and fallback to empty City queryset
         
   
@@ -294,9 +299,25 @@ class IcnReportDocumentForm(forms.ModelForm):
 
 class IcnReportApprovalTForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+         did = kwargs.pop('did', None)
+         super(IcnReportApprovalTForm, self).__init__(*args, **kwargs)
+       
+    
+     
+        
+         self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3'  }    )
+         self.fields['approval_status'].choices = [
+             (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalt_Status.objects.filter(id=did)
+         ]
+          
+         if did == 2:
+               self.fields['document'].choices = [
+             (document.pk, document) for document in IcnReportDocument.objects.none()
+         ]
+       
+         if did == 3:
+               self.fields['document'].widget.attrs['readonly'] = True
 
-        self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3'  }    )
         
         
     class Meta:
@@ -309,9 +330,25 @@ class IcnReportApprovalTForm(forms.ModelForm):
 
 class IcnReportApprovalFForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+         did = kwargs.pop('did', None)
+         super(IcnReportApprovalFForm, self).__init__(*args, **kwargs)
+       
+    
+     
+        
+         self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3'  }    )
+         self.fields['approval_status'].choices = [
+             (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalt_Status.objects.filter(id=did)
+         ]
+          
+         if did == 2:
+               self.fields['document'].choices = [
+             (document.pk, document) for document in IcnReportDocument.objects.none()
+         ]
+       
+         if did == 3:
+               self.fields['document'].widget.attrs['readonly'] = True
 
-        self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
         
         
     class Meta:
@@ -322,9 +359,25 @@ class IcnReportApprovalFForm(forms.ModelForm):
 
 class IcnReportApprovalPForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+         did = kwargs.pop('did', None)
+         super(IcnReportApprovalPForm, self).__init__(*args, **kwargs)
+       
+    
+     
+        
+         self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3'  }    )
+         self.fields['approval_status'].choices = [
+             (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalf_Status.objects.filter(id=did)
+         ]
+          
+         if did == 2:
+               self.fields['document'].choices = [
+             (document.pk, document) for document in IcnReportDocument.objects.none()
+         ]
+       
+         if did == 3:
+               self.fields['document'].widget.attrs['readonly'] = True
 
-        self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
         
     
                

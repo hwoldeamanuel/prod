@@ -38,9 +38,9 @@
 
                           <div class="col-md-4 col-sm-4 project_detail">
 
-                           <p>Lead Agency:<strong> {{ increport.icn.ilead_agency }}</strong></p>
+                           <p>Lead Agency:<strong> {{ icnreport.icn.ilead_agency }}</strong></p>
                               <p>Co-Lead Agency:
-                      {% for colead in increport.icn.ilead_co_agency.all %}
+                      {% for colead in icnreport.icn.ilead_co_agency.all %}
                       <strong>{{colead}},</strong>
                       {% endfor %}</p>
                              <p class="">Actual Start Date<strong>
@@ -85,7 +85,7 @@
                                   text: 'Current User doesnot match with ICN Owner and/or ICN submission status should be Draft;',
                                   type: 'info',
                                   styling: 'bootstrap3'
-                              });" {% else %} href="{% url 'icnreport_edit' icnreport.id %} {% endif %}" ><i class="fa fa-edit m-right-xs"></i>Edit Profile</a>
+                              });" {% else %} href="{% url 'icnreport_edit' icn.id %} {% endif %}" ><i class="fa fa-edit m-right-xs"></i>Edit Profile</a>
                            
                           </div>
                         </div>

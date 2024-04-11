@@ -39,9 +39,13 @@ from app_admin.models import Approvalt_Status, Approvalf_Status, Submission_Stat
 @login_required(login_url='login')
 def conceptnotes(request):
     user = request.user
-    program = Program.objects.filter(users_role=user)
-   
-    icns = Icn.objects.filter(program__in=program).order_by('-id')
+    if user.is_superuser:
+        icns = Icn.objects.all()
+    else:
+        program = Program.objects.filter(users_role=user)
+        icns = Icn.objects.filter(program__in=program).order_by('-id')
+
+
     context = {'icns':icns}
     
     return render(request, 'interventions.html', context)
@@ -92,7 +96,7 @@ def icn_edit(request, id):
                 
 @login_required(login_url='login') 
 def icn_step_impact(request, id):
-     icn = Icn.objects.get(pk=id)
+     icn = Icn.objects.get(id=id)
      
      impacts= Impact.objects.filter(icn_id=id)
      context = {'icn':icn, 'impacts': impacts}
@@ -284,8 +288,20 @@ def icn_delete(request, pk):
 
 def icn_submit_form(request, id, sid): 
     icn = get_object_or_404(Icn, pk=id)
-    form = IcnSubmitForm(user=request.user,icn=icn, sid=sid)
-    sid = sid
+    icnsubmit = IcnSubmit.objects.filter(icn_id=icn.id).latest('id')
+    if sid== 1:
+        form = IcnSubmitForm(sid=sid, icn=icn, user=request.user)
+        form.fields['document'].choices = [
+                (document.pk, document) for document in Document.objects.filter(id=icnsubmit.document.id)
+                ]
+    
+    elif sid == 2:
+        form = IcnSubmitForm(user=request.user,icn=icn, sid=sid)
+        form.fields['document'].choices = [
+                (document.pk, document) for document in Document.objects.none()
+                ]
+    
+    
    
     
     subject = 'Request for Approval'
@@ -369,9 +385,13 @@ def icn_submit_form(request, id, sid):
                     })
                 })
 
+        
+
       
     context = {'form':form, 'icn':icn, 'sid':sid}
     return render(request, 'icn_submit_form copy.html', context)
+
+
 
 def icn_submit_detail(request, pk):
     
@@ -386,6 +406,7 @@ def icn_submit_detail(request, pk):
     context = {'icnsubmit':icnsubmit}
 
     return render(request, 'icnsubmit_detail.html', context)
+
 
  
 def icn_approvalt(request, id, did):
