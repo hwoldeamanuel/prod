@@ -61,7 +61,7 @@
 
                    {% if impact.icnreportimpact %}
                     
-                     <button class="btn btn-info btn-sm" hx-get="{% url 'icnreport_edit_impact' pk=impact.icnreportimpact.pk %}" hx-target="#dialog"><i class="fa fa-edit"></i></button>
+                     <button {% if impact.icnreportimpact.icnreport.status == True or impact.icnreportimpact.icnreport.user.id != request.user.id %} disabled {% endif %} class="btn btn-info btn-sm" hx-get="{% url 'icnreport_edit_impact' pk=impact.icnreportimpact.pk %}" hx-target="#dialog"><i class="fa fa-edit"></i></button>
                      {% else %}
                     <button class="btn btn-info btn-sm" hx-get="{% url 'icnreport_add_impact' id=impact.pk %}" hx-target="#dialog"><i class="fa fa-plus"></i></button>
                     {% endif %}
