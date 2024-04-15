@@ -10,6 +10,7 @@ from django.forms.models import modelformset_factory
 from django_select2 import forms as s2forms
 from app_admin.models import Country , Region , Zone , Woreda , Approvalt_Status, Approvalf_Status, Submission_Status
 from django.contrib.auth.models import User
+from portfolio.models import Portfolio
 from django.forms import inlineformset_factory
 CHOICE1 =(
     ("1", "Low"),
@@ -29,9 +30,9 @@ class IcnForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
       
         if user:
-            self.fields['program'].queryset = Program.objects.filter(users_role=user)
-            self.fields['program'].initial=Program.objects.filter(users_role=user).first()
-            program = Program.objects.filter(users_role=user)
+            self.fields['program'].queryset = Program.objects.filter(users_role=user, userroles__is_pcn_initiator=True)
+            self.fields['program'].initial=Program.objects.filter(users_role=user, userroles__is_pcn_initiator=True).first()
+            program = Program.objects.filter(users_role=user, userroles__is_pcn_initiator=True)
             self.fields['program_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user)
             self.fields['program_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user).first()
             self.fields['technical_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_technical_approver=True).exclude(user=user)
@@ -103,6 +104,7 @@ class IcnForm(forms.ModelForm):
         self.fields['ilead_co_agency'].queryset = Portfolio.objects.all()
         self.fields['iworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'rows':'3','class':'form-control form-control-sm select',  'data-width': '100%'})
         self.fields['iworeda'].queryset = ImplementationArea.objects.all()
+        self.fields['iworeda'].required = True 
       
     class Meta:
         model = Icn
@@ -148,6 +150,10 @@ class IcnForm(forms.ModelForm):
          proposed_start_date = self.cleaned_data.get('proposed_start_date')
          proposed_end_date = self.cleaned_data.get('proposed_end_date')
          final_report_due_date = self.cleaned_data.get('final_report_due_date')
+         ilead_agency = self.cleaned_data.get('ilead_agency')
+       
+         ilead_co_agency = self.cleaned_data.get('ilead_co_agency')
+
 
          if (technical_lead==program_lead or technical_lead==finance_lead):
               self._errors['technical_lead'] = self.error_class(['Lead should take up only one role'])
@@ -162,6 +168,8 @@ class IcnForm(forms.ModelForm):
                self._errors['proposed_end_date'] = self.error_class(['End date should always be after start date'])
          elif (final_report_due_date != None and proposed_end_date != None and final_report_due_date < proposed_end_date):
              self._errors['final_report_due_date'] = self.error_class(['Reporting Date should always be after end date'])
+         elif (ilead_agency != None and ilead_co_agency != None and ilead_co_agency.contains(ilead_agency)):
+             self._errors['ilead_agency'] = self.error_class(['Lead Agency & Co-Lead Agency should be different'])
          return cleaned_data
 
 
@@ -413,14 +421,14 @@ class ActivityForm(forms.ModelForm):
       
         if user:
             
-            program = Program.objects.filter(users_role=user)
+            program = Program.objects.filter(users_role=user, userroles__is_pcn_initiator=True)
             self.fields['program_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user)
             self.fields['program_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user).first()
             self.fields['technical_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_technical_approver=True).exclude(user=user)
             self.fields['technical_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_technical_approver=True).exclude(user=user).first()
             self.fields['finance_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user)
             self.fields['finance_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user).first()
-            self.fields['icn'].queryset = Icn.objects.filter(program__in=program, approval_status="100% approved")
+            self.fields['icn'].queryset = Icn.objects.filter(program__in=program, approval_status="100% Approved")
            
         myfield = ['title',
             'icn',
@@ -432,10 +440,12 @@ class ActivityForm(forms.ModelForm):
             'program_lead',
             'technical_lead',
             'finance_lead',
+            'mc_currency',
+            'cs_currency',
+            'mc_budget',
            
-            'mc_budget_usd',
-           
-            'cost_sharing_budget_usd',
+            'cost_sharing_budget',
+            'aworeda',
             
             
             
@@ -484,6 +494,8 @@ class ActivityForm(forms.ModelForm):
         self.fields['alead_co_agency'].queryset = Portfolio.objects.all()
         self.fields['aworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
         self.fields['aworeda'].queryset = ImplementationArea.objects.all()
+        self.fields['aworeda'].required = True 
+        
          
     class Meta:
         model = Activity
@@ -498,9 +510,11 @@ class ActivityForm(forms.ModelForm):
             'technical_lead',
             'finance_lead',
             'aworeda',
-            'mc_budget_usd',
+            'mc_budget',
            
-            'cost_sharing_budget_usd',
+            'cost_sharing_budget',
+            'mc_currency',
+            'cs_currency',
             
           
             'alead_agency',
@@ -518,6 +532,11 @@ class ActivityForm(forms.ModelForm):
         
     def clean(self):
          cleaned_data = super().clean()
+         icn = self.cleaned_data.get('icn')
+         icn = Icn.objects.get(title=icn)
+         alead_agency = self.cleaned_data.get('alead_agency')
+       
+         alead_co_agency = self.cleaned_data.get('alead_co_agency')
          
          program_lead = self.cleaned_data.get('program_lead')
          finance_lead = self.cleaned_data.get('finance_lead')
@@ -539,6 +558,14 @@ class ActivityForm(forms.ModelForm):
                self._errors['proposed_end_date'] = self.error_class(['End date should always be after start date'])
          elif (final_report_due_date != None and proposed_end_date != None and final_report_due_date < proposed_end_date):
              self._errors['final_report_due_date'] = self.error_class(['Reporting Date should always be after end date'])
+         elif ((proposed_start_date != None and proposed_start_date > icn.proposed_end_date) or (proposed_start_date != None and proposed_start_date < icn.proposed_start_date)):
+             self._errors['proposed_start_date'] = self.error_class(['Activity Date should align with its parent intervention period'])
+         elif ((proposed_end_date != None and proposed_end_date > icn.proposed_end_date) or (proposed_end_date != None and proposed_end_date < icn.proposed_start_date)):
+             self._errors['proposed_end_date'] = self.error_class(['Activity Date should align with its parent intervention period'])
+         elif ((final_report_due_date != None and final_report_due_date > icn.final_report_due_date) or (final_report_due_date != None and final_report_due_date < icn.proposed_start_date)):
+             self._errors['final_report_due_date'] = self.error_class(['Activity Date should align with its parent intervention period'])
+         elif (alead_agency != None and alead_co_agency != None and alead_co_agency.contains(alead_agency)):
+             self._errors['alead_agency'] = self.error_class(['Lead Agency & Co-Lead Agency should be different'])
          return cleaned_data
 
 class ActivityAreaFormE(forms.ModelForm):
@@ -613,11 +640,22 @@ class ActivitySubmitForm(forms.ModelForm):
      def __init__(self, *args, **kwargs):
          user = kwargs.pop('user', None)
          activity = kwargs.pop('activity', None)
+         sid = kwargs.pop('sid', None)
          super(ActivitySubmitForm, self).__init__(*args, **kwargs)
 
-         self.fields['document'].choices = [
-             (document.pk, document) for document in ActivityDocument.objects.filter(user=user, activity=activity)
-         ]
+         self.fields['submission_status'].choices = [
+            (submission_status.id, submission_status.name) for submission_status in Submission_Status.objects.filter(id=sid)
+        ]
+
+            
+         if sid==2:
+               self.fields['document'].choices = [
+                (document.pk, document) for document in ActivityDocument.objects.none()
+            ] 
+         else:
+               self.fields['document'].choices = [
+                (document.pk, document) for document in ActivityDocument.objects.filter(user=user, activity=activity)
+            ] 
              
       # invalid input from the client; ignore and fallback to empty City queryset
         
@@ -658,9 +696,25 @@ class ActivityDocumentForm(forms.ModelForm):
 
 class ActivityApprovalTForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
+        did = kwargs.pop('did', None)
+        super(ActivityApprovalTForm, self).__init__(*args, **kwargs)
+       
+    
+     
+        
         self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3'  }    )
+        self.fields['approval_status'].choices = [
+             (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalt_Status.objects.filter(id=did)
+         ]
+          
+        if did == 2:
+               self.fields['document'].choices = [
+             (document.pk, document) for document in ActivityDocument.objects.none()
+         ]
+       
+        if did == 3:
+               self.fields['document'].widget.attrs['readonly'] = True
+        
         
         
     class Meta:
@@ -671,9 +725,24 @@ class ActivityApprovalTForm(forms.ModelForm):
 
 class ActivityApprovalPForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
+        did = kwargs.pop('did', None)
+        super(ActivityApprovalPForm, self).__init__(*args, **kwargs)
+       
+    
+     
+        
         self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3'  }    )
+        self.fields['approval_status'].choices = [
+             (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalf_Status.objects.filter(id=did)
+         ]
+          
+        if did == 2:
+               self.fields['document'].choices = [
+             (document.pk, document) for document in ActivityDocument.objects.none()
+         ]
+       
+        if did == 3:
+               self.fields['document'].widget.attrs['readonly'] = True
         
         
     class Meta:
@@ -684,9 +753,24 @@ class ActivityApprovalPForm(forms.ModelForm):
 
 class ActivityApprovalFForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3'  }    )
+         did = kwargs.pop('did', None)
+         super(ActivityApprovalFForm, self).__init__(*args, **kwargs)
+       
+    
+     
+        
+         self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3'  }    )
+         self.fields['approval_status'].choices = [
+             (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalt_Status.objects.filter(id=did)
+         ]
+          
+         if did == 2:
+               self.fields['document'].choices = [
+             (document.pk, document) for document in ActivityDocument.objects.none()
+         ]
+       
+         if did == 3:
+               self.fields['document'].widget.attrs['readonly'] = True
         
         
     class Meta:

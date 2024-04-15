@@ -126,7 +126,14 @@ def icnreport_step_impact(request, id):
 
     return render(request, 'report/icnreport_step_impact.html', context)
     
+@login_required(login_url='login') 
+def activityreport_step_impact(request, id):
+    activity = Activity.objects.get(id=id)
+    activityreport = ActivityReport.objects.filter(activity_id=id)
+    impacts = ActivityImpact.objects.filter(activity_id=id)
+    context = {'activity':activity, 'activityreport':activityreport, 'impacts': impacts}
 
+    return render(request, 'report/activityreport_step_impact.html', context)
         
 
 
@@ -246,7 +253,7 @@ def icnreport_approvalt(request, id, did):
                     })
                 })
         
-        return render(request, 'report/icnreport_approval_tform.html', {'form':form})
+        return render(request, 'report/icnreport_approval_tform.html', {'form':form, 'did':did})
   
 
 def icnreport_approvalp(request, id, did):
@@ -286,7 +293,7 @@ def icnreport_approvalp(request, id, did):
                     })
                 })
         
-        return render(request, 'report/icnreport_approval_pform.html', {'form':form})
+        return render(request, 'report/icnreport_approval_pform.html', {'form':form, 'did':did})
 
 
  
@@ -326,7 +333,7 @@ def icnreport_approvalf(request, id, did):
                     })
                 })
         
-        return render(request, 'report/icnreport_approval_fform.html', {'form':form})
+        return render(request, 'report/icnreport_approval_fform.html', {'form':form, 'did':did})
 
 def icnreport_submit_approval(request, id):
     icn = Icn.objects.get(id=id)
@@ -579,11 +586,7 @@ def icnreport_remove_impact(request, pk):
         })
 
 
-def download_env_att(request, id):
-    document = get_object_or_404(IcnReport, id=id)
-    response = HttpResponse(document.environmental_assessment_att, content_type='application/docx')
-    response['Content-Disposition'] = f'attachment; filename="{document.environmental_assessment_att}"'
-    return response
+
 
 def icnreport_submit_form_partial(request, id): 
     icnreport = get_object_or_404(IcnReport, pk=id)
@@ -606,21 +609,25 @@ def activitiesreport(request):
     return render(request, 'report/activitiesreport.html', context)
 
  
-def activityreport_detail(request, pk):
-    
+def activityreport_detail(request, id):
+    activity = Activity.objects.get(id=id)
+
     context ={}
- 
+
     # add the dictionary during initialization
-  
-    activityreport = ActivityReport.objects.get(pk=pk)
+    if ActivityReport.objects.filter(activity_id=activity.id).exists():
+            
+        activityreport = ActivityReport.objects.get(activity_id=activity.id)
 
-    context = {'activityreport':activityreport}
-    
-    #icnsubmit= IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).latest('id')
-    #icnsubmit = get_object_or_404(IcnReportSubmit, icnreport_id=icnreport.id).latest('id')
+        if ActivityReportSubmit.objects.filter(activityreport_id=activityreport.id).exists():
+            activityreportsubmit = ActivityReportSubmit.objects.filter(activityreport_id=activityreport.id).latest('id')
+            context = {'activity':activity,'activityreport':activityreport, 'activityreportsubmit':activityreportsubmit}
+        else:
+            context = {'activity': activity, 'activityreport':activityreport}
+        
+        return render(request, 'report/activityreport_step_profile_detail.html', context)
 
-
-    return render(request, 'report/activityreport_detail.html', context)
+    return redirect('activityreport_add',id=id) 
 
  
 def activityreport_add(request, id): 
@@ -650,7 +657,7 @@ def activityreport_add(request, id):
  
 def activityreport_edit(request, id): 
     activityreport = ActivityReport.objects.get(pk=id)
-    acn = Activity.objects.get(pk=id)
+    activity = Activity.objects.get(pk=id)
     
     if request.method == "POST":
        
@@ -659,52 +666,60 @@ def activityreport_edit(request, id):
             instance = form.save()
             return redirect('activityreport_detail',instance.pk) 
         
-        form = ActivityReportForm(request.POST,  instance=activityreport, user=request.user, acn=acn) 
-        context = {'form':form, 'acn':acn}
-        return render(request, 'report/activityreport_add.html', context)
+        form = ActivityReportForm(request.POST,  instance=activityreport, user=request.user, acn=activity) 
+        context = {'form':form, 'activity':activity, 'activityreport':activityreport}
+        return render(request, 'report/activityreport_step_profile_add.html', context)
             
     elif request.method == "GET" and activityreport.status == False:    
 
-        form = ActivityReportForm(instance=activityreport,  user=request.user, acn=acn) 
-        context = {'form':form, 'acn':acn}
-        return render(request, 'report/activityreport_add.html', context)
+        form = ActivityReportForm(instance=activityreport,  user=request.user, acn=activity) 
+        context = {'form':form, 'activity':activity, 'activityreport':activityreport}
+        return render(request, 'report/activityreport_step_profile_add.html', context)
     else:
         return HttpResponseRedirect(request.path_info)
     
  
 
 def add_activityreport_impact(request, id):
-    activityreport = get_object_or_404(ActivityReport, pk=id)
-    icnreport = get_object_or_404(IcnReport, pk=activityreport.icnreport_id)
+    activityimpact = ActivityImpact.objects.get(pk=id)
+    activity = Activity.objects.get(id=activityimpact.activity_id)
     
+    
+    activityreport = ActivityReport.objects.get(activity_id=activity.id)
     if request.method == "POST":
-        form = ActivityReportImpactForm(request.POST or None)
+       
+        form = ActivityReportImpactForm(request.POST)
         if form.is_valid():
             instance = form.save(commit=False)
-            instance.activityreport = get_object_or_404(ActivityReport, pk=id)
-            
+            instance.activityimpact = activityimpact
+            instance.activityreport = activityreport
             instance.save()
             
-               
-            return HttpResponse(
+            
+            if ActivityReportImpact.objects.filter(activityreport_id=instance.activityreport_id).count() == 1:
+                return HttpResponseClientRedirect('/report/activity/'+str(activity.id)+'/impact/')
+            else:
+                return HttpResponse(
+           
                 status=204,
                 headers={
                     'HX-Trigger': json.dumps({
-                        "AImpactListChanged": None,
-                        "showMessage": f"{instance.activityreport} added."
+                        "ImpactListChanged": None,
+                        "showMessage": f"{instance.pk} updated."
                     })
                 })
     else:
-        form = ActivityReportImpactForm(icnreport=icnreport)
-    return render(request, 'partial/activityreport_impact_form.html', {
+        form = ActivityReportImpactForm()
+    return render(request, 'report/partial/activityreport_impact_form.html', {
         'form': form,
+        'activityimpact': activityimpact,
     })
 
    
 def activityreport_impact_list(request, id):
     
-    activityreport_impacts=ActivityReportImpact.objects.filter(activityreport_id=id)
-    context = {'activityreport_impacts':activityreport_impacts }
+    impacts=ActivityReportImpact.objects.filter(activityreport_id=id)
+    context = {'impacts':impacts }
     return render(request, 'report/partial/activityreport_impact_list.html', context)
 
 
@@ -764,20 +779,20 @@ def search_results_view2(request):
     context = {'activitiesreport': activitiesreport, 'count': activitiesreport.count()}
     return render(request, 'partial/activityreport_list.html', context)
 
-def activityreport_submit_approval(request, pk):
-    activityreport = get_object_or_404(ActivityReport, pk=pk)
-    context ={}
+def activityreport_submit_approval(request, id):
+    activity = Activity.objects.get(id=id)
+    
  
     # add the dictionary during initialization
-    activityreport = ActivityReport.objects.get(pk=pk)
+    activityreport = ActivityReport.objects.get(activity_id=activity.id)
     if ActivityReportSubmit.objects.filter(activityreport_id=activityreport.id).exists():
         activityreportsubmit = ActivityReportSubmit.objects.filter(activityreport_id=activityreport.id).latest('id')
-        context = {'activityreport':activityreport, 'activityreportsubmit':activityreportsubmit}
+        context = {'activity':activity, 'activityreport':activityreport, 'activityreportsubmit':activityreportsubmit}
     else:
-        context = {'activityreport':activityreport}
+        context = {'activity':activity, 'activityreport':activityreport}
     
 
-    return render(request, 'report/activityreport_submit_approval.html', context)
+    return render(request, 'report/activityreport_step_approval.html', context)
 
  
 def current_activityreport_submit_approval_list(request, id):
@@ -785,19 +800,34 @@ def current_activityreport_submit_approval_list(request, id):
  
     # add the dictionary during initialization
   
-    activityreport = ActivityReport.objects.get(pk=id)
+    activity = Activity.objects.get(id=id)
+    
+    # add the dictionary during initialization
+    activityreport = ActivityReport.objects.get(activity_id=activity.id)
     if ActivityReportSubmit.objects.filter(activityreport_id=activityreport.id).exists():
         activityreportsubmit = ActivityReportSubmit.objects.filter(activityreport_id=activityreport.id).latest('id')
-        context = {'activityreport':activityreport, 'activityreportsubmit':activityreportsubmit}
+        context = {'activity':activity, 'activityreport':activityreport, 'activityreportsubmit':activityreportsubmit}
     else:
-        context = {'activityreport':activityreport}
+        context = {'activity':activity, 'activityreport':activityreport}
 
     return render(request, 'report/partial/activityreport_submit_list.html', context)
 
 
-def activityreport_submit_form(request, id): 
+def activityreport_submit_form(request, id, sid): 
     activityreport = get_object_or_404(ActivityReport, pk=id)
-    form = ActivityReportSubmitForm(user=request.user,activityreport=activityreport)
+    activityreportsubmit = ActivityReportSubmit.objects.filter(activityreport_id=activityreport.id).latest('id')
+    if sid== 1:
+        form = ActivityReportSubmitForm(sid=sid, activityreport=activityreport, user=request.user)
+        form.fields['document'].choices = [
+                (document.pk, document) for document in ActivityReportDocument.objects.filter(id=activityreportsubmit.document.id)
+                ]
+    
+    elif sid == 2:
+        form = ActivityReportSubmitForm(sid=sid, activityreport=activityreport, user=request.user)
+        form.fields['document'].choices = [
+                (document.pk, document) for document in ActivityReportDocument.objects.none()
+                ]
+   
     
     subject = 'Request for Approval'
     
@@ -818,12 +848,12 @@ def activityreport_submit_form(request, id):
             
             activityreportsubmit = get_object_or_404(ActivityReportSubmit, pk=instance.pk)
             #Document.objects.create(user = icnreport.user, document = instance.document,  icnreport=instance.icnreport, description = document_i)
-            if activityreportsubmit.submission_status == 2:
+            if activityreportsubmit.submission_status.name == 'Request Submitted':
                 ActivityReport.objects.filter(pk=id).update(status=True)
-                ActivityReport.objects.filter(pk=id).update(approval_status="Pending")
-                ActivityReportSubmitApproval_T.objects.create(user = activityreport.technical_lead,submit_id = instance, document = instance.document, approval_status=1)
-                ActivityReportSubmitApproval_P.objects.create(user = activityreport.program_lead,submit_id = instance,document = instance.document, approval_status=1)
-                ActivityReportSubmitApproval_F.objects.create(user = activityreport.finance_lead,submit_id = instance,document = instance.document, approval_status=1)
+                ActivityReport.objects.filter(pk=id).update(approval_status="Pending Approval")
+                ActivityReportSubmitApproval_T.objects.create(user = activityreport.technical_lead,submit_id = instance, document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
+                ActivityReportSubmitApproval_P.objects.create(user = activityreport.program_lead,submit_id = instance,document = instance.document, approval_status=Approvalf_Status.objects.get(id=1))
+                ActivityReportSubmitApproval_F.objects.create(user = activityreport.finance_lead,submit_id = instance,document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
 
                 send_mail(subject, message, email_from, recipient_list)
                 return HttpResponse(
@@ -835,11 +865,11 @@ def activityreport_submit_form(request, id):
                     })
                 })
             
-            elif activityreportsubmit.submission_status == 1:
+            elif activityreportsubmit.submission_status.name == 'Request Canceled':
                 ActivityReport.objects.filter(pk=id).update(status=False)
                 ActivityReport.objects.filter(pk=id).update(approval_status="Pending Submission")
                 subject = 'Request withdrawn temporarly'
-                message = "The Intervention Concept Note approval request has been withdrawn for further update/changes & will notify you when it's re-submitted for approval process"
+                message = "Activity Concept Note Report approval request has been withdrawn for further update/changes & will notify you when it's re-submitted for approval process"
                 send_mail(subject, message, email_from, recipient_list)
                 return HttpResponse(
                 status=204,
@@ -851,7 +881,7 @@ def activityreport_submit_form(request, id):
                 })
 
       
-    context = {'form':form, 'activityreport':activityreport}
+    context = {'form':form, 'activityreport':activityreport, 'sid':sid}
     return render(request, 'report/activityreport_submit_form.html', context)
 
 
@@ -919,7 +949,7 @@ def activityreport_submit_approval_list(request, id):
     return render(request, 'report/partial/activityreport_submit_approval_list.html', context )
 
  
-def activityreport_approvalt(request, id):
+def activityreport_approvalt(request, id, did):
      
     activityreportsubmitApproval_t = get_object_or_404(ActivityReportSubmitApproval_T, submit_id_id=id)
     activityreportsubmit = get_object_or_404(ActivityReportSubmit, pk=id)
@@ -927,14 +957,14 @@ def activityreport_approvalt(request, id):
     activityreport =  get_object_or_404(ActivityReport, id=activityreportsubmit.activityreport_id)
 
     subject = 'Approval Status changed'
-    message = 'Reviewed & status has been updated to this Concept Note has been submitted'
+    message = 'Activity Report has been Reviewed & its status has been changed'
     email_from = None 
     recipient_list = [activityreport.technical_lead.user.email, activityreport.program_lead.user.email, activityreport.finance_lead.user.email]
        
     if request.method == "GET":
         activityreportsubmitApproval_t = get_object_or_404(ActivityReportSubmitApproval_T, submit_id_id=id)
-        form = ActivityReportApprovalTForm(instance=activityreportsubmitApproval_t)
-        context = {'activityreportsubmitapproval_t':activityreportsubmitApproval_t, 'form': form, 'activityreport':activityreport, }
+        form = ActivityReportApprovalTForm(instance=activityreportsubmitApproval_t, did=did)
+        context = {'activityreportsubmitapproval_t':activityreportsubmitApproval_t, 'form': form, 'activityreport':activityreport, 'did':did}
         return render(request, 'report/activityreport_approval_tform.html', context)
     
     elif request.method == "PUT":
@@ -961,7 +991,7 @@ def activityreport_approvalt(request, id):
         return render(request, 'report/activityreport_approval_tform.html', {'form':form})
 
  
-def activityreport_approvalp(request, id):
+def activityreport_approvalp(request, id, did):
      
     activityreportsubmitApproval_p = get_object_or_404(ActivityReportSubmitApproval_P, submit_id_id=id)
     activityreportsubmit = get_object_or_404(ActivityReportSubmit, pk=id)
@@ -975,14 +1005,14 @@ def activityreport_approvalp(request, id):
        
     if request.method == "GET":
         activityreportsubmitApproval_p = get_object_or_404(ActivityReportSubmitApproval_P, submit_id_id=id)
-        form = ActivityReportApprovalPForm(instance=activityreportsubmitApproval_p)
-        context = {'activityreportsubmitapproval_p':activityreportsubmitApproval_p, 'form': form, 'activityreport':activityreport, }
+        form = ActivityReportApprovalPForm(instance=activityreportsubmitApproval_p, did=did)
+        context = {'activityreportsubmitapproval_p':activityreportsubmitApproval_p, 'form': form, 'activityreport':activityreport, 'did':did }
         return render(request, 'report/activityreport_approval_pform.html', context)
     
     elif request.method == "PUT":
         activityreportsubmitApproval_p = get_object_or_404(ActivityReportSubmitApproval_P, submit_id_id=id)
         data = QueryDict(request.body).dict()
-        form = ActivityReportApprovalPForm(data, instance=activityreportsubmitApproval_p)
+        form = ActivityReportApprovalPForm(data, instance=activityreportsubmitApproval_p, did=did)
         if form.is_valid():
             instance =form.save()
             
@@ -1000,10 +1030,10 @@ def activityreport_approvalp(request, id):
                     })
                 })
         
-        return render(request, 'report/activityreport_approval_pform.html', {'form':form})
+        return render(request, 'report/activityreport_approval_pform.html', {'form':form, 'did':did})
 
  
-def activityreport_approvalf(request, id):
+def activityreport_approvalf(request, id, did):
      
     activityreportsubmitApproval_f = get_object_or_404(ActivityReportSubmitApproval_F, submit_id_id=id)
     activityreportsubmit = get_object_or_404(ActivityReportSubmit, pk=id)
@@ -1017,14 +1047,14 @@ def activityreport_approvalf(request, id):
        
     if request.method == "GET":
         activityreportsubmitApproval_f = get_object_or_404(ActivityReportSubmitApproval_F, submit_id_id=id)
-        form = ActivityReportApprovalFForm(instance=activityreportsubmitApproval_f)
-        context = {'activityreportsubmitapproval_f':activityreportsubmitApproval_f, 'form': form, 'activityreport':activityreport, }
+        form = ActivityReportApprovalFForm(instance=activityreportsubmitApproval_f, did=did)
+        context = {'activityreportsubmitapproval_f':activityreportsubmitApproval_f, 'form': form, 'activityreport':activityreport, 'did':did }
         return render(request, 'report/activityreport_approval_fform.html', context)
     
     elif request.method == "PUT":
         activityreportsubmitApproval_f = get_object_or_404(ActivityReportSubmitApproval_F, submit_id_id=id)
         data = QueryDict(request.body).dict()
-        form = ActivityReportApprovalFForm(data, instance=activityreportsubmitApproval_f)
+        form = ActivityReportApprovalFForm(data, instance=activityreportsubmitApproval_f, did=did)
         if form.is_valid():
             instance =form.save()
             
@@ -1051,12 +1081,15 @@ def update_activityreport_approval_status(id):
     activityreportsubmitapproval_f = get_object_or_404(ActivityReportSubmitApproval_F, submit_id_id=id)
     
     approval_t = activityreportsubmitapproval_t.approval_status
+    approval_t = int(approval_t)
     approval_p = activityreportsubmitapproval_p.approval_status
+    approval_p = int(approval_p)
     approval_f = activityreportsubmitapproval_f.approval_status
+    approval_f = int(approval_f)
     
     if approval_t == 4 or approval_p== 4 or approval_f== 4:
-        ActivityReport.objects.filter(pk=activityreportsubmit.activityreport_id).update(approval_status="Rejected")
-    elif approval_t < 3 and approval_p < 3 and approval_p < 3:
+        ActivityReport.objects.filter(pk=activityreportsubmit.activityreport_id).update(approval_status="100% Rejected")
+    elif approval_t < 3 and approval_p < 3 and approval_f < 3:
         ActivityReport.objects.filter(pk=activityreportsubmit.activityreport_id).update(approval_status="Pending Approval")
     elif approval_t == 3 and approval_p ==3 and approval_f==3:
         ActivityReport.objects.filter(pk=activityreportsubmit.activityreport_id).update(approval_status="100% Approved")

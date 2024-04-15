@@ -1,0 +1,107 @@
+
+{% extends "activity_step.html" %}
+
+{% block content_intervention_step %}
+{% load humanize%}
+<div class="row">
+              <div class="col-md-12 col-sm-12  ">
+                <div class="x_panel">
+                  <div class="x_title">
+                   <h2>Profile<small>Activity</small></h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="#">Settings 1</a>
+                            <a class="dropdown-item" href="#">Settings 2</a>
+                          </div>
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
+     
+              
+                   <div class="panel-body">
+                     
+                           <p>Program:<strong>  {{ activity.icn.program }}</strong></p>
+                         
+                           <p>Intervention:<strong>  {{ activity.icn }}</strong></p>
+                        
+                          <p>Activity:<strong> {{ activity.title }}</strong></p>
+                          <p>ID:<strong> {{ activity.acn_number }}</strong></p>
+                            <p><strong>Description: </strong> {{ activity.description }}</p>
+
+                          
+
+                          <div class="col-md-4 col-sm-4 project_detail">
+
+                           <p>Lead Agency:<strong> {{ activity.alead_agency }}</strong></p>
+                              <p>Co-Lead Agency:
+                      {% for colead in activity.alead_co_agency.all %}
+                      <strong>{{colead}},</strong>
+                      {% endfor %}</p>
+                             <p class="">Proposed Start Date<strong>
+                      {{activity.proposed_start_date}}</strong></p>
+                      <p class="">Proposed End Date<strong>
+                      {{activity.proposed_end_date}}</strong></p>
+                      <p>Final Report due date: <strong>  {{ activity.final_report_due_date}}</strong></p>
+                            
+                          </div>
+  <div class="col-md-4 col-sm-4 project_detail">
+  <p>Implementation Woredas:
+                      {% for woreda in activity.aworeda.all %}
+                      <strong>{{woreda}},</strong>
+                      {% endfor %}</p>
+                              <p>Intervention. Env.Impact: {% if activity.icn.eniromental_impact == '3' %}<strong>High</strong>{% elif activity.icn.eniromental_impact == '2' %}<strong>Medium</strong>{% elif activity.icn.eniromental_impact == '1' %}<strong>Low</strong>{% endif %}</p>
+                              <p>Intervention. Env.Impact Doc <i class="fa fa-paperclip"></i>:<strong>{% if activity.icn.environmental_assessment_att %}<a href="{% url 'download_env_att' activity.icn.id %}">  download </a> {% else %}NA{% endif%} </strong></p>
+
+                              <p>Total Mercy Corps budget:<strong> {{ activity.mc_budget|floatformat:2|intcomma }}</strong>{{activity.get_mc_currency_display }}</p>
+                              <p>Cost-share budget:<strong> {{ activity.cost_sharing_budget|floatformat:2|intcomma }}</strong>{{activity.get_cs_currency_display }}</p>
+                              
+ </div>
+                         
+                         
+                          <ul class="list-unstyled project_detail">
+                            <p>Initited By:<strong> {{ activity.user.profile.full_name }}</strong>
+                            </p>
+                             <p>Technical Lead:<strong> {{ activity.technical_lead.user.profile.full_name }}</strong>
+                            </p>
+                            </p>
+                             <p>Finance Lead:<strong> {{ activity.finance_lead.user.profile.full_name }}</strong>
+                            </p>
+                             <p>Program Lead:<strong> {{ activity.program_lead.user.profile.full_name }}</strong>
+                            </p>
+                            <p >Submission Status: <strong>{{ activity.get_status_display }}</strong>
+                            </p>
+                          </ul>
+                          
+<div class="ln_solid"></div>
+                          <div class="text-center mtop20">
+                            <a class="btn btn-success source" {% if activity.status == True or activity.user != request.user %} onclick="new PNotify({
+                                  title: 'Permission',
+                                  text: 'Current User doesnot match with ICN Owner and/or ICN submission status should be Draft;',
+                                  type: 'info',
+                                  styling: 'bootstrap3'
+                              });" {% else %} href="{% url 'activity_edit' activity.id %} {% endif %}" ><i class="fa fa-edit m-right-xs"></i>Edit Profile</a>
+                           
+                          </div>
+                        </div>
+                        
+                </div>
+      
+                   </div>
+                     </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /page content -->
+{% endblock %}
+
+
+
+

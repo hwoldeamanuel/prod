@@ -13,25 +13,25 @@ urlpatterns = [
     path('intervention/<int:id>/new/profile/', views.icnreport_add, name='icnreport_add'),
     path('intervention/<int:id>/profile/edit/', views.icnreport_edit, name='icnreport_edit'),
     path('intervention/<int:id>/impact/', views.icnreport_step_impact, name='icnreport_step_impact'),
-
+    path('activity/<int:id>/impact/', views.activityreport_step_impact, name='activityreport_step_impact'),
 
     
     path('intervention/<int:id>/profile/', views.icnreport_detail, name='icnreport_detail'),
     path('intervention/<int:id>/approval/', views.icnreport_submit_approval, name='icnreport_submit_approval'),
-    path('activity/<int:pk>/approval/', views.activityreport_submit_approval, name='activityreport_submit_approval'),
+    path('activity/<int:id>/approval/', views.activityreport_submit_approval, name='activityreport_submit_approval'),
     path('downloadi/<int:id>/', views.download, name='downloadi'),
     path('downloada/<int:id>/', views.downloada, name='downloada'),
     
     
    
    
-    path('download_env_att/<int:id>/', views.download_env_att, name='download_env_att'),
+   
     path('icnreport_submit_form_partial/<int:id>/', views.icnreport_submit_form_partial, name='icnreport_submit_form_partial'),
     path('activityreport_submit_form_partial/<int:id>/', views.activityreport_submit_form_partial, name='activityreport_submit_form_partial'),
     path('activity/', views.activitiesreport, name='activitiesreport'),
-    path('activity/<int:pk>/', views.activityreport_detail, name='activityreport_detail'),
-    path('activity/<int:id>/add/', views.activityreport_add, name='activityreport_new'),
-    path('activity/<int:id>/edit/', views.activityreport_edit, name='activityreport_edit'),
+    path('activity/<int:id>/profile/', views.activityreport_detail, name='activityreport_detail'),
+    path('activity/<int:id>/profile/add/', views.activityreport_add, name='activityreport_new'),
+    path('activity/<int:id>/profile/edit/', views.activityreport_edit, name='activityreport_edit'),
    
     
 ]
@@ -45,15 +45,15 @@ htmxpatterns = [
 
 
  path('icnreport_submit_form/<int:id>/<int:sid>/', views.icnreport_submit_form, name='icnreport_submit_form'),
- path('activityreport_submit_form/<int:id>/', views.activityreport_submit_form, name='activityreport_submit_form'),
+ path('activityreport_submit_form/<int:id>/<int:sid>/', views.activityreport_submit_form, name='activityreport_submit_form'),
  path('icnreport_submit_document/<int:id>/', views.icnreport_submit_document, name='icnreport_submit_document'),
  path('activityreport_submit_document/<int:id>/', views.activityreport_submit_document, name='activityreport_submit_document'),
  path('icnreport_approvalp/<int:id>/<int:did>/', views.icnreport_approvalp, name='icnreport_approvalp'),
  path('icnreport_approvalf/<int:id>/<int:did>/', views.icnreport_approvalf, name='icnreport_approvalf'),
  path('icnreport_approvalt/<int:id>/<int:did>/', views.icnreport_approvalt, name='icnreport_approvalt'),
- path('activityreport_approvalt/<int:id>/', views.activityreport_approvalt, name='activityreport_approvalt'),
- path('activityreport_approvalp/<int:id>/', views.activityreport_approvalp, name='activityreport_approvalp'),
- path('activityreport_approvalf/<int:id>/', views.activityreport_approvalf, name='activityreport_approvalf'),
+ path('activityreport_approvalt/<int:id>/<int:did>/', views.activityreport_approvalt, name='activityreport_approvalt'),
+ path('activityreport_approvalp/<int:id>/<int:did>/', views.activityreport_approvalp, name='activityreport_approvalp'),
+ path('activityreport_approvalf/<int:id>/<int:did>/', views.activityreport_approvalf, name='activityreport_approvalf'),
  path('icnreport_filter/', views.icnreport_filter, name='icnreport_filter'),
  path('activityreport_filter/', views.search_results_view2, name='activityreport_filter'),
  

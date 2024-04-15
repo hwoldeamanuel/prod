@@ -9,7 +9,7 @@
 
               <!-- start project list -->
 
-             <table class="table table-striped">
+                        <table class="table table-striped">
                      
                   
                 <thead>
@@ -21,8 +21,8 @@
                     <th style="width: 18%">Team Members</th>
                
                     <th style="width:12%">Date<small> (Start/End)</small></th>
-                   <th style="width:10%">Submission</th>
-                      <th style="width:10%">Approval</th>
+                   <th style="width:11%">Status <small>(ICN)</small></th>
+                      <th style="width:10%">Status <small>(Report)</small></th>
                      <th >Action</th>
                      </tr>
                      
@@ -36,8 +36,7 @@
 <small>{{ icn.program.portfolio }}</small></td>
                     <td>{{icn.icn_number}}</br>
                       <small>{{ icn.title }}</small>
-                      <br />
-                      <small>{{ icn.created_at }}</small>
+                     
                     </td>
                     <td>
                       <ul class="list-inline">
@@ -65,12 +64,19 @@
                         <small>{{ icn.proposed_end_date }}</small>
                     </td>
                     <td>
+                    {% if icn.status == True %}
+                      <span class="badge {% if 'Rejected' in icn.approval_status %} bg-red {% elif 'Approved' in icn.approval_status %} bg-green {% else %} bg-warning {% endif %}">{% if icn.approval_status %} {{ icn.approval_status}} {% else %} Pending {% endif %}</span>
+                      {% else %}
                       <span class="badge {% if icn.status == True %}badge bg-green {% else %} badge bg-red {% endif %}">{{ icn.get_status_display}}</span>
+                      {% endif %}
                    </td>
                    <td>
-                   {% if icn.status == True %}
-                      <span class="badge {% if 'Rejected' in icn.approval_status %} bg-red {% elif 'Approved' in icn.approval_status %} bg-green {% else %} bg-warning {% endif %}">{% if icn.approval_status %} {{ icn.approval_status}} {% else %} Pending {% endif %}</span>
-                     {% elif icn.status == False %}
+                     {% if not icn.icnreport or icn.approval_status != '100% Approved' %}
+                      <span class="badge badge bg-default">{{icn.final_report_due_date}}</span>
+                   {% elif icn.icnreport.status == True %}
+                      <span class="badge {% if 'Rejected' in icn.icnreport.approval_status %} bg-red {% elif 'Approved' in icn.icnreport.approval_status %} bg-green {% else %} bg-warning {% endif %}">{% if icn.icnreport.approval_status %} {{ icn.icnreport.approval_status}} {% else %} Pending {% endif %}</span>
+                     {% elif icn.icnreport.status == False %}
+                    <span class="badge {% if icn.icnreport and icn.icnreport.status == True %}badge bg-green {% else %} badge bg-warning {% endif %}">{{ icn.icnreport.get_status_display}}</span>
                      {% endif %}
                     </td>
                     

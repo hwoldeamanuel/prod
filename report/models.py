@@ -284,8 +284,10 @@ class ActivityReportImplementationArea(models.Model):
 class ActivityReportImpact(models.Model):
     activityreport =  models.ForeignKey(
         ActivityReport, on_delete=models.CASCADE, null=True, blank=True)
-    activityimpact =  models.ForeignKey(
+    activityimpact =  models.OneToOneField(
         ActivityImpact, on_delete=models.CASCADE, null=True, blank=True)
+   
+    
     actual_impact_pilot  = models.IntegerField(null=True, blank=True)
     actual_impact_scaleup  = models.IntegerField(null=True, blank=True)
     
@@ -320,7 +322,7 @@ class ActivityReportSubmit(models.Model):
     activityreport =  models.ForeignKey(
         ActivityReport, on_delete=models.CASCADE, null=True, blank=True)
     submission_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)
-    submission_status = models.PositiveSmallIntegerField(choices=SSTATUS, default = 2, blank=True, null=True)
+    submission_status = models.ForeignKey(Submission_Status, on_delete=models.CASCADE)
     submission_note = models.TextField(null=True,  blank=True)
 
     document = models.ForeignKey(ActivityReportDocument, on_delete=models.CASCADE, null=True, blank=True)
@@ -355,7 +357,7 @@ class ActivityReportSubmitApproval_T(models.Model):
     submit_id = models.OneToOneField(ActivityReportSubmit, on_delete=models.CASCADE)
     approval_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)
     approval_note = models.TextField(null=True,  blank=True)
-    approval_status = models.PositiveSmallIntegerField(choices=STATUS, default=1, blank=True, null=True)
+    approval_status = models.ForeignKey(Approvalt_Status, on_delete=models.CASCADE)
     document = models.ForeignKey(ActivityReportDocument, on_delete=models.CASCADE)
     
     def __init__(self, *args, **kwargs):
@@ -390,7 +392,7 @@ class ActivityReportSubmitApproval_P(models.Model):
     submit_id = models.OneToOneField(ActivityReportSubmit, on_delete=models.CASCADE)
     approval_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)
     approval_note = models.TextField(null=True,  blank=True)
-    approval_status = models.PositiveSmallIntegerField(choices=STATUS, default=1, blank=True, null=True)
+    approval_status = models.ForeignKey(Approvalf_Status, on_delete=models.CASCADE)
     document = models.ForeignKey(ActivityReportDocument, on_delete=models.CASCADE)
     
     def __init__(self, *args, **kwargs):
@@ -425,7 +427,7 @@ class ActivityReportSubmitApproval_F(models.Model):
     submit_id = models.OneToOneField(ActivityReportSubmit, on_delete=models.CASCADE)
     approval_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)
     approval_note = models.TextField(null=True,  blank=True)
-    approval_status = models.PositiveSmallIntegerField(choices=STATUS, default=1, blank=True, null=True)
+    approval_status = models.ForeignKey(Approvalt_Status, on_delete=models.CASCADE)
     document = models.ForeignKey(ActivityReportDocument, on_delete=models.CASCADE)
     
     def __init__(self, *args, **kwargs):

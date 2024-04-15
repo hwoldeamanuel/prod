@@ -629,12 +629,16 @@ class ActivityReportSubmitForm(forms.ModelForm):
      def __init__(self, *args, **kwargs):
          user = kwargs.pop('user', None)
          activityreport = kwargs.pop('activityreport', None)
+         sid = kwargs.pop('sid', None)
          super(ActivityReportSubmitForm, self).__init__(*args, **kwargs)
 
          self.fields['document'].choices = [
              (document.pk, document) for document in ActivityReportDocument.objects.filter(user=user, activityreport=activityreport)
          ]
-             
+
+         self.fields['submission_status'].choices = [
+            (submission_status.id, submission_status.name) for submission_status in Submission_Status.objects.filter(id=sid)
+        ]   
       # invalid input from the client; ignore and fallback to empty City queryset
         
   
@@ -642,6 +646,13 @@ class ActivityReportSubmitForm(forms.ModelForm):
 
          self.fields['submission_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
          self.fields['submission_note'].required = True 
+             
+      # invalid input from the client; ignore and fallback to empty City queryset
+        
+  
+    
+
+       
         
      class Meta:
             model = ActivityReportSubmit
@@ -674,10 +685,24 @@ class ActivityReportDocumentForm(forms.ModelForm):
 
 class ActivityReportApprovalTForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3'  }    )
+         did = kwargs.pop('did', None)
+         super(ActivityReportApprovalTForm, self).__init__(*args, **kwargs)
+       
+    
+     
         
+         self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3'  }    )
+         self.fields['approval_status'].choices = [
+             (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalt_Status.objects.filter(id=did)
+         ]
+          
+         if did == 2:
+               self.fields['document'].choices = [
+             (document.pk, document) for document in ActivityReportDocument.objects.none()
+         ]
+       
+         if did == 3:
+               self.fields['document'].widget.attrs['readonly'] = True
         
     class Meta:
             model = ActivityReportSubmitApproval_T
@@ -687,9 +712,24 @@ class ActivityReportApprovalTForm(forms.ModelForm):
 
 class ActivityReportApprovalPForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3'  }    )
+         did = kwargs.pop('did', None)
+         super(ActivityReportApprovalPForm, self).__init__(*args, **kwargs)
+       
+    
+     
+        
+         self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3'  }    )
+         self.fields['approval_status'].choices = [
+             (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalf_Status.objects.filter(id=did)
+         ]
+          
+         if did == 2:
+               self.fields['document'].choices = [
+             (document.pk, document) for document in ActivityReportDocument.objects.none()
+         ]
+       
+         if did == 3:
+               self.fields['document'].widget.attrs['readonly'] = True
         
         
     class Meta:
@@ -700,10 +740,24 @@ class ActivityReportApprovalPForm(forms.ModelForm):
 
 class ActivityReportApprovalFForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3'  }    )
+         did = kwargs.pop('did', None)
+         super(ActivityReportApprovalFForm, self).__init__(*args, **kwargs)
+       
+    
+     
         
+         self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3'  }    )
+         self.fields['approval_status'].choices = [
+             (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalt_Status.objects.filter(id=did)
+         ]
+          
+         if did == 2:
+               self.fields['document'].choices = [
+             (document.pk, document) for document in ActivityReportDocument.objects.none()
+         ]
+       
+         if did == 3:
+               self.fields['document'].widget.attrs['readonly'] = True
         
     class Meta:
             model = ActivityReportSubmitApproval_F

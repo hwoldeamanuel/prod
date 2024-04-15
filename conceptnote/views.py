@@ -142,6 +142,20 @@ def icn_step_approval(request, id):
         context = {'icn':icn}
     return render(request, 'intervention_step_approval.html', context)
 
+
+@login_required(login_url='login') 
+def activity_step_approval(request, id):
+    activity = get_object_or_404(Activity, pk=id)
+    context ={}
+ 
+    # add the dictionary during initialization
+    activity = Activity.objects.get(pk=id)
+    if ActivitySubmit.objects.filter(activity_id=activity.id).exists():
+        activitysubmit = ActivitySubmit.objects.filter(activity_id=activity.id).latest('id')
+        context = {'activity':activity, 'activitysubmit':activitysubmit}
+    else:
+        context = {'activity':activity}
+    return render(request, 'activity_step_approval.html', context)
 @login_required(login_url='login') 
 def icn_detail(request, pk):
     
@@ -713,9 +727,10 @@ def search_results_view(request):
     if query:
         qs1 = all_icns.filter(title__icontains=query)
         qs2 = all_icns.distinct().filter(program__title__icontains=query)
+        qs3 = all_icns.distinct().filter(icn_number__icontains=query)
         
         
-        icns = qs1.union(qs2).order_by('id')
+        icns = qs1.union(qs2, qs3).order_by('id')
     else:
         icns = all_icns
 
@@ -852,7 +867,7 @@ def icn_edit_impact(request, pk):
     })
 
 def remove_impact(request, pk):
-    redirect_url = request.get_full_path()
+    
     impact = get_object_or_404(Impact, pk=pk)
     icn_id = impact.icn_id
     impact.delete()
@@ -893,7 +908,11 @@ def icn_approvalp_form_partial(request, id):
 
  
 def activities(request):
-    activities = Activity.objects.all().order_by('-id')
+    user = request.user
+    program = Program.objects.filter(users_role=user)
+   
+    icns = Icn.objects.filter(program__in=program).order_by('-id')
+    activities = Activity.objects.filter(icn__in=icns).order_by('-id')
     context = {'activities':activities}
     
     return render(request, 'activities.html', context)
@@ -913,7 +932,7 @@ def activity_detail(request, pk):
     #icnsubmit = get_object_or_404(IcnSubmit, icn_id=icn.id).latest('id')
 
 
-    return render(request, 'activity_detail.html', context)
+    return render(request, 'activity_step_profile_detail.html', context)
 
  
 def activity_add(request): 
@@ -928,11 +947,11 @@ def activity_add(request):
         
         form = ActivityForm(request.POST, user=request.user)
         context = {'form':form}
-        return render(request, 'activity_add.html', context)
+        return render(request, 'activity_step_profile_add.html', context)
     
     form = ActivityForm(user=request.user)   
     context = {'form':form}
-    return render(request, 'activity_add.html', context)
+    return render(request, 'activity_step_profile_add.html', context)
 
  
 def activity_edit(request, id): 
@@ -947,13 +966,13 @@ def activity_edit(request, id):
         
         form = ActivityForm(request.POST,  instance=activity, user=request.user) 
         context = {'form':form}
-        return render(request, 'activity_edit.html', context)
+        return render(request, 'activity_step_profile_edit.html', context)
             
     elif request.method == "GET" and activity.status == False:    
 
         form = ActivityForm(instance=activity,  user=request.user) 
         context = {'form':form}
-        return render(request, 'activity_edit.html', context)
+        return render(request, 'activity_step_profile_edit.html', context)
     else:
         return HttpResponseRedirect(request.path_info)
     
@@ -990,7 +1009,14 @@ def aarea_list(request, id):
         'aareas': ActivityImplementationArea.objects.filter(activity_id=id),
     })
 
- 
+@login_required(login_url='login') 
+def activity_step_impact(request, id):
+     activity = Activity.objects.get(id=id)
+     
+     impacts= ActivityImpact.objects.filter(activity_id=id)
+     context = {'activity':activity, 'impacts': impacts}
+     return render(request, 'activity_step_impact.html', context) 
+
 def aarea_edit_form(request, pk):
     aarea = get_object_or_404(ActivityImplementationArea, pk=pk)
     activity = aarea.activity
@@ -1031,15 +1057,21 @@ def add_activity_impact(request, id):
             items = Impact.objects.filter(id__in=selected_impact)
             instance.save()
             instance.impact.add(*items)
-               
-            return HttpResponse(
-                status=204,
-                headers={
-                    'HX-Trigger': json.dumps({
-                        "AImpactListChanged": None,
-                        "showMessage": f"{instance.activity} added."
-                    })
-                })
+            
+            activity = get_object_or_404(Activity,id=instance.activity_id)
+   
+            if ActivityImpact.objects.filter(activity_id=activity.id).count() == 1 or ActivityImpact.objects.filter(activity_id=activity.id).count() == 0:
+                return HttpResponseClientRedirect('/conceptnote/activity/'+str(activity.id)+'/impact/')
+            else:
+                return HttpResponse(
+                        status=204,
+                        headers={
+                            'HX-Trigger': json.dumps({
+                            "AImpactListChanged": None,
+                            "showMessage": f"{instance.title} added."
+                        })
+                        })
+              
     else:
         form = ActivityImpactForm(icn=icn)
     return render(request, 'partial/activity_impact_form.html', {
@@ -1079,15 +1111,23 @@ def edit_activity_impact(request, pk):
 
 def remove_activity_impact(request, pk):
     activity_impact = get_object_or_404(ActivityImpact, pk=pk)
+    activity_id = activity_impact.activity_id
     activity_impact.delete()
-    return HttpResponse(
-        status=204,
-        headers={
-            'HX-Trigger': json.dumps({
+    activity = get_object_or_404(Activity,id=activity_id)
+   
+    if ActivityImpact.objects.filter(activity=activity).count() != 0:
+        return HttpResponse(
+            status=204,
+            headers={
+                'HX-Trigger': json.dumps({
                 "AImpactListChanged": None,
                 "showMessage": f"{activity_impact.title} deleted."
+              })
             })
-        })
+    else:
+        return HttpResponseClientRedirect('/conceptnote/activity/'+str(activity.id)+'/impact/')
+       
+   
 
 def adelete_area(request, pk):
     area = get_object_or_404(ActivityImplementationArea, pk=pk)
@@ -1103,16 +1143,21 @@ def adelete_area(request, pk):
         })
 
 def search_results_view2(request):
+    user = request.user
+    program = Program.objects.filter(users_role=user)
+   
+    icns = Icn.objects.filter(program__in=program).order_by('-id')
     query = request.GET.get('search', '')
     
 
-    all_activities= Activity.objects.all()
+    all_activities= Activity.objects.filter(icn__in=icns)
     if query:
-        qs1 = Activity.objects.filter(title__icontains=query)
-        qs2 = Activity.objects.distinct().filter(icn__title__icontains=query)
-        
-        qs3 = Activity.objects.distinct().filter(icn__program__title__icontains=query)
-        activities = qs1.union(qs2, qs3).order_by('id')
+        qs1 = all_activities.filter(title__icontains=query)
+        qs2 = all_activities.distinct().filter(icn__title__icontains=query)
+        qs5 = all_activities.distinct().filter(icn__icn_number__icontains=query)
+        qs4 = all_activities.distinct().filter(acn_number__icontains=query)
+        qs3 = all_activities.distinct().filter(icn__program__title__icontains=query)
+        activities = qs1.union(qs2, qs3, qs4, qs5).order_by('id')
        
     else:
         activities = all_activities
@@ -1151,13 +1196,26 @@ def current_activity_submit_approval_list(request, id):
     return render(request, 'partial/activity_submit_list.html', context)
 
 
-def activity_submit_form(request, id): 
+def activity_submit_form(request, id, sid): 
     activity = get_object_or_404(Activity, pk=id)
-    form = ActivitySubmitForm(user=request.user,activity=activity)
+    
+    activitysubmit = ActivitySubmit.objects.filter(activity_id=activity.id).latest('id')
+    if sid== 1:
+        form = ActivitySubmitForm(sid=sid, activity=activity, user=request.user)
+        form.fields['document'].choices = [
+                (document.pk, document) for document in ActivityDocument.objects.filter(id=activitysubmit.document.id)
+                ]
+    
+    elif sid == 2:
+        form = ActivitySubmitForm(user=request.user,activity=activity, sid=sid)
+        form.fields['document'].choices = [
+                (document.pk, document) for document in ActivityDocument.objects.none()
+                ]
+   
     
     subject = 'Request for Approval'
     
-    message = 'A new Intervention Concept Note has been submitted'
+    message = 'A new Activity Concept Note has been submitted'
     email_from = None 
     recipient_list = [activity.user.email,activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
 
@@ -1174,12 +1232,12 @@ def activity_submit_form(request, id):
             
             activitysubmit = get_object_or_404(ActivitySubmit, pk=instance.pk)
             #Document.objects.create(user = icn.user, document = instance.document,  icn=instance.icn, description = document_i)
-            if activitysubmit.submission_status == 2:
+            if activitysubmit.submission_status.name == 'Request Submitted':
                 Activity.objects.filter(pk=id).update(status=True)
-                Activity.objects.filter(pk=id).update(approval_status="Pending")
-                ActivitySubmitApproval_T.objects.create(user = activity.technical_lead,submit_id = instance, document = instance.document, approval_status=1)
-                ActivitySubmitApproval_P.objects.create(user = activity.program_lead,submit_id = instance,document = instance.document, approval_status=1)
-                ActivitySubmitApproval_F.objects.create(user = activity.finance_lead,submit_id = instance,document = instance.document, approval_status=1)
+                Activity.objects.filter(pk=id).update(approval_status="Pending Approval")
+                ActivitySubmitApproval_T.objects.create(user = activity.technical_lead,submit_id = instance, document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
+                ActivitySubmitApproval_P.objects.create(user = activity.program_lead,submit_id = instance,document = instance.document, approval_status=Approvalf_Status.objects.get(id=1))
+                ActivitySubmitApproval_F.objects.create(user = activity.finance_lead,submit_id = instance,document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
 
                 send_mail(subject, message, email_from, recipient_list)
                 return HttpResponse(
@@ -1191,11 +1249,11 @@ def activity_submit_form(request, id):
                     })
                 })
             
-            elif activitysubmit.submission_status == 1:
+            elif activitysubmit.submission_status.name == 'Request Canceled':
                 Activity.objects.filter(pk=id).update(status=False)
                 Activity.objects.filter(pk=id).update(approval_status="Pending Submission")
                 subject = 'Request withdrawn temporarly'
-                message = "The Intervention Concept Note approval request has been withdrawn for further update/changes & will notify you when it's re-submitted for approval process"
+                message = "The Activity Concept Note approval request has been withdrawn for further update/changes & will notify you when it's re-submitted for approval process"
                 send_mail(subject, message, email_from, recipient_list)
                 return HttpResponse(
                 status=204,
@@ -1207,7 +1265,7 @@ def activity_submit_form(request, id):
                 })
 
       
-    context = {'form':form, 'activity':activity}
+    context = {'form':form, 'activity':activity, 'sid':sid}
     return render(request, 'activity_submit_form.html', context)
 
 
@@ -1275,7 +1333,7 @@ def activity_submit_approval_list(request, id):
     return render(request, 'partial/activity_submit_approval_list.html', context )
 
  
-def activity_approvalt(request, id):
+def activity_approvalt(request, id, did):
      
     activitysubmitApproval_t = get_object_or_404(ActivitySubmitApproval_T, submit_id_id=id)
     activitysubmit = get_object_or_404(ActivitySubmit, pk=id)
@@ -1289,7 +1347,14 @@ def activity_approvalt(request, id):
        
     if request.method == "GET":
         activitysubmitApproval_t = get_object_or_404(ActivitySubmitApproval_T, submit_id_id=id)
-        form = ActivityApprovalTForm(instance=activitysubmitApproval_t)
+        if did != 2:
+            form = ActivityApprovalTForm(instance=activitysubmitApproval_t, did=did)
+            form.fields['document'].choices = [
+                (document.pk, document) for document in Document.objects.filter(id=activitysubmitApproval_t.document.id)
+                ]
+        else:
+            form = ActivityApprovalTForm(instance=activitysubmitApproval_t, did=did)
+       
         context = {'activitysubmitapproval_t':activitysubmitApproval_t, 'form': form, 'activity':activity, }
         return render(request, 'activity_approval_tform.html', context)
     
@@ -1314,10 +1379,10 @@ def activity_approvalt(request, id):
                     })
                 })
         
-        return render(request, 'activity_approval_tform.html', {'form':form})
+        return render(request, 'activity_approval_tform.html', {'form':form, 'did':did})
 
  
-def activity_approvalp(request, id):
+def activity_approvalp(request, id, did):
      
     activitysubmitApproval_p = get_object_or_404(ActivitySubmitApproval_P, submit_id_id=id)
     activitysubmit = get_object_or_404(ActivitySubmit, pk=id)
@@ -1331,7 +1396,14 @@ def activity_approvalp(request, id):
        
     if request.method == "GET":
         activitysubmitApproval_p = get_object_or_404(ActivitySubmitApproval_P, submit_id_id=id)
-        form = ActivityApprovalPForm(instance=activitysubmitApproval_p)
+        if did != 2:
+            form = ActivityApprovalPForm(instance=activitysubmitApproval_p, did=did)
+            form.fields['document'].choices = [
+                (document.pk, document) for document in Document.objects.filter(id=activitysubmitApproval_p.document.id)
+                ]
+        else:
+            form = ActivityApprovalPForm(instance=activitysubmitApproval_p, did=did)
+        
         context = {'activitysubmitapproval_p':activitysubmitApproval_p, 'form': form, 'activity':activity, }
         return render(request, 'activity_approval_pform.html', context)
     
@@ -1356,10 +1428,10 @@ def activity_approvalp(request, id):
                     })
                 })
         
-        return render(request, 'activity_approval_pform.html', {'form':form})
+        return render(request, 'activity_approval_pform.html', {'form':form, 'did':did})
 
  
-def activity_approvalf(request, id):
+def activity_approvalf(request, id, did):
      
     activitysubmitApproval_f = get_object_or_404(ActivitySubmitApproval_F, submit_id_id=id)
     activitysubmit = get_object_or_404(ActivitySubmit, pk=id)
@@ -1373,7 +1445,14 @@ def activity_approvalf(request, id):
        
     if request.method == "GET":
         activitysubmitApproval_f = get_object_or_404(ActivitySubmitApproval_F, submit_id_id=id)
-        form = ActivityApprovalFForm(instance=activitysubmitApproval_f)
+        if did != 2:
+            form = ActivityApprovalFForm(instance=activitysubmitApproval_f, did=did)
+            form.fields['document'].choices = [
+                (document.pk, document) for document in Document.objects.filter(id=activitysubmitApproval_f.document.id)
+                ]
+        else:
+            form = ActivityApprovalFForm(instance=activitysubmitApproval_f, did=did)
+     
         context = {'activitysubmitapproval_f':activitysubmitApproval_f, 'form': form, 'activity':activity, }
         return render(request, 'activity_approval_fform.html', context)
     
@@ -1398,7 +1477,7 @@ def activity_approvalf(request, id):
                     })
                 })
         
-        return render(request, 'activity_approval_fform.html', {'form':form})
+        return render(request, 'activity_approval_fform.html', {'form':form, 'did':did })
 
 def update_activity_approval_status(id):
     activitysubmit = get_object_or_404(ActivitySubmit, pk=id)
@@ -1407,11 +1486,14 @@ def update_activity_approval_status(id):
     activitysubmitapproval_f = get_object_or_404(ActivitySubmitApproval_F, submit_id_id=id)
     
     approval_t = activitysubmitapproval_t.approval_status
+    approval_t = int(approval_t)
     approval_p = activitysubmitapproval_p.approval_status
+    approval_p = int(approval_p)
     approval_f = activitysubmitapproval_f.approval_status
+    approval_f = int(approval_f)
     
     if approval_t == 4 or approval_p== 4 or approval_f== 4:
-        Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="Rejected")
+        Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="100% Rejected")
     elif approval_t < 3 and approval_p < 3 and approval_p < 3:
         Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="Pending Approval")
     elif approval_t == 3 and approval_p ==3 and approval_f==3:

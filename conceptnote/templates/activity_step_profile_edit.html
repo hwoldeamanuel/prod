@@ -1,17 +1,15 @@
-<!-- page content -->
-{% extends "base.html" %}
-{% block content %}
- <div class="right_col" role="main">
-          <div class="">
-         
 
-            <div class="clearfix"></div>
+{% extends "activity_step.html" %}
+
+{% block content_intervention_step %}
+{% load humanize%}
+
 
             <div class="row">
               <div class="col-md-12 col-sm-12  ">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2>Acitivy Concept Note :: Update</h2> 
+                    	<h2>Profile Update <small>Activity</small></h2>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                       </li>
@@ -55,62 +53,70 @@
                            
                           <div class="form-group row">
 
-                              <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.alead_agency.id_for_label }}">Lead Agency: <span class="required">*</span>
-                                  </label>
-                              <div class="col-md-3 col-sm-3">
+                              <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.alead_agency.id_for_label }}">Lead Agency:</label>
+                              <div class="col-md-2 col-sm-2">
                               
                                  {% render_field   form.alead_agency class="form-control form-control-sm" required= %}
                                  <div class="invalid-feedback">{{ form.alead_agency.errors|first }}</div>
                               </div>
-                              <label class="col-form-label col-md-2 col-sm-2 label-align" for=" {% render_field form.alead_co_agency.id_for_label %}"> Co-Lead Agency: <span class="required">*</span>
-                              </label>
-                              <div class="col-md-3 col-sm-3 ">
+                              <label class="col-form-label col-md-2 col-sm-2 label-align" for=" {% render_field form.alead_co_agency.id_for_label %}">Co-Lead Agency:</label>
+                              <div class="col-md-4 col-sm-4 ">
                                    {% render_field form.alead_co_agency class+="form-control form-control-sm form-select form-select-solid" attr="data-control:select2" %}
                                     <div class="invalid-feedback">{{ form.alead_co_agency.errors|first }}</div>
                               </div>
                             </div>
                             <div class="form-group row">
-                              <label class="col-form-label col-md-2 col-sm-2 label-align" >Proposed Start Date: <span class="required"></span>
+                              <label class="col-form-label col-md-2 col-sm-2 label-align" >Start Date: <span class="required"></span>
                                   </label>
-                              <div class="col-md-3 col-sm-3 ">
+                              <div class="col-md-2 col-sm-2 ">
                                  {% render_field form.proposed_start_date class+="form-control form-control-sm" %}
                                    <div class="invalid-feedback">{{ form.proposed_start_date.errors|first }}</div>
                               </div>
-                              <label class="col-form-label col-md-2 col-sm-2 label-align" >Proposed End Date: <span class="required"></span>
+                              <label class="col-form-label col-md-1 col-sm-1 label-align">End Date:
                               </label>
-                              <div class="col-md-3 col-sm-3 ">
+                              <div class="col-md-2 col-sm-2">
                                  {% render_field form.proposed_end_date class+="form-control form-control-sm" %}
                                   <div class="invalid-feedback">{{ form.proposed_end_date.errors|first }}</div>
                               </div>
-                            </div>
-                          <div class="form-group row">
-                            <label class="col-form-label col-md-2 col-sm-2 label-align" >Final Report due date: <span class+="required"></span>
+                              <label class="col-form-label col-md-1 col-sm-1 label-align"><small>Report Date</small>
                             </label>
-                            <div class="col-md-3 col-sm-3 ">
+                            <div class="col-md-2 col-sm-2 ">
                                  {% render_field form.final_report_due_date class+="form-control form-control-sm" %}
                                  <div class="invalid-feedback">{{ form.final_report_due_date.errors|first }}</div>
                             </div>
-                             <label class="col-form-label col-md-2 col-sm-2 label-align" > Activity Woredas: <span class="required">*</span>
+                            
+                            </div>
+                                                    <div class="form-group row">
+                            
+                             <label class="col-form-label col-md-2 col-sm-2 label-align">Activity Woreda:
                               </label>
-                              <div class="col-md-3 col-sm-3 ">
-                                   {% render_field form.aworeda class+="form-control form-control-sm form-select form-select-solid" attr="data-control:select2" %}
+                              <div class="col-md-8 col-sm-8">
+                                   {% render_field form.aworeda class+="form-control form-control-sm select2_group form-control" attr="data-control:select2"  %}
                                     <div class="invalid-feedback">{{ form.aworeda.errors|first }}</div>
                               </div>
                           </div>
                          
-                             <div class="form-group row">
-                            <label class="col-form-label col-md-2 col-sm-2 label-align" >Mercy Corps Budget($): <span class+="required"></span>
+                              <div class="form-group row">
+                            <label class="col-form-label col-md-2 col-sm-2 label-align" >Mercy Corps Budget: <span class+="required"></span>
                             </label>
-                            <div class="col-md-3 col-sm-3 ">
-                                   {% render_field form.mc_budget_usd class="form-control form-control-sm" %}
-                                 <div class="invalid-feedback">{{ form.mc_budget_usd.errors|first }}</div>
+                            <div class="col-md-2 col-sm-2">
+                                   {% render_field form.mc_budget class="form-control form-control-sm" %}
+                                 <div class="invalid-feedback">{{ form.mc_budget.errors|first }}</div>
+                            </div>
+                             <div class="col-md-1 col-sm-1">
+                                   {% render_field form.mc_currency class="form-control form-control-sm" %}
+                                 <div class="invalid-feedback">{{ form.mc_currency.errors|first }}</div>
                             </div>
                          
-                            <label class="col-form-label col-md-2 col-sm-2 label-align" >Cost Share Budget($):
+                            <label class="col-form-label col-md-2 col-sm-2 label-align" >Cost Share Budget:
                             </label>
-                            <div class="col-md-3 col-sm-3 ">
-                                    {% render_field form.cost_sharing_budget_usd class="form-control form-control-sm" %}
-                                 <div class="invalid-feedback">{{ form.cost_sharing_budget_usd.errors|first }}</div>
+                            <div class="col-md-2 col-sm-2 ">
+                                    {% render_field form.cost_sharing_budget class="form-control form-control-sm" %}
+                                 <div class="invalid-feedback">{{ form.cost_sharing_budget.errors|first }}</div>
+                            </div>
+                            <div class="col-md-1 col-sm-1">
+                                    {% render_field form.cs_currency class="form-control form-control-sm" %}
+                                 <div class="invalid-feedback">{{ form.cs_currency.errors|first }}</div>
                             </div>
                           </div>
                           <div class="form-group row">

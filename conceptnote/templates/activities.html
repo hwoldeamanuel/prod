@@ -6,13 +6,13 @@
     <div class="">
       <div class="page-title">
         <div class="title_left">
-          <h3>Activity Concept Note</h3>
+            <h3>Concept Note :: Activity</h3>
         </div>
 
         <div class="title_right">
           <form hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'>
             {% csrf_token %}
-            <div class="col-md-5 col-sm-5   form-group pull-right top_search">
+            <div class="col-md-6 col-sm-6   form-group pull-right top_search">
 
                <div class="input-group">
                   <input name="search" type="text" class="form-control" placeholder="Search for..." 
@@ -21,14 +21,12 @@
                   hx-target="#icn_list">
                   <span class="input-group-btn">
                       <button type="button" class="btn btn-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      Go!
+                      New
                       </button>
                       <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
-                          <a class="dropdown-item" href="{% url 'activity_new' %}">Add New</a>
-                          <a class="dropdown-item" href="#">Another action</a>
-                          <a class="dropdown-item" href="#">Something else here</a>
-                          <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Separated link</a>
+                          <a class="dropdown-item" href="{% url 'activity_add' %}">Activity CN</a>
+                          <a class="dropdown-item" href="{% url 'icns' %}">Intervention List</a>
+                          
                          </div>
                       </div>
                   </span>
@@ -44,7 +42,7 @@
         <div class="col-md-12">
           <div class="x_panel">
             <div class="x_title">
-              <h2>Activity CN List</h2>
+              <h2>Activity List</h2>
               <ul class="nav navbar-right panel_toolbox">
                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                 </li>
@@ -72,22 +70,23 @@
 
               <!-- start project list -->
 
-             <table class="table table-striped ">
+              <table class="table table-striped">
                      
                   
                 <thead>
-                        <tr>
+                              <tr>
                     <th style="width:">#</th>
                      
                     <th style="width: 10%">Intervention</th>
-                    <th style="width: 30%">Activity</th>
+                    <th style="width: 30%">Activity ID/Title</th>
                     <th style="width: 18%">Team Members</th>
                
-                    <th style="width: 14%">Dates</th>
-                    <th>Submission</th>
-                     <th>Approval</th>
-                     <th style="width: 11%"></th>
+                    <th style="width:12%">Date<small> (Start/End)</small></th>
+                   <th style="width:10%">Status <small>(ACN)</small></th>
+                      <th style="width:12%">Status <small>(Report)</small></th>
+                     <th >Action</th>
                      </tr>
+                     
                 </thead>
                 <tbody>
                 {% if activities %}
@@ -95,13 +94,10 @@
                   <tr>
                     <td>{{ forloop.counter }}</td>
 <td> {{ activity.icn.icn_number }}</br>
-<small>{{ activity.icn.program}}</small></br>
-<small>{{ activity.icn.program.portfolio}}</small>
-</td>
-                    <td>
-                      <a>{{ activity.title }}</a>
-                      <br />
-                      <small>{{ activity.icn}}</small>
+<small>{{ activity.icn.program }}</small></td>
+                    <td>{{activity.acn_number}}</br>
+                      <small>{{ activity.title }}</small>
+                     
                     </td>
                     <td>
                       <ul class="list-inline">
@@ -114,10 +110,11 @@
                           <img src="{% static 'images/user.png' %}" class="avatar" title="{{ activity.technical_lead.user }}">
                         </li>
                            <li>
-                          <img src="{% static 'images/user.png' %}" class="avatar" title="{{ activity.program_lead.user }}">
+                         <img src="{% static 'images/user.png' %}" class="avatar" title="{{ activity.finance_lead.user }}">
                         </li>
                           <li>
-                          <img src="{% static 'images/user.png' %}" class="avatar" title="{{ activity.finance_lead.user }}">
+                          
+                           <img src="{% static 'images/user.png' %}" class="avatar" title="{{ activity.program_lead.user }}">
                         </li>
                         
                       </ul>
@@ -128,18 +125,25 @@
                         <small>{{ activity.proposed_end_date }}</small>
                     </td>
                     <td>
-                      <span class="badge {% if activity.status == True %}badge bg-green {% else %} badge bg-red {% endif %}">{{ activity.get_status_display}}</span>
-                   </td>
-                   <td>
+                    {% if activity.status == True %}
                       <span class="badge {% if 'Rejected' in activity.approval_status %} bg-red {% elif 'Approved' in activity.approval_status %} bg-green {% else %} bg-warning {% endif %}">{% if activity.approval_status %} {{ activity.approval_status}} {% else %} Pending {% endif %}</span>
+                      {% else %}
+                      <span class="badge {% if activity.status == True %}badge bg-green {% else %} badge bg-red {% endif %}">{{ activity.get_status_display}}</span>
+                      {% endif %}
+                   </td>
+                  <td>
+                     {% if not activity.activityreport or activity.approval_status != '100% Approved' %}
+                      <span class="badge badge bg-default">{{activity.final_report_due_date}}</span>
+                   {% elif activity.activityreport.status == True %}
+                      <span class="badge {% if 'Rejected' in activity.activityreport.approval_status %} bg-red {% elif 'Approved' in activity.activityreport.approval_status %} bg-green {% else %} bg-warning {% endif %}">{% if activity.activityreport.approval_status %} {{ activity.activityreport.approval_status}} {% else %} Pending {% endif %}</span>
+                     {% elif activity.activityreport.status == False %}
+                    <span class="badge {% if activity.activityreport and activity.activityreport.status == True %}badge bg-green {% else %} badge bg-warning {% endif %}">{{ activity.activityreport.get_status_display}}</span>
+                     {% endif %}
                     </td>
                     
-                    <td>
-
-                      <a button class="btn btn-sm btn-info" href="{% url 'activity_detail' activity.id %}"><span><i class="fa fa-eye"></i></span>View</a>
-                      
-                      
-                     
+                    
+                      <td class=" last"><a href="{% url 'activity_detail' activity.id %}">View</a>
+                    
                      
                     </td>
                   </tr>

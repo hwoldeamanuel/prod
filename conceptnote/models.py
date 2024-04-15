@@ -309,7 +309,7 @@ class Activity(models.Model):
     icn = models.ForeignKey(Icn, on_delete=models.DO_NOTHING)
     proposed_start_date = models.DateField()
     proposed_end_date = models.DateField()
-    acn_number =  models.CharField(max_length=20, null=True, blank=True)
+    acn_number =  models.CharField(max_length=30, null=True, blank=True)
     alead_agency = models.ForeignKey(Portfolio, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='acns')
     alead_co_agency = models.ManyToManyField(Portfolio,  blank=True, related_name='aco_leads')
     final_report_due_date = models.DateField(null=True, blank=True)
@@ -319,9 +319,20 @@ class Activity(models.Model):
     description = models.TextField(null=True, blank=True)
     aworeda = models.ManyToManyField(ImplementationArea,  blank=True, related_name='activity_woredas')
     
-    mc_budget_usd = models.FloatField(null=True, blank=True)
+    mc_budget = models.FloatField(null=True, blank=True)
     
-    cost_sharing_budget_usd = models.FloatField(null=True, blank=True)
+    cost_sharing_budget = models.FloatField(null=True, blank=True)
+    USD = 1
+    ETB = 2
+    CURRENCY_CHOICES =   (
+        (USD, 'USD'),
+        (ETB, 'ETB'),
+     
+        )
+
+ 
+    mc_currency = models.PositiveSmallIntegerField(choices=CURRENCY_CHOICES, default = 1, blank=True, null=True)
+    cs_currency =  models.PositiveSmallIntegerField(choices=CURRENCY_CHOICES, default = 1, blank=True, null=True)
     
     
    
@@ -403,7 +414,7 @@ class ActivitySubmit(models.Model):
     activity =  models.ForeignKey(
         Activity, on_delete=models.CASCADE, null=True, blank=True)
     submission_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)
-    submission_status = models.PositiveSmallIntegerField(choices=SSTATUS, default = 2, blank=True, null=True)
+    submission_status = models.ForeignKey(Submission_Status, on_delete=models.CASCADE)
     submission_note = models.TextField(null=True,  blank=True)
 
     document = models.ForeignKey(ActivityDocument, on_delete=models.CASCADE, null=True, blank=True)
@@ -438,7 +449,7 @@ class ActivitySubmitApproval_T(models.Model):
     submit_id = models.OneToOneField(ActivitySubmit, on_delete=models.CASCADE)
     approval_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)
     approval_note = models.TextField(null=True,  blank=True)
-    approval_status = models.PositiveSmallIntegerField(choices=STATUS, default=1, blank=True, null=True)
+    approval_status = models.ForeignKey(Approvalt_Status, on_delete=models.CASCADE)
     document = models.ForeignKey(ActivityDocument, on_delete=models.CASCADE)
     
     def __init__(self, *args, **kwargs):
@@ -473,7 +484,7 @@ class ActivitySubmitApproval_P(models.Model):
     submit_id = models.OneToOneField(ActivitySubmit, on_delete=models.CASCADE)
     approval_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)
     approval_note = models.TextField(null=True,  blank=True)
-    approval_status = models.PositiveSmallIntegerField(choices=STATUS, default=1, blank=True, null=True)
+    approval_status = models.ForeignKey(Approvalf_Status, on_delete=models.CASCADE)
     document = models.ForeignKey(ActivityDocument, on_delete=models.CASCADE)
     
     def __init__(self, *args, **kwargs):
@@ -508,7 +519,7 @@ class ActivitySubmitApproval_F(models.Model):
     submit_id = models.OneToOneField(ActivitySubmit, on_delete=models.CASCADE)
     approval_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)
     approval_note = models.TextField(null=True,  blank=True)
-    approval_status = models.PositiveSmallIntegerField(choices=STATUS, default=1, blank=True, null=True)
+    approval_status = models.ForeignKey(Approvalt_Status, on_delete=models.CASCADE)
     document = models.ForeignKey(ActivityDocument, on_delete=models.CASCADE)
     
     def __init__(self, *args, **kwargs):

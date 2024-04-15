@@ -7,7 +7,7 @@
  <div class="form-group row">
   <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.approval_note.id_for_label }}">Approval Note <span class="required">*</span>
   </label>
-  <div class="col-md-10 col-sm-10">
+  <div class="col-md-8 col-sm-8">
     {%  render_field form.approval_note class+="form-control required" %}
     <div class="invalid-feedback">{{ form.approval_note.errors|first }}</div>
 </div>
@@ -30,7 +30,7 @@
     <div class="invalid-feedback">{{ form.document.errors|first }}</div>
 </div>
   <div class="col-md-3 col-sm-3">
- <button type="button" hx-get="/conceptnote/activity_submit_document/{{activity.id}}/" hx-target="#dialog" class="btn btn-info btn-sm" ><i class="fa fa-paperclip"></i>Version</button>
+ <button type="button"  {% if did != 2 %} disabled {% endif %}  hx-get="/conceptnote/activity_submit_document/{{activity.id}}/" hx-target="#dialog" class="btn btn-info btn-sm" ><i class="fa fa-paperclip"></i>Version</button>
    
 </div>
 

@@ -7,7 +7,7 @@
               <div class="col-md-12 col-sm-12  ">
                 <div class="x_panel">
                   <div class="x_title">
-                   <h2>Intervention<small>Profile</small></h2>
+                   <h2>Profile<small>Intervention</small></h2>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                       </li>
@@ -28,9 +28,9 @@
                   
                     <div class="panel-body">
                      
-                         
-                          <p>Title:<strong> {{ icn.title }}</strong></p>
                           <p>Program:<strong>  {{ icn.program }}</strong></p>
+                          <p>Title:<strong> {{ icn.title }}</strong></p>
+                         
                           <p>ID:<strong> {{ icn.icn_number }}</strong></p>
                             <p><strong>Description: </strong> {{ icn.description }}</p>
 
@@ -55,8 +55,8 @@
                       {% for woreda in icn.iworeda.all %}
                       <strong>{{woreda}},</strong>
                       {% endfor %}</p>
-                              <p>Environmnetal Impact: {% if icn.eniromental_impact == '3' %}High{% elif icn.eniromental_impact == '2' %}<strong>Medium</strong>{% elif icn.eniromental_impact == '1' %}<strong>Low</strong>{% endif %}</p>
-                              <p>Environmnetal Impact Doc <i class="fa fa-paperclip"></i>:<strong>{% if icn.environmental_assessment_att %}<a href="{% url 'download_env_att' icn.id %}"><i class="fa fa-paperclip"></i>  download </a> {% else %}NA{% endif%} </strong></p>
+                              <p>Environmnetal Impact: {% if icn.eniromental_impact == '3' %}<strong>High</strong>{% elif icn.eniromental_impact == '2' %}<strong>Medium</strong>{% elif icn.eniromental_impact == '1' %}<strong>Low</strong>{% endif %}</p>
+                              <p>Environmnetal Impact Doc <i class="fa fa-paperclip"></i>:<strong>{% if icn.environmental_assessment_att %}<a href="{% url 'download_env_att' icn.id %}"> download </a> {% else %}NA{% endif%} </strong></p>
 
                               <p>Total Mercy Corps budget:<strong> {{ icn.mc_budget|floatformat:2|intcomma }}</strong>{{icn.get_mc_currency_display }}</p>
                               <p>Cost-share budget:<strong> {{ icn.cost_sharing_budget|floatformat:2|intcomma }}</strong>{{icn.get_cs_currency_display }}</p>
