@@ -53,7 +53,9 @@ class IcnReport(models.Model):
                                        choices=STATUS_CHOICES)
     approval_status = models.CharField(max_length=100,null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-
+    
+    def get_name(self):
+        return "InterventionReport"
     
     def __str__(self):
         return str(self.icn.title)
@@ -264,6 +266,8 @@ class ActivityReport(models.Model):
     approval_status = models.CharField(max_length=100,null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
+    def get_name(self):
+        return "ActivityReport"
         
        
     def __str__(self):

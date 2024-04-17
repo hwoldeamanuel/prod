@@ -19,6 +19,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from program.models import Program, UserRoles
 from conceptnote.models import Icn, Activity
+from report.models import IcnReport, ActivityReport
 import json
 from django.db.models import Max, Avg,Sum,Count
 from django.db.models import Q
@@ -239,14 +240,21 @@ def user_program_roles(request):
 
 
 def user_conceptnotes(request):
+    
     user = User.objects.filter(username=request.user)
    
     userroles = UserRoles.objects.filter(user__in=user)
-    qsi = Icn.objects.filter(Q(user__in=user) | Q(program_lead__in=userroles) | Q(technical_lead__in=userroles)| Q(finance_lead__in=userroles)).only("title", "id","user","program_lead","technical_lead","finance_lead","status","approval_status")
-    qsa = Activity.objects.filter(Q(user__in=user) | Q(program_lead__in=userroles) | Q(technical_lead__in=userroles)| Q(finance_lead__in=userroles)).only("title", "id", "user","program_lead","technical_lead","finance_lead","status","approval_status")
-      
+    qsi = Icn.objects.filter(Q(user__in=user) | Q(program_lead__in=userroles) | Q(technical_lead__in=userroles)| Q(finance_lead__in=userroles)).exclude(approval_status='100% Approved').only("title", "id","user","program_lead","technical_lead","finance_lead","status","approval_status")
+    qsa = Activity.objects.filter(Q(user__in=user) | Q(program_lead__in=userroles) | Q(technical_lead__in=userroles)| Q(finance_lead__in=userroles)).exclude(approval_status='100% Approved').only("title", "id", "user","program_lead","technical_lead","finance_lead","status","approval_status")
+    qsir = IcnReport.objects.filter(Q(user__in=user) | Q(program_lead__in=userroles) | Q(technical_lead__in=userroles)| Q(finance_lead__in=userroles)).exclude(approval_status='100% Approved').only( "id","user","program_lead","technical_lead","finance_lead","status","approval_status")
+    qsar = Activity.objects.filter(Q(user__in=user) | Q(program_lead__in=userroles) | Q(technical_lead__in=userroles)| Q(finance_lead__in=userroles)).exclude(approval_status='100% Approved').only( "id", "user","program_lead","technical_lead","finance_lead","status","approval_status")
        
-    conceptnotes = list(chain(qsi, qsa))
+    conceptnotes = list(chain(qsi, qsa, qsir, qsar))
+    for obj in conceptnotes:
+        
+        types = type(obj).__name__
+        obj.types = types
+
     return render(request, 'user/partial/conceptnotes.html', {
         'conceptnotes': conceptnotes,
     })

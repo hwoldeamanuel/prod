@@ -103,10 +103,10 @@
                 <ul class="nav side-menu">
                   <li "{% if 'setting' in request.path %}active{%endif %}"><a><i class="fa fa-bug"></i> System Admin <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu" style="{% if 'setting' in request.path %}display: block;{% endif %}">
-                      <li class="{% if 'account' in request.path %}current-page{% endif %}"><a href="{% url 'user_setting' %}">Account Settings</a></li>
-                             <li class="{% if 'groups' in request.path %}current-page{% endif %}"><a href="{% url 'group_setting' %}">Users Group Settings</a></li>
-                      <li class="{% if 'boundaries' in request.path %}current-page{% endif %}"><a href="{% url 'admin_boundary' %}">Admin Boundaries</a></li>
-                      <li class="{% if 'project_types' in request.path %}current-page{% endif %}"><a href="{% url 'project_type' %}">Project Types</a></li>
+                      <li class="{% if 'account' in request.path %}current-page{% elif request.user.is_superuser == False %}nav-link disabled{%endif%}"><a href="{% url 'user_setting' %}" >Account Settings</a></li>
+                             <li class="{% if 'groups' in request.path %}current-page{% elif request.user.is_superuser == False %}nav-link disabled{%endif%}"><a href="{% url 'group_setting' %}">Users Group Settings</a></li>
+                      <li class="{% if 'boundaries' in request.path %}current-page{% elif request.user.is_superuser == False %}nav-link disabled{%endif%}"><a href="{% url 'admin_boundary' %}">Admin Boundaries</a></li>
+                      <li class="{% if 'project_types' in request.path %}current-page{% elif request.user.is_superuser == False %}nav-link disabled{%endif%}"><a href="{% url 'project_type' %}">Project Types</a></li>
                       
                     </ul>
                   </li>

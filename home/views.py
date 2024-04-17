@@ -44,9 +44,15 @@ def home(request):
   total_user  =  User.objects.count
   total_icn = Icn.objects.count
   total_activity = Activity.objects.count
+  total_cn=0
   program_users = Program.objects.annotate(num_user=Count("users_role")).order_by('-num_user')[:12]
+  program_cn = Program.objects.annotate(num_cn=Count("icn__activity") + Count("icn")).filter(num_cn__gte=1).order_by('-num_cn')
+  for program in program_cn:
+     total_cn = program.num_cn + total_cn
+
   total_woreda = ImplementationArea.objects.count
-  context = {'program_users':program_users, 'total_program': total_program, 'total_portfolio':total_portfolio, 'total_user':total_user,  'total_woreda':total_woreda, 'total_icn':total_icn, 'total_activity':total_activity}
+  
+  context = {'program_users':program_users, 'total_program': total_program,'total_cn':total_cn,'program_cn':program_cn, 'total_portfolio':total_portfolio, 'total_user':total_user,  'total_woreda':total_woreda, 'total_icn':total_icn, 'total_activity':total_activity}
   return render(request, 'home/dashboard_main.html', context)
 
 
