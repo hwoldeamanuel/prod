@@ -1,0 +1,18 @@
+{% autoescape off %}
+Program: {{program}}
+Intervention CN Report Title: {{title}}
+Submitted by: {{initiator }}
+Intervention CN Report Version: {{version}}
+Date: {{date}}
+
+http://127.0.0.1:8000{% url 'icnreport_submit_approval' id  %}
+
+https://cnms.onrender.com{% url 'icnreport_submit_approval' id  %}
+
+Please visit above link to review and approve the concept note.
+If clicking the link above doesn't work, please copy and paste the URL in a new browser
+window instead.
+
+  Sincerely,
+  CNMS App
+{% endautoescape %}

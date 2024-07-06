@@ -34,10 +34,10 @@ environ.Env.read_env()
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", "True").lower() == "true"
+DEBUG = True
 
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
+ALLOWED_HOSTS =  []
 
 
 
@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'user',
     'report',
     'conceptnote',
-   
+    
     'django_htmx',
     
     'django_extensions',
@@ -69,7 +69,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
    
-   
+    'crispy_bootstrap4',
     'widget_tweaks',
  
   
@@ -78,7 +78,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    #'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -117,18 +117,24 @@ WSGI_APPLICATION = 'cnms.wsgi.application'
 
 import dj_database_url
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'paqcnms',
+            'USER': 'paq_admin',
+            'PASSWORD': 'Letmin@2024',
+            'HOST': 'conceptnote.postgres.database.azure.com',
+            'PORT': '5432',
+            
+        }
     }
-}
 
 
-database_url = os.environ.get("DATABASE_URL")
-DATABASES = {
-    "default" : dj_database_url.parse(database_url)
+
+#database_url = os.environ.get("DATABASE_URL")
+#DATABASES = {
+ #   "default" : dj_database_url.parse(database_url)
    
-}
+#}
 
 
 # Password validation
@@ -164,17 +170,17 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 #Location of static files
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'), ]
 # This production code might break development mode, so we check whether we're in DEBUG mode
-if not DEBUG:
+#if not DEBUG:
     # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+#   STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     # Enable the WhiteNoise storage backend, which compresses static files to reduce disk use
     # and renames the files with unique names for each version to support long-term caching
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    #STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 
@@ -193,12 +199,12 @@ USE_I18N = True
 USE_TZ = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = "CNMS App"
 EMAIL_HOST_USER = "habtamuwh@gmail.com"
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+EMAIL_HOST_PASSWORD = "rnqc nqhx ijse kebm"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/

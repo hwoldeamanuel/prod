@@ -26,6 +26,11 @@ from conceptnote.models import Icn, Activity, IcnImplementationArea
 from django.forms import formset_factory 
 from django.views.generic.edit import CreateView
 from django.utils import timezone
+from django.template import Context
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from render_block import render_block_to_string
+from django_htmx.http import HttpResponseClientRedirect
 from django_htmx.http import HttpResponseClientRedirect
 from django_htmx.http import HttpResponseClientRefresh
 from app_admin.models import Approvalf_Status, Approvalt_Status, Submission_Status
@@ -146,12 +151,6 @@ def icnreport_submit_form(request, id, sid):
     icnreport = IcnReport.objects.get(icn_id=icn.id)
     form = IcnReportSubmitForm(user=request.user,icnreport=icnreport, sid=sid)
     
-    subject = 'Request for Report Approval'
-    
-    message = 'A new Intervention Concept Note has been submitted'
-    email_from = None 
-    recipient_list = [icnreport.user.email,icnreport.technical_lead.user.email, icnreport.program_lead.user.email, icnreport.finance_lead.user.email]
-
     if request.method == "POST":
         form = IcnReportSubmitForm(request.POST, request.FILES)
         if form.is_valid():
@@ -165,13 +164,33 @@ def icnreport_submit_form(request, id, sid):
             
             icnreportsubmit = get_object_or_404(IcnReportSubmit, pk=instance.pk)
             #Document.objects.create(user = icnreport.user, document = instance.document,  icnreport=instance.icnreport, description = document_i)
-            if icnreportsubmit.submission_status.name == 'Request Submitted':
+            if icnreportsubmit.submission_status_id == 2:
                 IcnReport.objects.filter(icn_id=icn.id).update(status=True)
                 IcnReport.objects.filter(icn_id=icn.id).update(approval_status="Pending Submission")
                 IcnReportSubmitApproval_T.objects.create(user = icnreport.technical_lead,submit_id = instance, document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
                 IcnReportSubmitApproval_P.objects.create(user = icnreport.program_lead,submit_id = instance,document = instance.document, approval_status=Approvalf_Status.objects.get(id=1))
                 IcnReportSubmitApproval_F.objects.create(user = icnreport.finance_lead,submit_id = instance,document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
 
+                subject = 'Request for Report Approval'
+                context = {
+                        "program": icn.program,
+                        "title": icn.title,
+                        "id": icnreport.id,
+                        "initiator": icnreport.user,
+                       
+                        "version": icnreportsubmit.document,
+                        "date": icnreportsubmit.submission_date,
+                        }
+                template_name = "report/partial/report_mail.html"
+                convert_to_html_content =  render_to_string(
+                template_name=template_name,
+                context=context
+                                    )
+                plain_message = strip_tags(convert_to_html_content)
+                message = plain_message
+                
+                email_from = None 
+                recipient_list = [icnreport.user.email, icnreport.technical_lead.user.email, icnreport.program_lead.user.email, icnreport.finance_lead.user.email]
                 send_mail(subject, message, email_from, recipient_list)
                 return HttpResponse(
                 status=204,
@@ -181,11 +200,29 @@ def icnreport_submit_form(request, id, sid):
                         "showMessage": f"{instance.id} added."
                     })
                 })
-            elif icnreportsubmit.submission_status.name == 'Request Canceled':
+            elif icnreportsubmit.submission_status_id == 1:
                 IcnReport.objects.filter(pk=id).update(status=False)
                 IcnReport.objects.filter(pk=id).update(approval_status="Pending Submission")
-                subject = 'Request withdrawn temporarly'
-                message = "The Intervention Concept Note approval request has been withdrawn for further update/changes & will notify you when it's re-submitted for approval process"
+                subject = 'Request for Report Approval Canceled'
+                context = {
+                        "program": icn.program,
+                        "title": icn.title,
+                        "id": icnreport.id,
+                        "initiator": icnreport.user,
+                       
+                        "version": icnreportsubmit.document,
+                        "date": icnreportsubmit.submission_date,
+                        }
+                template_name = "report/partial/report_mail.html"
+                convert_to_html_content =  render_to_string(
+                template_name=template_name,
+                context=context
+                                    )
+                plain_message = strip_tags(convert_to_html_content)
+                message = plain_message
+                
+                email_from = None 
+                recipient_list = [icnreport.user.email, icnreport.technical_lead.user.email, icnreport.program_lead.user.email, icnreport.finance_lead.user.email]
                 send_mail(subject, message, email_from, recipient_list)
                 return HttpResponse(
                 status=204,
@@ -221,10 +258,7 @@ def icnreport_approvalt(request, id, did):
     icnreportsubmit = get_object_or_404(IcnReportSubmit, pk=id)
     
     icnreport =  get_object_or_404(IcnReport, id=icnreportsubmit.icnreport_id)
-    subject = 'Approval Status changed'
-    message = 'Reviewed & status has been updated to this Concept Note has been submitted'
-    email_from = None 
-    recipient_list = [icnreport.technical_lead.user.email, icnreport.program_lead.user.email, icnreport.finance_lead.user.email]
+    
        
     if request.method == "GET":
         icnreportsubmitApproval_t = get_object_or_404(IcnReportSubmitApproval_T, submit_id_id=id)
@@ -242,7 +276,26 @@ def icnreport_approvalt(request, id, did):
             icnreportsubmit = get_object_or_404(IcnReportSubmit, pk=id)
             icnreport =  get_object_or_404(IcnReport, id=icnreportsubmit.icnreport_id)
             update_approval_status(icnreportsubmit.id)
-            context = {'icnreport':icnreport, 'icnreportsubmit':icnreportsubmit }
+            subject = 'Report Approval Status Changed'
+            context = {
+                        "program": icnreport.icn.program,
+                        "title": icnreport.title,
+                        "id": icnreport.id,
+                        "initiator": icnreport.technical_lead.user,
+                       
+                       
+                        "date": icnreportsubmit.submission_date,
+                        }
+            template_name = "report/partial/report_mail.html"
+            convert_to_html_content =  render_to_string(
+            template_name=template_name,
+            context=context
+                                )
+            plain_message = strip_tags(convert_to_html_content)
+            message = plain_message
+            
+            email_from = None 
+            recipient_list = [icnreport.user.email, icnreport.technical_lead.user.email, icnreport.program_lead.user.email, icnreport.finance_lead.user.email]
             send_mail(subject, message, email_from, recipient_list)
             return HttpResponse(
                 status=204,
@@ -262,10 +315,7 @@ def icnreport_approvalp(request, id, did):
     icnreportsubmit = get_object_or_404(IcnReportSubmit, pk=id)
     
     icnreport =  get_object_or_404(IcnReport, id=icnreportsubmit.icnreport_id)
-    subject = 'Approval Status changed'
-    message = 'Reviewed & status has been updated to this Concept Note has been submitted'
-    email_from = None 
-    recipient_list = [icnreport.user ,icnreport.technical_lead.user.email, icnreport.program_lead.user.email, icnreport.finance_lead.user.email]
+    
        
     if request.method == "GET":
         icnreportsubmitApproval_p = get_object_or_404(IcnReportSubmitApproval_P, submit_id_id=id)
@@ -283,6 +333,26 @@ def icnreport_approvalp(request, id, did):
             update_approval_status(icnreportsubmit.id)
             icnreport =  get_object_or_404(IcnReport, id=icnreportsubmit.icnreport_id)
             context = {'icnreport':icnreport, 'icnreportsubmit':icnreportsubmit }
+            subject = 'Report Approval Status Changed'
+            context = {
+                        "program": icnreport.icn.program,
+                        "title": icnreport.title,
+                        "id": icnreport.id,
+                        "initiator": icnreport.program_lead.user,
+                       
+                       
+                        "date": icnreportsubmit.submission_date,
+                        }
+            template_name = "report/partial/report_mail.html"
+            convert_to_html_content =  render_to_string(
+            template_name=template_name,
+            context=context
+                                )
+            plain_message = strip_tags(convert_to_html_content)
+            message = plain_message
+            
+            email_from = None 
+            recipient_list = [icnreport.user.email, icnreport.technical_lead.user.email, icnreport.program_lead.user.email, icnreport.finance_lead.user.email]
             send_mail(subject, message, email_from, recipient_list)
             return HttpResponse(
                 status=204,
@@ -302,10 +372,7 @@ def icnreport_approvalf(request, id, did):
     icnreportsubmit = get_object_or_404(IcnReportSubmit, pk=id)
     
     icnreport =  get_object_or_404(IcnReport, id=icnreportsubmit.icnreport_id)
-    subject = 'Approval Status changed'
-    message = 'Reviewed & status has been updated to this Concept Note has been submitted'
-    email_from = None 
-    recipient_list = [icnreport.user ,icnreport.technical_lead.user.email, icnreport.program_lead.user.email, icnreport.finance_lead.user.email]
+
        
     if request.method == "GET":
         icnreportsubmitApproval_f = get_object_or_404(IcnReportSubmitApproval_F, submit_id_id=id)
@@ -323,6 +390,26 @@ def icnreport_approvalf(request, id, did):
             update_approval_status(icnreportsubmit.id)
             icnreport =  get_object_or_404(IcnReport, id=icnreportsubmit.icnreport_id)
             context = {'icnreport':icnreport, 'icnreportsubmit':icnreportsubmit }
+            subject = 'Report Approval Status Changed'
+            context = {
+                        "program": icnreport.icn.program,
+                        "title": icnreport.title,
+                        "id": icnreport.id,
+                        "initiator": icnreport.finance_lead.user,
+                       
+                       
+                        "date": icnreportsubmit.submission_date,
+                        }
+            template_name = "report/partial/report_mail.html"
+            convert_to_html_content =  render_to_string(
+            template_name=template_name,
+            context=context
+                                )
+            plain_message = strip_tags(convert_to_html_content)
+            message = plain_message
+            
+            email_from = None 
+            recipient_list = [icnreport.user.email, icnreport.technical_lead.user.email, icnreport.program_lead.user.email, icnreport.finance_lead.user.email]
             send_mail(subject, message, email_from, recipient_list)
             return HttpResponse(
                 status=204,
@@ -631,28 +718,27 @@ def activityreport_detail(request, id):
 
  
 def activityreport_add(request, id): 
-    acn = Activity.objects.get(pk=id)
-    aimpacts =  ActivityImpact.objects.filter(activity_id=id)
+    activity = Activity.objects.get(pk=id)
+    activitympacts =  ActivityImpact.objects.filter(activity_id=id)
     if request.method == "POST":
-        form = ActivityReportForm(request.POST,request.FILES, user=request.user, acn=acn)
+        form = ActivityReportForm(request.POST,request.FILES, user=request.user, activity=activity)
         if form.is_valid():
             instance = form.save(commit=False)
             instance.user = request.user
            
             instance.save()
            
-            for aimpact in aimpacts:
-                 ActivityReportImpact.objects.create(activityreport=instance, activityimpact=aimpact)
+           
             return redirect('activityreport_detail',instance.pk) 
         
         
-        form = ActivityReportForm(request.POST,request.FILES, user=request.user, acn=acn)   
-        context = {'form':form, 'acn':acn}
-        return render(request, 'report/activityreport_add.html', context)
+        form = ActivityReportForm(request.POST,request.FILES, user=request.user, activity=activity)   
+        context = {'form':form, 'activity':activity}
+        return render(request, 'report/activityreport_step_profile_add.html', context)
     
-    form = ActivityReportForm(user=request.user, acn=acn)   
-    context = {'form':form, 'acn':acn}
-    return render(request, 'report/activityreport_add.html', context)
+    form = ActivityReportForm(user=request.user, acn=activity)   
+    context = {'form':form, 'activity':activity}
+    return render(request, 'report/activityreport_step_profile_add.html', context)
 
  
 def activityreport_edit(request, id): 
@@ -815,7 +901,8 @@ def current_activityreport_submit_approval_list(request, id):
 
 def activityreport_submit_form(request, id, sid): 
     activityreport = get_object_or_404(ActivityReport, pk=id)
-    activityreportsubmit = ActivityReportSubmit.objects.filter(activityreport_id=activityreport.id).latest('id')
+    activity = get_object_or_404(Activity, id = activitiesreport.activity_id)
+    
     if sid== 1:
         form = ActivityReportSubmitForm(sid=sid, activityreport=activityreport, user=request.user)
         form.fields['document'].choices = [
@@ -829,11 +916,7 @@ def activityreport_submit_form(request, id, sid):
                 ]
    
     
-    subject = 'Request for Approval'
     
-    message = 'A new Intervention Concept Note has been submitted'
-    email_from = None 
-    recipient_list = [activityreport.user.email,activityreport.technical_lead.user.email, activityreport.program_lead.user.email, activityreport.finance_lead.user.email]
 
     if request.method == "POST":
         form = ActivityReportSubmitForm(request.POST, request.FILES)
@@ -848,14 +931,34 @@ def activityreport_submit_form(request, id, sid):
             
             activityreportsubmit = get_object_or_404(ActivityReportSubmit, pk=instance.pk)
             #Document.objects.create(user = icnreport.user, document = instance.document,  icnreport=instance.icnreport, description = document_i)
-            if activityreportsubmit.submission_status.name == 'Request Submitted':
+            if activityreportsubmit.submission_status_id == 2:
                 ActivityReport.objects.filter(pk=id).update(status=True)
                 ActivityReport.objects.filter(pk=id).update(approval_status="Pending Approval")
                 ActivityReportSubmitApproval_T.objects.create(user = activityreport.technical_lead,submit_id = instance, document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
                 ActivityReportSubmitApproval_P.objects.create(user = activityreport.program_lead,submit_id = instance,document = instance.document, approval_status=Approvalf_Status.objects.get(id=1))
                 ActivityReportSubmitApproval_F.objects.create(user = activityreport.finance_lead,submit_id = instance,document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
-
+                subject = 'Request for Report Approval'
+                context = {
+                        "program": activity.icn.program,
+                        "title": activity.title,
+                        "id": activityreport.id,
+                        "initiator": activityreport.user,
+                       
+                     
+                        "date": activityreportsubmit.submission_date,
+                        }
+                template_name = "report/partial/report_mail.html"
+                convert_to_html_content =  render_to_string(
+                template_name=template_name,
+                context=context
+                                    )
+                plain_message = strip_tags(convert_to_html_content)
+                message = plain_message
+                
+                email_from = None 
+                recipient_list = [activityreport.user.email, activityreport.technical_lead.user.email, activityreport.program_lead.user.email, activityreport.finance_lead.user.email]
                 send_mail(subject, message, email_from, recipient_list)
+
                 return HttpResponse(
                 status=204,
                 headers={
@@ -865,12 +968,31 @@ def activityreport_submit_form(request, id, sid):
                     })
                 })
             
-            elif activityreportsubmit.submission_status.name == 'Request Canceled':
+            elif activityreportsubmit.submission_status_id == 1:
                 ActivityReport.objects.filter(pk=id).update(status=False)
                 ActivityReport.objects.filter(pk=id).update(approval_status="Pending Submission")
-                subject = 'Request withdrawn temporarly'
-                message = "Activity Concept Note Report approval request has been withdrawn for further update/changes & will notify you when it's re-submitted for approval process"
+                subject = 'Report Approval Request Canceled'
+                context = {
+                        "program": activity.icn.program,
+                        "title": activity.title,
+                        "id": activityreport.id,
+                        "initiator": activityreport.user,
+                       
+                     
+                        "date": activityreportsubmit.submission_date,
+                        }
+                template_name = "report/partial/report_mail.html"
+                convert_to_html_content =  render_to_string(
+                template_name=template_name,
+                context=context
+                                    )
+                plain_message = strip_tags(convert_to_html_content)
+                message = plain_message
+                
+                email_from = None 
+                recipient_list = [activityreport.user.email, activityreport.technical_lead.user.email, activityreport.program_lead.user.email, activityreport.finance_lead.user.email]
                 send_mail(subject, message, email_from, recipient_list)
+
                 return HttpResponse(
                 status=204,
                 headers={
@@ -929,6 +1051,7 @@ def activityreport_submit_document(request, id):
             
 def activityreport_submit_form_partial(request, id): 
     activityreport = get_object_or_404(ActivityReport, pk=id)
+    
     form = ActivityReportSubmitForm(user=request.user,activityreport=activityreport)
     
     context = {'form':form, 'activityreport':activityreport}
@@ -956,11 +1079,7 @@ def activityreport_approvalt(request, id, did):
     
     activityreport =  get_object_or_404(ActivityReport, id=activityreportsubmit.activityreport_id)
 
-    subject = 'Approval Status changed'
-    message = 'Activity Report has been Reviewed & its status has been changed'
-    email_from = None 
-    recipient_list = [activityreport.technical_lead.user.email, activityreport.program_lead.user.email, activityreport.finance_lead.user.email]
-       
+         
     if request.method == "GET":
         activityreportsubmitApproval_t = get_object_or_404(ActivityReportSubmitApproval_T, submit_id_id=id)
         form = ActivityReportApprovalTForm(instance=activityreportsubmitApproval_t, did=did)
@@ -978,7 +1097,28 @@ def activityreport_approvalt(request, id, did):
             activityreport =  get_object_or_404(ActivityReport, id=activityreportsubmit.activityreport_id)
             update_activityreport_approval_status(activityreportsubmit.id)
             context = {'activityreport':activityreport, 'activityreportsubmit':activityreportsubmit }
+            subject = 'Approval Status Changed'
+            context = {
+                        "program": activityreport.activity.icn.program,
+                        "title": activityreport.activity.title,
+                        "id": activityreport.id,
+                        "initiator": activityreport.technical_lead.user,
+                       
+                     
+                        "date": activityreportsubmit.submission_date,
+                        }
+            template_name = "report/partial/report_mail.html"
+            convert_to_html_content =  render_to_string(
+            template_name=template_name,
+            context=context
+                                )
+            plain_message = strip_tags(convert_to_html_content)
+            message = plain_message
+            
+            email_from = None 
+            recipient_list = [activityreport.user.email, activityreport.technical_lead.user.email, activityreport.program_lead.user.email, activityreport.finance_lead.user.email]
             send_mail(subject, message, email_from, recipient_list)
+
             return HttpResponse(
                 status=204,
                 headers={
@@ -998,11 +1138,7 @@ def activityreport_approvalp(request, id, did):
     
     activityreport =  get_object_or_404(ActivityReport, id=activityreportsubmit.activityreport_id)
 
-    subject = 'Approval Status changed'
-    message = 'Reviewed & status has been updated to this Concept Note has been submitted'
-    email_from = None 
-    recipient_list = [activityreport.technical_lead.user.email, activityreport.program_lead.user.email, activityreport.finance_lead.user.email]
-       
+        
     if request.method == "GET":
         activityreportsubmitApproval_p = get_object_or_404(ActivityReportSubmitApproval_P, submit_id_id=id)
         form = ActivityReportApprovalPForm(instance=activityreportsubmitApproval_p, did=did)
@@ -1020,7 +1156,28 @@ def activityreport_approvalp(request, id, did):
             activityreport =  get_object_or_404(ActivityReport, id=activityreportsubmit.activityreport_id)
             update_activityreport_approval_status(activityreportsubmit.id)
             context = {'activityreport':activityreport, 'activityreportsubmit':activityreportsubmit }
+            subject = 'Approval Status Changed'
+            context = {
+                    "program": activityreport.activity.icn.program,
+                    "title": activityreport.activity.title,
+                    "id": activityreport.id,
+                    "initiator": activityreport.program_lead.user,
+                    
+                    
+                    "date": activityreportsubmit.submission_date,
+                    }
+            template_name = "report/partial/report_mail.html"
+            convert_to_html_content =  render_to_string(
+            template_name=template_name,
+            context=context
+                                )
+            plain_message = strip_tags(convert_to_html_content)
+            message = plain_message
+            
+            email_from = None 
+            recipient_list = [activityreport.user.email, activityreport.technical_lead.user.email, activityreport.program_lead.user.email, activityreport.finance_lead.user.email]
             send_mail(subject, message, email_from, recipient_list)
+
             return HttpResponse(
                 status=204,
                 headers={
@@ -1040,11 +1197,7 @@ def activityreport_approvalf(request, id, did):
     
     activityreport =  get_object_or_404(ActivityReport, id=activityreportsubmit.activityreport_id)
 
-    subject = 'Approval Status changed'
-    message = 'Reviewed & status has been updated to this Concept Note'
-    email_from = None 
-    recipient_list = [activityreport.technical_lead.user.email, activityreport.program_lead.user.email, activityreport.finance_lead.user.email]
-       
+          
     if request.method == "GET":
         activityreportsubmitApproval_f = get_object_or_404(ActivityReportSubmitApproval_F, submit_id_id=id)
         form = ActivityReportApprovalFForm(instance=activityreportsubmitApproval_f, did=did)
@@ -1062,7 +1215,28 @@ def activityreport_approvalf(request, id, did):
             activityreport =  get_object_or_404(ActivityReport, id=activityreportsubmit.activityreport_id)
             update_activityreport_approval_status(activityreportsubmit.id)
             context = {'activityreport':activityreport, 'activityreportsubmit':activityreportsubmit }
+            subject = 'Request for Report Approval'
+            context = {
+                    "program": activityreport.activity.icn.program,
+                    "title": activityreport.activity.title,
+                    "id": activityreport.id,
+                    "initiator": activityreport.finance_lead.user,
+                    
+                    
+                    "date": activityreportsubmit.submission_date,
+                    }
+            template_name = "report/partial/report_mail.html"
+            convert_to_html_content =  render_to_string(
+            template_name=template_name,
+            context=context
+                                )
+            plain_message = strip_tags(convert_to_html_content)
+            message = plain_message
+            
+            email_from = None 
+            recipient_list = [activityreport.user.email, activityreport.technical_lead.user.email, activityreport.program_lead.user.email, activityreport.finance_lead.user.email]
             send_mail(subject, message, email_from, recipient_list)
+
             return HttpResponse(
                 status=204,
                 headers={

@@ -30,7 +30,7 @@ urlpatterns = [
     path('activityreport_submit_form_partial/<int:id>/', views.activityreport_submit_form_partial, name='activityreport_submit_form_partial'),
     path('activity/', views.activitiesreport, name='activitiesreport'),
     path('activity/<int:id>/profile/', views.activityreport_detail, name='activityreport_detail'),
-    path('activity/<int:id>/profile/add/', views.activityreport_add, name='activityreport_new'),
+    path('activity/<int:id>/profile/add/', views.activityreport_add, name='activityreport_add'),
     path('activity/<int:id>/profile/edit/', views.activityreport_edit, name='activityreport_edit'),
    
     

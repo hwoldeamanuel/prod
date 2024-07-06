@@ -26,15 +26,15 @@
               
                   <span class="input-group-btn">
                       <button type="button" class="btn btn-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      Action!
+                      New!
                       </button>
                       <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
-                          <a class="dropdown-item" hx-get="{% url 'add_portfolio' %}" hx-target="#dialog">Add New</a>
+                          <a class="dropdown-item" hx-get="{% url 'add_portfolio' %}" hx-target="#dialog">New Portfolio</a>
                            <div class="dropdown-divider"></div>
                            <a class="dropdown-item" href="{% url 'programs' %}">Program</a>
                          
                             <a class="dropdown-item" href="{% url 'icns' %}">Intervention CN</a>
-                            <a class="dropdown-item" href="{% url 'new_portfolio' %}">New Portfolio</a>
+                           
                          </div>
                       </div>
                   </span>

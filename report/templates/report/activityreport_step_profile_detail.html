@@ -29,13 +29,24 @@
                     <div class="panel-body">
                      
                          
-                          <p>Activity Title:<strong> {{ activityreport.activity.title }}</strong></p>
-                           <p>Intervention:<strong>  {{ activityreport.activity.icn }}</strong></p>
-                          <p>Program:<strong>  {{ activityreport.activity.icn.program }}</strong></p>
-                          <p>ID:<strong> {{ activityreport.activity.acn_number }}</strong></p>
+                         
+                                                      <div class="col-md-12 col-sm-12 project_detail">
+                       <div class="col-md-9 col-sm-9 project_detail">
+                          
+                          <p>Title:<strong> {{ activityreport.activity.title }}</strong></p>
+                          <p>ID:<strong> {{ activityreport.activity.acn_number }}</strong> </p>
+                         </div>
+                         <div class="col-md-3 col-sm-3 project_detail">
+                         <p>Program:<strong>  {{ activityreport.activity.icn.program }}</strong></p>
+                          <p>Intervention:<strong> {{ activityreport.activity.icn.icn_number }}</strong> </p>
+                          
+                          
+                        </div>
+                        </div>
+                         <div class="col-md-12 col-sm-12 project_detail">
                             <p><strong>Description: </strong> {{ activityreport.description }}</p>
 
-                          
+                          </div>
 
                           <div class="col-md-4 col-sm-4 project_detail">
 

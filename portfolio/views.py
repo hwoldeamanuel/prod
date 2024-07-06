@@ -260,7 +260,3 @@ def portfolio_conceptnotes(request, id):
     context = {'conceptnotes': conceptnotes}
 
     return render(request, 'partial/portfolio_conceptnotes.html', context)
-
-@login_required(login_url='login')
-def new_portfolio(request):
-    return render(request, 'new_portfolio.html')

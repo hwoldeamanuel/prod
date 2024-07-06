@@ -425,12 +425,12 @@ class IcnReportImpactForm(forms.ModelForm):
 class ActivityReportForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
-        acn = kwargs.pop('acn', None)
+        activity = kwargs.pop('activity', None)
         super().__init__(*args, **kwargs)
       
-        if user and acn:
-            self.fields['activity'].queryset =  Activity.objects.filter(id=acn.id)
-            self.fields['activity'].initial = Activity.objects.filter(id=acn.id).first()
+        if user and activity:
+            self.fields['activity'].queryset =  Activity.objects.filter(id=activity.id)
+            self.fields['activity'].initial = Activity.objects.filter(id=activity.id).first()
             
             program = Program.objects.filter(users_role=user)
             self.fields['program_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user)

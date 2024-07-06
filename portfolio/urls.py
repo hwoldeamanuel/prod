@@ -9,7 +9,7 @@ urlpatterns = [
    
     path('', views.portfolios, name='portfolio'),
     path('portfolio/', views.portfolios, name='portfolios'),
-    path('new/', views.new_portfolio, name='new_portfolio'),
+
     path('portfolios/', views.portfolios, name='portfolios'),
     path('portfolio/<int:pk>/', views.portfolio_detail, name='portfolio_detail'),
     path('program/edit/<int:id>/', views.edit_portfolio, name='edit_portfolio'),

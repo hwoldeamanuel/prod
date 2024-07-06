@@ -37,7 +37,7 @@
 
                 <div style="height:380px;">
                   <div class="row">
-                    <div class="table" id="SubmitList" hx-trigger="load, SubmitApprovalListChanged from:body" hx-get= "{% url 'current_submit_approval_list' icn.id %}" hx-target="this" >
+                    <div class="table" id="SubmitList" hx-trigger="load, SubmitApprovalListChanged from:body" hx-get= "{% url 'current_submit_approval_list' icn.id %}" hx-target="#SubmitList" >
 
   
                     </div>

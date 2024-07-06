@@ -34,13 +34,13 @@
         <td>{{activityreportsubmit.document }}</td>
           
         <td>
-          <button type="button" class="btn {% if activityreportsubmit.submission_status.name == 'Request Canceled' %} btn-danger {% else %}btn-success{% endif %} btn-sm btn-xs" >{{ activityreportsubmit.submission_status.name }}</button>
+          <span class="badge  {% if activityreportsubmit.submission_status_id == 1  %} badge-danger {% elif activityreportsubmit.submission_status_id == 2 %}badge-success{% endif %}" >{{ activityreportsubmit.submission_status.name }}</span>
          
         
        
  </td>
   <td>
-  {% if activityreportsubmit.submission_status.name == 'Request Canceled' %}
+  {% if activityreportsubmit.submission_status_id == 1 %}
   <div class="btn-group">
                     <button type="button" class="{% if request.user.id != activityreport.user.id %}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       Action
@@ -84,10 +84,10 @@
        
         <td>{{activityreportsubmit.activityreportsubmitapproval_t.document }}</td>
         <td>
-          <button type="button" class="{% if activityreportsubmit.activityreportsubmitapproval_t.approval_status.name == 'Pending Review' %} btn btn-primary btn-sm btn-xs{% elif activityreportsubmit.activityreportsubmitapproval_t.approval_status.name == 'Require Doc Update' %}btn btn-warning btn-sm btn-xs {% elif activityreportsubmit.activityreportsubmitapproval_t.approval_status.name == 'Request Endorsed' %}btn btn-success btn-sm btn-xs{% elif activityreportsubmit.activityreportsubmitapproval_t.approval_status.name == 'Request Rejected' %}btn btn-danger btn-sm btn-xs {% else %}btn btn-secondary btn-sm{% endif %}" >{% if activityreportsubmit.activityreportsubmitapproval_t %} {{ activityreportsubmit.activityreportsubmitapproval_t.approval_status.name }} {% else %}Pending Submission{% endif %}</button>
+          <span class="badge {% if activityreportsubmit.activityreportsubmitapproval_t.approval_status_id == 1 %} badge-primary{% elif activityreportsubmit.activityreportsubmitapproval_t.approval_status_id == 2 %}badge-warning {% elif activityreportsubmit.activityreportsubmitapproval_t.approval_status_id == 3 %}badge-success{% elif activityreportsubmit.activityreportsubmitapproval_t.approval_status_id == 4 %}badge-danger {% endif %}" >{% if activityreportsubmit.activityreportsubmitapproval_t %} {{ activityreportsubmit.activityreportsubmitapproval_t.approval_status.name }} {% endif %}</span>
         </td>
          <td><div class="btn-group">
-                    <button type="button" class="{% if request.user != activityreport.technical_lead.user or activityreportsubmit.activityreportsubmitapproval_t.approval_status.name != 'Pending Review'%}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="{% if request.user != activityreport.technical_lead.user or activityreportsubmit.activityreportsubmitapproval_t.approval_status_id != 1 %}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       Action
                     </button>
                     <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
@@ -123,10 +123,10 @@
        
     <td>{{activityreportsubmit.activityreportsubmitapproval_f.document }}</td>
     <td>
-                <button type="button" class="{% if activityreportsubmit.activityreportsubmitapproval_f.approval_status.name == 'Pending Review' %} btn btn-primary btn-sm btn-xs{% elif activityreportsubmit.activityreportsubmitapproval_f.approval_status.name == 'Require Doc Update' %}btn btn-warning btn-sm btn-xs {% elif activityreportsubmit.activityreportsubmitapproval_f.approval_status.name == 'Request Endorsed' %}btn btn-success btn-sm btn-xs{% elif activityreportsubmit.activityreportsubmitapproval_f.approval_status.name == 'Request Rejected' %}btn btn-danger btn-sm btn-xs {% else %}btn btn-secondary btn-sm{% endif %}" >{% if activityreportsubmit.activityreportsubmitapproval_f %} {{ activityreportsubmit.activityreportsubmitapproval_f.approval_status.name }} {% else %}Pending Submission{% endif %}</button>
+               <span class="badge {% if activityreportsubmit.activityreportsubmitapproval_f.approval_status_id == 1 %} badge-primary{% elif activityreportsubmit.activityreportsubmitapproval_f.approval_status_id == 2 %}badge-warning {% elif activityreportsubmit.activityreportsubmitapproval_f.approval_status_id == 3 %}badge-success{% elif activityreportsubmit.activityreportsubmitapproval_f.approval_status_id == 4 %}badge-danger {% endif %}" >{% if activityreportsubmit.activityreportsubmitapproval_f %} {{ activityreportsubmit.activityreportsubmitapproval_f.approval_status.name }} {% endif %}</span>
      <td>
      <div class="btn-group">
-                    <button type="button" class="{% if request.user != activityreport.finance_lead.user or activityreportsubmit.activityreportsubmitapproval_f.approval_status.name != 'Pending Review' %}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="{% if request.user != activityreport.finance_lead.user or activityreportsubmit.activityreportsubmitapproval_f.approval_status_id != 1 %}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       Action
                     </button>
                     <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
@@ -160,11 +160,11 @@
         
     <td>{{activityreportsubmit.activityreportsubmitapproval_p.document}}</td>
     <td>
-               <button type="button" class="{% if activityreportsubmit.activityreportsubmitapproval_p.approval_status.name == 'Pending Review' %} btn btn-primary btn-sm btn-xs{% elif activityreportsubmit.activityreportsubmitapproval_p.approval_status.name == 'Require Doc Update' %}btn btn-warning btn-sm btn-xs {% elif activityreportsubmit.activityreportsubmitapproval_p.approval_status.name == 'Request Approved' %}btn btn-success btn-sm btn-xs{% elif activityreportsubmit.activityreportsubmitapproval_p.approval_status.name == 'Request Rejected' %}btn btn-danger btn-sm btn-xs {% else %}btn btn-secondary btn-sm{% endif %}" >{% if activityreportsubmit.activityreportsubmitapproval_p %} {{ activityreportsubmit.activityreportsubmitapproval_p.approval_status.name }} {% else %}Pending Submission{% endif %}</button>
+              <span class="badge {% if activityreportsubmit.activityreportsubmitapproval_p.approval_status_id == 1 %} badge-primary{% elif activityreportsubmit.activityreportsubmitapproval_p.approval_status_id == 2 %}badge-warning {% elif activityreportsubmit.activityreportsubmitapproval_p.approval_status_id == 3 %}badge-success{% elif activityreportsubmit.activityreportsubmitapproval_p.approval_status_id == 4 %}badge-danger {% endif %}" >{% if activityreportsubmit.activityreportsubmitapproval_p %} {{ activityreportsubmit.activityreportsubmitapproval_p.approval_status.name }} {% endif %}</span>
     </td>
      <td>
       <div class="btn-group">
-                    <button type="button" class="{% if request.user != activityreport.program_lead.user or activityreportsubmit.activityreportsubmitapproval_p.approval_status.name != 'Pending Review' %}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="{% if request.user != activityreport.program_lead.user or activityreportsubmit.activityreportsubmitapproval_p.approval_status_id != 1 %}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       Action
                     </button>
                     <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">

@@ -17,6 +17,10 @@ from .forms import IcnForm, ActivityForm,ImpactForm, ActivityImpactForm, Activit
 from program.models import  Program
 from django.http import QueryDict
 from django.conf import settings
+
+
+
+from django.conf import settings
 from django.core.mail import send_mail
 from django.forms.models import modelformset_factory
 from django.core.paginator import Paginator
@@ -156,6 +160,7 @@ def activity_step_approval(request, id):
     else:
         context = {'activity':activity}
     return render(request, 'activity_step_approval.html', context)
+
 @login_required(login_url='login') 
 def icn_detail(request, pk):
     
@@ -302,27 +307,19 @@ def icn_delete(request, pk):
 
 def icn_submit_form(request, id, sid): 
     icn = get_object_or_404(Icn, pk=id)
-    icnsubmit = IcnSubmit.objects.filter(icn_id=icn.id).latest('id')
-    if sid== 1:
+    
+    if sid== 1 and  IcnSubmit.objects.filter(icn_id=icn.id).exists():
+        icnsubmit = IcnSubmit.objects.filter(icn_id=icn.id).latest('id')
         form = IcnSubmitForm(sid=sid, icn=icn, user=request.user)
         form.fields['document'].choices = [
                 (document.pk, document) for document in Document.objects.filter(id=icnsubmit.document.id)
                 ]
+    elif (sid== 1 and IcnSubmit.objects.filter(icn_id=icn.id).exists()==False) or (sid == 2):
     
-    elif sid == 2:
         form = IcnSubmitForm(user=request.user,icn=icn, sid=sid)
         form.fields['document'].choices = [
                 (document.pk, document) for document in Document.objects.none()
                 ]
-    
-    
-   
-    
-    subject = 'Request for Approval'
-    
-
-    email_from = None 
-    recipient_list = [icn.user.email,icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
 
     if request.method == "POST":
         form = IcnSubmitForm(request.POST, request.FILES)
@@ -337,70 +334,72 @@ def icn_submit_form(request, id, sid):
             
             icnsubmit = get_object_or_404(IcnSubmit, pk=instance.pk)
             #Document.objects.create(user = icn.user, document = instance.document,  icn=instance.icn, description = document_i)
-            if icnsubmit.submission_status.name == 'Request Submitted':
+          
+            if icnsubmit.submission_status_id == 2:
                 Icn.objects.filter(pk=id).update(status=True)
                 Icn.objects.filter(pk=id).update(approval_status="Pending Approval")
                 IcnSubmitApproval_T.objects.create(user = icn.technical_lead,submit_id = instance, document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
                 IcnSubmitApproval_P.objects.create(user = icn.program_lead,submit_id = instance,document = instance.document, approval_status=Approvalf_Status.objects.get(id=1))
                 IcnSubmitApproval_F.objects.create(user = icn.finance_lead,submit_id = instance,document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
+                subject = 'Request for Approval'
                 context = {
-                    "program": icn.program,
-                    "title": icn.title,
-                    "id": icn.id,
-                    "initiator": icn.user,
-                    "submission_note": icnsubmit.submission_note,
-                    "version": icnsubmit.document,
-                    "date": icnsubmit.submission_date,
-                    }
+                        "program": icn.program,
+                        "title": icn.title,
+                        "id": icn.id,
+                        "initiator": icn.user,
+                        "submission_note": icnsubmit.submission_note,
+                        "version": icnsubmit.document,
+                        "date": icnsubmit.submission_date,
+                        }
                 template_name = "partial/intervention_mail.html"
                 convert_to_html_content =  render_to_string(
                 template_name=template_name,
                 context=context
-                        )
+                                    )
                 plain_message = strip_tags(convert_to_html_content)
                 message = plain_message
-                send_mail(subject, message, email_from, recipient_list)
-                return HttpResponse(
-                status=204,
-                headers={
-                    'HX-Trigger': json.dumps({
-                        "SubmitApprovalListChanged": None,
-                        "showMessage": f"{instance.id} added."
-                    })
-                })
-            elif icnsubmit.submission_status.name == 'Request Canceled':
+                
+                email_from = None 
+                recipient_list = [icn.user.email, icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
+                send_mail(subject, message, email_from, recipient_list) 
+             
+             
+            elif icnsubmit.submission_status_id == 1:
                 Icn.objects.filter(pk=id).update(status=False)
                 Icn.objects.filter(pk=id).update(approval_status="Pending Submission")
-                subject = 'Request withdrawn temporarly'
+                icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
+                subject = 'Approval Request Cancelled'
                 context = {
-                    "program": icn.program,
-                    "title": icn.title,
-                    "id": icn.id,
-                    "initiator": icn.user,
-                    "submission_note": icnsubmit.submission_note,
-                    "version": icnsubmit.document,
-                    "date": icnsubmit.submission_date,
-                    }
+                        "program": icn.program,
+                        "title": icn.title,
+                        "id": icn.id,
+                        "initiator": icn.user,
+                        "submission_note": icnsubmit.submission_note,
+                        "version": icnsubmit.document,
+                        "date": icnsubmit.submission_date,
+                        }
                 template_name = "partial/intervention_mail.html"
                 convert_to_html_content =  render_to_string(
                 template_name=template_name,
                 context=context
-                        )
+                                    )
                 plain_message = strip_tags(convert_to_html_content)
                 message = plain_message
-                send_mail(subject, message, email_from, recipient_list)
+                
+                email_from = None 
+                recipient_list = [icn.user.email, icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
+                send_mail(subject, message, email_from, recipient_list) 
+             
+
                
-                return HttpResponse(
-                status=204,
-                headers={
-                    'HX-Trigger': json.dumps({
-                        "SubmitApprovalListChanged": None,
-                        "showMessage": f"{instance.id} added."
-                    })
+            return HttpResponse(
+            status=204,
+            headers={
+                'HX-Trigger': json.dumps({
+                    "SubmitApprovalListChanged": None,
+                    "showMessage": f"{instance.id} added."
                 })
-
-        
-
+            })
       
     context = {'form':form, 'icn':icn, 'sid':sid}
     return render(request, 'icn_submit_form copy.html', context)
@@ -755,7 +754,7 @@ def iarea_list(request, id):
 def icn_submit_approval_list(request, id):
    
 
-    icnsubmitlist = IcnSubmit.objects.filter(icn_id=id, submission_status=2)[:10]
+    icnsubmitlist = IcnSubmit.objects.filter(icn_id=id)[:10]
     context = {'icnsubmitlist':icnsubmitlist}
    
   
@@ -1199,7 +1198,7 @@ def current_activity_submit_approval_list(request, id):
 def activity_submit_form(request, id, sid): 
     activity = get_object_or_404(Activity, pk=id)
     
-    activitysubmit = ActivitySubmit.objects.filter(activity_id=activity.id).latest('id')
+    
     if sid== 1:
         form = ActivitySubmitForm(sid=sid, activity=activity, user=request.user)
         form.fields['document'].choices = [
@@ -1213,12 +1212,6 @@ def activity_submit_form(request, id, sid):
                 ]
    
     
-    subject = 'Request for Approval'
-    
-    message = 'A new Activity Concept Note has been submitted'
-    email_from = None 
-    recipient_list = [activity.user.email,activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
-
     if request.method == "POST":
         form = ActivitySubmitForm(request.POST, request.FILES)
         if form.is_valid():
@@ -1232,13 +1225,33 @@ def activity_submit_form(request, id, sid):
             
             activitysubmit = get_object_or_404(ActivitySubmit, pk=instance.pk)
             #Document.objects.create(user = icn.user, document = instance.document,  icn=instance.icn, description = document_i)
-            if activitysubmit.submission_status.name == 'Request Submitted':
+            if activitysubmit.submission_status_id == 2:
                 Activity.objects.filter(pk=id).update(status=True)
                 Activity.objects.filter(pk=id).update(approval_status="Pending Approval")
                 ActivitySubmitApproval_T.objects.create(user = activity.technical_lead,submit_id = instance, document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
                 ActivitySubmitApproval_P.objects.create(user = activity.program_lead,submit_id = instance,document = instance.document, approval_status=Approvalf_Status.objects.get(id=1))
                 ActivitySubmitApproval_F.objects.create(user = activity.finance_lead,submit_id = instance,document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
 
+                subject = 'Request for Approval'
+                context = {
+                            "program": activity.icn.program,
+                            "title": activity.title,
+                            "id": activity.id,
+                            "initiator": activity.user,
+                        
+                        
+                            "date":activitysubmit.submission_date,
+                            }
+                template_name = "partial/activity_mail.html"
+                convert_to_html_content =  render_to_string(
+                template_name=template_name,
+                context=context
+                                    )
+                plain_message = strip_tags(convert_to_html_content)
+                message = plain_message
+                
+                email_from = None 
+                recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
                 send_mail(subject, message, email_from, recipient_list)
                 return HttpResponse(
                 status=204,
@@ -1249,11 +1262,29 @@ def activity_submit_form(request, id, sid):
                     })
                 })
             
-            elif activitysubmit.submission_status.name == 'Request Canceled':
+            elif activitysubmit.submission_status_id == 1:
                 Activity.objects.filter(pk=id).update(status=False)
                 Activity.objects.filter(pk=id).update(approval_status="Pending Submission")
-                subject = 'Request withdrawn temporarly'
-                message = "The Activity Concept Note approval request has been withdrawn for further update/changes & will notify you when it's re-submitted for approval process"
+                subject = 'Request for Approval Canceled'
+                context = {
+                            "program": activity.icn.program,
+                            "title": activity.title,
+                            "id": activity.id,
+                            "initiator": activity.user,
+                        
+                        
+                            "date":activitysubmit.submission_date,
+                            }
+                template_name = "partial/activity_mail.html"
+                convert_to_html_content =  render_to_string(
+                template_name=template_name,
+                context=context
+                                    )
+                plain_message = strip_tags(convert_to_html_content)
+                message = plain_message
+                
+                email_from = None 
+                recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
                 send_mail(subject, message, email_from, recipient_list)
                 return HttpResponse(
                 status=204,
@@ -1340,11 +1371,6 @@ def activity_approvalt(request, id, did):
     
     activity =  get_object_or_404(Activity, id=activitysubmit.activity_id)
 
-    subject = 'Approval Status changed'
-    message = 'Reviewed & status has been updated to this Concept Note has been submitted'
-    email_from = None 
-    recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
-       
     if request.method == "GET":
         activitysubmitApproval_t = get_object_or_404(ActivitySubmitApproval_T, submit_id_id=id)
         if did != 2:
@@ -1368,7 +1394,27 @@ def activity_approvalt(request, id, did):
             activitysubmit = get_object_or_404(ActivitySubmit, pk=id)
             activity =  get_object_or_404(Activity, id=activitysubmit.activity_id)
             update_activity_approval_status(activitysubmit.id)
-            context = {'activity':activity, 'activitysubmit':activitysubmit }
+           
+            subject = 'Approval Status Changed'
+            context = {
+                            "program": activity.icn.program,
+                            "title": activity.title,
+                            "id": activity.id,
+                            "initiator": activity.technical_lead.user,
+                        
+                        
+                            "date":activitysubmit.submission_date,
+                            }
+            template_name = "partial/activity_mail.html"
+            convert_to_html_content =  render_to_string(
+            template_name=template_name,
+            context=context
+                                )
+            plain_message = strip_tags(convert_to_html_content)
+            message = plain_message
+            
+            email_from = None 
+            recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
             send_mail(subject, message, email_from, recipient_list)
             return HttpResponse(
                 status=204,
@@ -1388,11 +1434,6 @@ def activity_approvalp(request, id, did):
     activitysubmit = get_object_or_404(ActivitySubmit, pk=id)
     
     activity =  get_object_or_404(Activity, id=activitysubmit.activity_id)
-
-    subject = 'Approval Status changed'
-    message = 'Reviewed & status has been updated to this Concept Note'
-    email_from = None 
-    recipient_list = [activity.user.email,activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
        
     if request.method == "GET":
         activitysubmitApproval_p = get_object_or_404(ActivitySubmitApproval_P, submit_id_id=id)
@@ -1417,7 +1458,26 @@ def activity_approvalp(request, id, did):
             activitysubmit = get_object_or_404(ActivitySubmit, pk=id)
             activity =  get_object_or_404(Activity, id=activitysubmit.activity_id)
             update_activity_approval_status(activitysubmit.id)
-            context = {'activity':activity, 'activitysubmit':activitysubmit }
+            subject = 'Approval Status Changed'
+            context = {
+                            "program": activity.icn.program,
+                            "title": activity.title,
+                            "id": activity.id,
+                            "initiator": activity.program_lead.user,
+                        
+                        
+                            "date":activitysubmit.submission_date,
+                            }
+            template_name = "partial/activity_mail.html"
+            convert_to_html_content =  render_to_string(
+            template_name=template_name,
+            context=context
+                                )
+            plain_message = strip_tags(convert_to_html_content)
+            message = plain_message
+            
+            email_from = None 
+            recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
             send_mail(subject, message, email_from, recipient_list)
             return HttpResponse(
                 status=204,
@@ -1438,11 +1498,6 @@ def activity_approvalf(request, id, did):
     
     activity =  get_object_or_404(Activity, id=activitysubmit.activity_id)
 
-    subject = 'Approval Status changed'
-    message = 'Reviewed & status has been updated to this Concept Note'
-    email_from = None 
-    recipient_list = [activity.user.email,activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
-       
     if request.method == "GET":
         activitysubmitApproval_f = get_object_or_404(ActivitySubmitApproval_F, submit_id_id=id)
         if did != 2:
@@ -1466,7 +1521,26 @@ def activity_approvalf(request, id, did):
             activitysubmit = get_object_or_404(ActivitySubmit, pk=id)
             activity =  get_object_or_404(Activity, id=activitysubmit.activity_id)
             update_activity_approval_status(activitysubmit.id)
-            context = {'activity':activity, 'activitysubmit':activitysubmit }
+            subject = 'Approval Status Changed'
+            context = {
+                            "program": activity.icn.program,
+                            "title": activity.title,
+                            "id": activity.id,
+                            "initiator": activity.finance_lead.user,
+                        
+                        
+                            "date":activitysubmit.submission_date,
+                            }
+            template_name = "partial/activity_mail.html"
+            convert_to_html_content =  render_to_string(
+            template_name=template_name,
+            context=context
+                                )
+            plain_message = strip_tags(convert_to_html_content)
+            message = plain_message
+            
+            email_from = None 
+            recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
             send_mail(subject, message, email_from, recipient_list)
             return HttpResponse(
                 status=204,

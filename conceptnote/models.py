@@ -33,7 +33,7 @@ class Icn(models.Model):
     mc_budget = models.FloatField(null=True, blank=True)
     
     cost_sharing_budget = models.FloatField(null=True, blank=True)
-    icn_number =  models.CharField(max_length=20, null=True, blank=True)
+    icn_number =  models.CharField(max_length=100, null=True, blank=True)
     eniromental_impact =  models.CharField(max_length=255, null=True, blank=True)
     
     environmental_assessment_att = models.FileField(null=True,  blank=True, upload_to='documents/')
@@ -309,7 +309,7 @@ class Activity(models.Model):
     icn = models.ForeignKey(Icn, on_delete=models.DO_NOTHING)
     proposed_start_date = models.DateField()
     proposed_end_date = models.DateField()
-    acn_number =  models.CharField(max_length=30, null=True, blank=True)
+    acn_number =  models.CharField(max_length=100, null=True, blank=True)
     alead_agency = models.ForeignKey(Portfolio, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='acns')
     alead_co_agency = models.ManyToManyField(Portfolio,  blank=True, related_name='aco_leads')
     final_report_due_date = models.DateField(null=True, blank=True)

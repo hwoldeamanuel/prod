@@ -34,13 +34,13 @@
         <td>{{icnreportsubmit.document }}</td>
           
         <td>
-          <button type="button" class="btn {% if icnreportsubmit.submission_status.name == 'Request Canceled' %} btn-danger {% else %}btn-success{% endif %} btn-sm btn-xs" >{{ icnreportsubmit.submission_status.name }}</button>
+        <span class="badge {% if icnreportsubmit.submission_status_id == 1 %} badge-danger {% elif icnreportsubmit.submission_status_id == 2 %}badge-success{% endif %}">{{ icnreportsubmit.submission_status.name }}</span>
          
         
        
  </td>
   <td>
-  {% if icnreportsubmit.submission_status.name == 'Request Canceled' %}
+  {% if icnreportsubmit.submission_status_id == 1 %}
   <div class="btn-group">
                     <button type="button" class="{% if request.user.id != icnreport.user.id %}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       Action
@@ -84,10 +84,10 @@
        
         <td>{{icnreportsubmit.icnreportsubmitapproval_t.document }}</td>
         <td>
-          <button type="button" class="{% if icnreportsubmit.icnreportsubmitapproval_t.approval_status.name == 'Pending Review' %} btn btn-primary btn-sm btn-xs{% elif icnreportsubmit.icnreportsubmitapproval_t.approval_status.name == 'Require Doc Update' %}btn btn-warning btn-sm btn-xs {% elif icnreportsubmit.icnreportsubmitapproval_t.approval_status.name == 'Request Endorsed' %}btn btn-success btn-sm btn-xs{% elif icnreportsubmit.icnreportsubmitapproval_t.approval_status.name == 'Request Rejected' %}btn btn-danger btn-sm btn-xs {% else %}btn btn-secondary btn-sm{% endif %}" >{% if icnreportsubmit.icnreportsubmitapproval_t %} {{ icnreportsubmit.icnreportsubmitapproval_t.approval_status.name }} {% else %}Pending Submission{% endif %}</button>
+          <span class="badge {% if icnreportsubmit.icnreportsubmitapproval_t.approval_status_id == 1 %}badge-primary{% elif icnreportsubmit.icnreportsubmitapproval_t.approval_status_id == 2 %}badge-warning {% elif icnreportsubmit.icnreportsubmitapproval_t.approval_status_id == 3 %}badge-success{% elif icnreportsubmit.icnreportsubmitapproval_t.approval_status_id == 4 %} badge-danger{% endif %}" >{% if icnreportsubmit.icnreportsubmitapproval_t %} {{ icnreportsubmit.icnreportsubmitapproval_t.approval_status.name }} {% else %}{% endif %}</span>
         </td>
          <td><div class="btn-group">
-                    <button type="button" class="{% if request.user != icnreport.technical_lead.user or icnreportsubmit.icnreportsubmitapproval_t.approval_status.name != 'Pending Review'%}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="{% if request.user != icnreport.technical_lead.user or icnreportsubmit.icnreportsubmitapproval_t.approval_status_id != 1 %}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       Action
                     </button>
                     <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
@@ -123,10 +123,10 @@
        
     <td>{{icnreportsubmit.icnreportsubmitapproval_f.document }}</td>
     <td>
-                <button type="button" class="{% if icnreportsubmit.icnreportsubmitapproval_f.approval_status.name == 'Pending Review' %} btn btn-primary btn-sm btn-xs{% elif icnreportsubmit.icnreportsubmitapproval_f.approval_status.name == 'Require Doc Update' %}btn btn-warning btn-sm btn-xs {% elif icnreportsubmit.icnreportsubmitapproval_f.approval_status.name == 'Request Endorsed' %}btn btn-success btn-sm btn-xs{% elif icnreportsubmit.icnreportsubmitapproval_f.approval_status.name == 'Request Rejected' %}btn btn-danger btn-sm btn-xs {% else %}btn btn-secondary btn-sm{% endif %}" >{% if icnreportsubmit.icnreportsubmitapproval_f %} {{ icnreportsubmit.icnreportsubmitapproval_f.approval_status.name }} {% else %}Pending Submission{% endif %}</button>
+                <span class="badge {% if icnreportsubmit.icnreportsubmitapproval_f.approval_status_id == 1 %}badge-primary{% elif icnreportsubmit.icnreportsubmitapproval_f.approval_status_id == 2 %}badge-warning {% elif icnreportsubmit.icnreportsubmitapproval_f.approval_status_id == 3 %}badge-success{% elif icnreportsubmit.icnreportsubmitapproval_f.approval_status_id == 4 %} badge-danger{% endif %}" >{% if icnreportsubmit.icnreportsubmitapproval_f %} {{ icnreportsubmit.icnreportsubmitapproval_f.approval_status.name }} {% else %}{% endif %}</span>
      <td>
      <div class="btn-group">
-                    <button type="button" class="{% if request.user != icnreport.finance_lead.user or icnreportsubmit.icnreportsubmitapproval_f.approval_status.name != 'Pending Review' %}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="{% if request.user != icnreport.finance_lead.user or icnreportsubmit.icnreportsubmitapproval_f.approval_status_id != 1 %}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       Action
                     </button>
                     <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
@@ -160,11 +160,11 @@
         
     <td>{{icnreportsubmit.icnreportsubmitapproval_p.document}}</td>
     <td>
-               <button type="button" class="{% if icnreportsubmit.icnreportsubmitapproval_p.approval_status.name == 'Pending Review' %} btn btn-primary btn-sm btn-xs{% elif icnreportsubmit.icnreportsubmitapproval_p.approval_status.name == 'Require Doc Update' %}btn btn-warning btn-sm btn-xs {% elif icnreportsubmit.icnreportsubmitapproval_p.approval_status.name == 'Request Approved' %}btn btn-success btn-sm btn-xs{% elif icnreportsubmit.icnreportsubmitapproval_p.approval_status.name == 'Request Rejected' %}btn btn-danger btn-sm btn-xs {% else %}btn btn-secondary btn-sm{% endif %}" >{% if icnreportsubmit.icnreportsubmitapproval_p %} {{ icnreportsubmit.icnreportsubmitapproval_p.approval_status.name }} {% else %}Pending Submission{% endif %}</button>
+              <span class="badge {% if icnreportsubmit.icnreportsubmitapproval_p.approval_status_id == 1 %}badge-primary{% elif icnreportsubmit.icnreportsubmitapproval_p.approval_status_id == 2 %}badge-warning {% elif icnreportsubmit.icnreportsubmitapproval_p.approval_status_id == 3 %}badge-success{% elif icnreportsubmit.icnreportsubmitapproval_p.approval_status_id == 4 %} badge-danger{% endif %}" >{% if icnreportsubmit.icnreportsubmitapproval_p %} {{ icnreportsubmit.icnreportsubmitapproval_p.approval_status.name }} {% else %}{% endif %}</span>
     </td>
      <td>
       <div class="btn-group">
-                    <button type="button" class="{% if request.user != icnreport.program_lead.user or icnreportsubmit.icnreportsubmitapproval_p.approval_status.name != 'Pending Review' %}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="{% if request.user != icnreport.program_lead.user or icnreportsubmit.icnreportsubmitapproval_p.approval_status_id != 1 %}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       Action
                     </button>
                     <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
