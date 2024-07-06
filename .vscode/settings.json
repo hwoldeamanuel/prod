@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/5f5e38f8-111f-4120-bbdc-b26caed5f26d/resourceGroups/RG-ET-1-IPTS/providers/Microsoft.Web/sites/conceptnote",
+    "appService.deploySubpath": "."
+}
