@@ -4,8 +4,11 @@ from .settings import *
 from .settings import BASE_DIR
 
 SECRET_KEY = "django-insecure-&3ep*035k@21#4lh)ex_l&=797@9u6af_3!*%$mx_8^p8=(d*^')"
+
 ALLOWED_HOSTS = [os.environ['WEBSITE_HOSTNAME']] if 'WEBSITE_HOSTNAME' in os.environ else []
+
 CSRF_TRUSTED_ORIGINS = ['https://' + os.environ['WEBSITE_HOSTNAME']] if 'WEBSITE_HOSTNAME' in os.environ else []
+
 DEBUG = False
 
 MIDDLEWARE = [
@@ -39,3 +42,13 @@ DATABASES = {
     }
 }
 
+CACHES = {
+        "default": {  
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": os.environ.get('AZURE_REDIS_CONNECTIONSTRING'),
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+        },
+    }
+}
