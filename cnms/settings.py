@@ -213,7 +213,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Add azure web app as trusted CRSF
-CRSF_TRUSTED_ORIGINS = ["fintech-app.azurewebsites.net"]
+CRSF_TRUSTED_ORIGINS = ["conceptnote.azurewebsites.net"]
 
 
 
