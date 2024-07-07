@@ -33,7 +33,7 @@ SECRET_KEY = "django-insecure-&3ep*035k@21#4lh)ex_l&=797@9u6af_3!*%$mx_8^p8=(d*^
 DEBUG = False
 
 
-ALLOWED_HOSTS =  ['127.0.0.1', 'https://conceptnote.azurewebsites.net']
+ALLOWED_HOSTS =  ['https://conceptnote.azurewebsites.net']
 
 
 
@@ -208,9 +208,11 @@ EMAIL_HOST_PASSWORD = "rnqc nqhx ijse kebm"
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 # Update Staticfiles directory
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_DIRS = (str(BASE_DIR.joinpath('azure_content/static')),)
+STATIC_URL = '/azure_content/static/'
 
 # Add azure web app as trusted CRSF
 CRSF_TRUSTED_ORIGINS = ["conceptnote.azurewebsites.net"]
