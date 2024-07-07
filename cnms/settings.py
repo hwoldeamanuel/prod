@@ -67,8 +67,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
-   
     'crispy_bootstrap4',
     'widget_tweaks',
  
@@ -170,10 +171,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
-STATIC_URL = '/static/'
+#STATIC_URL = '/static/'
 #Location of static files
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'), ]
+#STATICFILES_DIRS = [
+#    os.path.join(BASE_DIR, 'static'), ]
 # This production code might break development mode, so we check whether we're in DEBUG mode
 #if not DEBUG:
     # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
@@ -208,6 +209,18 @@ EMAIL_HOST_PASSWORD = "rnqc nqhx ijse kebm"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
+
+STATIC_URL = '/static/'
+STORAGES = {
+    # ...
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+
+
 SELECT2_JS = "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/js/select2.min.js"
 SELECT2_CSS = "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/css/select2.min.css"
 SELECT2_I18N_PATH = "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/js/i18n"
