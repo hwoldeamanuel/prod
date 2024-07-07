@@ -32,7 +32,7 @@ environ.Env.read_env()
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = "django-insecure-&3ep*035k@21#4lh)ex_l&=797@9u6af_3!*%$mx_8^p8=(d*^')"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
@@ -211,12 +211,14 @@ EMAIL_HOST_PASSWORD = "rnqc nqhx ijse kebm"
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
 STORAGES = {
     # ...
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
+
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
