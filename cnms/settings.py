@@ -20,11 +20,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-import environ
 
-env = environ.Env()
-
-environ.Env.read_env()
 
 
 # Quick-start development settings - unsuitable for production
@@ -34,7 +30,7 @@ environ.Env.read_env()
 
 SECRET_KEY = "django-insecure-&3ep*035k@21#4lh)ex_l&=797@9u6af_3!*%$mx_8^p8=(d*^')"
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 
 ALLOWED_HOSTS =  ['127.0.0.1', 'https://conceptnote.azurewebsites.net']
@@ -171,15 +167,15 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
-STATIC_URL = '/static/'
+#STATIC_URL = '/static/'
 #Location of static files
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'), ]
+#STATICFILES_DIRS = [
+#   os.path.join(BASE_DIR, 'static'), ]
 # This production code might break development mode, so we check whether we're in DEBUG mode
-if not DEBUG:
+#if not DEBUG:
     # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
-   STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-   STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+#   STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+ #  STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     # Enable the WhiteNoise storage backend, which compresses static files to reduce disk use
     # and renames the files with unique names for each version to support long-term caching
     #STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
@@ -211,16 +207,13 @@ EMAIL_HOST_PASSWORD = "rnqc nqhx ijse kebm"
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = '/static/'
+# Update Staticfiles directory
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-STORAGES = {
-    # ...
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
-
-STATIC_ROOT = BASE_DIR / "staticfiles"
+# Add azure web app as trusted CRSF
+CRSF_TRUSTED_ORIGINS = ["fintech-app.azurewebsites.net"]
 
 
 
