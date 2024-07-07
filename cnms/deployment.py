@@ -3,6 +3,7 @@ import os
 from .settings import *
 from .settings import BASE_DIR
 
+SECRET_KEY = "django-insecure-&3ep*035k@21#4lh)ex_l&=797@9u6af_3!*%$mx_8^p8=(d*^')"
 ALLOWED_HOSTS = [os.environ['WEBSITE_HOSTNAME']] if 'WEBSITE_HOSTNAME' in os.environ else []
 CSRF_TRUSTED_ORIGINS = ['https://' + os.environ['WEBSITE_HOSTNAME']] if 'WEBSITE_HOSTNAME' in os.environ else []
 DEBUG = False
@@ -37,3 +38,4 @@ DATABASES = {
         'PASSWORD': conn_str_params['password'],
     }
 }
+
