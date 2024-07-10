@@ -14,12 +14,12 @@ from django.views.generic import FormView, TemplateView
 from django.contrib.auth import get_user_model
 from .models import Icn, Activity, ActivityImpact,ActivityImplementationArea,  Indicator, IcnImplementationArea,  Impact, IcnSubmit, Document, Icn_Approval, IcnSubmitApproval_P, IcnSubmitApproval_F, IcnSubmitApproval_T, ActivityDocument, ActivitySubmit, ActivitySubmitApproval_F,ActivitySubmitApproval_P,ActivitySubmitApproval_T
 from .forms import IcnForm, ActivityForm,ImpactForm, ActivityImpactForm, ActivityAreaFormE, IcnAreaFormE, IcnSubmitForm, IcnAreaFormset, IcnDocumentForm, IcnApprovalTForm, IcnApprovalFForm, IcnApprovalPForm, ActivitySubmitForm, ActivityDocumentForm, ActivityApprovalFForm, ActivityApprovalPForm,ActivityApprovalTForm, ImpactFormSet
-from program.models import  Program
+from program.models import  Program,  ImplementationArea
 from django.http import QueryDict
 from django.conf import settings
+from app_admin.models import Country , Region , Zone , Woreda
 
-
-
+from portfolio.models import Portfolio
 from django.conf import settings
 from django.core.mail import send_mail
 from django.forms.models import modelformset_factory
@@ -61,7 +61,14 @@ def icn_add(request):
         if form.is_valid():
             instance = form.save(commit=False)
             instance.user = request.user
+           
+            selected_woredas = request.POST.getlist("iworeda")
+            selected_co_agency = request.POST.getlist("ilead_co_agency")
+            items_woreda = ImplementationArea.objects.filter(id__in=selected_woredas)
+            items_co_agency = Portfolio.objects.filter(id__in=selected_co_agency)
             instance.save()
+            instance.iworeda.add(*items_woreda)
+            instance.ilead_co_agency.add(*items_co_agency)
             return redirect('icn_detail',instance.pk) 
         
         
@@ -940,7 +947,14 @@ def activity_add(request):
         if form.is_valid():
             instance = form.save(commit=False)
             instance.user = request.user
+            selected_woredas = request.POST.getlist("aworeda")
+            selected_co_agency = request.POST.getlist("alead_co_agency")
+            items_woreda = ImplementationArea.objects.filter(id__in=selected_woredas)
+            items_co_agency = Portfolio.objects.filter(id__in=selected_co_agency)
             instance.save()
+            instance.aworeda.add(*items_woreda)
+            instance.alead_co_agency.add(*items_co_agency)
+
             return redirect('activity_detail',instance.pk) 
         
         

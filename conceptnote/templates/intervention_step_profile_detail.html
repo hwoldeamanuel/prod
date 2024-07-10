@@ -27,21 +27,19 @@
                
                   
                     <div class="panel-body">
-                      <div class="col-md-12 col-sm-12 project_detail">
+                     
                        <div class="col-md-9 col-sm-9 project_detail">
                           
                           <p>Title:<strong> {{ icn.title }}</strong></p>
                          </div>
                          <div class="col-md-3 col-sm-3 project_detail">
-                         <p>Program:<strong>  {{ icn.program }}</strong></p>
+                       
                           <p>ID:<strong> {{ icn.icn_number }}</strong> </p>
                           
                           
                         </div>
-                        </div>
-                         <div class="col-md-12 col-sm-12 project_detail">
-                            <p><strong>Description: </strong> {{ icn.description }}</p>
-</div>
+                       
+ 
                           
 
                           <div class="col-md-4 col-sm-4 project_detail">
@@ -85,7 +83,11 @@
                             <p >Submission Status: <strong>{{ icn.get_status_display }}</strong>
                             </p>
                           </ul>
-                          
+                          </div>
+                                                <div class="col-md-12 col-sm-12 project_detail">
+   
+                            <p><strong>Description: </strong> {{ icn.description }}</p>
+
 <div class="ln_solid"></div>
                           <div class="text-center mtop20">
                             <a class="btn btn-success source" {% if icn.status == True or icn.user != request.user %} onclick="new PNotify({

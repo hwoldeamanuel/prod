@@ -16,8 +16,8 @@
                               <tr>
                     <th style="width:">#</th>
                      
-                    <th style="width: 10%">Intervention</th>
-                    <th style="width: 30%">Activity ID/Title</th>
+                
+                    <th style="width: 40%">Activity ID/Title</th>
                     <th style="width: 18%">Team Members</th>
                
                     <th style="width:12%">Date<small> (Start/End)</small></th>
@@ -32,8 +32,7 @@
                     {% for activity in activities %}
                   <tr>
                     <td>{{ forloop.counter }}</td>
-<td> {{ activity.icn.icn_number }}</br>
-<small>{{ activity.icn.program }}</small></td>
+
                     <td>{{activity.acn_number}}</br>
                       <small>{{ activity.title }}</small>
                      

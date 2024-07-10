@@ -57,7 +57,8 @@ class Icn(models.Model):
     
     
     def save(self,*args, **kwargs):
-        suffix = f"{self.pk}".zfill(4)
+        super().save(*args, **kwargs)
+        suffix = f"{self.id}".zfill(4)
         self.icn_number = f"{self.program.title}/ICN/{suffix}"
         super(Icn, self).save(*args, **kwargs)
 
@@ -344,6 +345,7 @@ class Activity(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     def save(self,*args, **kwargs):
+        super().save(*args, **kwargs)
         suffix = f"{self.pk}".zfill(4)
         self.acn_number = f"{self.icn.icn_number}/ACN/{suffix}"
         super(Activity, self).save(*args, **kwargs)

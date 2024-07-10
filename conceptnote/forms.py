@@ -50,7 +50,7 @@ class IcnForm(forms.ModelForm):
             'program_lead',
             'technical_lead',
             'finance_lead',
-           
+            'iworeda',
             'mc_budget',
            
             'cost_sharing_budget',
@@ -102,7 +102,7 @@ class IcnForm(forms.ModelForm):
         self.fields['eniromental_impact'].widget = forms.widgets.Select(choices = CHOICE1,attrs={'type': 'choice', 'class': 'form-control form-control-sm', 'rows':'1', 'placeholder':''   }    )
         self.fields['ilead_co_agency'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
         self.fields['ilead_co_agency'].queryset = Portfolio.objects.all()
-        self.fields['iworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'rows':'3','class':'form-control form-control-sm select',  'data-width': '100%'})
+        self.fields['iworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
         self.fields['iworeda'].queryset = ImplementationArea.objects.all()
         self.fields['iworeda'].required = True 
       
