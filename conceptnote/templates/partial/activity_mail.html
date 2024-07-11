@@ -1,15 +1,16 @@
 {% autoescape off %}
 Program: {{program}}
-Activity Title: {{title}}
-User: {{initiator }}
+Concept Note Workflow: Activity Concept Note
+ID: {{ cn_id }}
+Title: {{title}}
+By:{{ initiator|add:" - "|add:user_role }}
 Date: {{date}}
 
-
- http://paqcnms.azurewebsites.net/{% url 'activity_submit_approval' id  %}
+ http://paqcnms.azurewebsites.net{% url 'activity_submit_approval' id  %}
 
 Please visit above link to review and approve the concept note.
-If clicking the link above doesn't work, please copy and paste the URL in a new browser
-window instead.
+
+If clicking the link above doesn't work, please copy and paste the URL in a new browser window instead.
 
   Sincerely,
   CNMS App

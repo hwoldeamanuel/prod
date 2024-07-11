@@ -308,9 +308,15 @@ def icn_delete(request, pk):
     icn = get_object_or_404(Icn, pk=pk)
    
     icn.delete()
-    icns =Icn.objects.all()
-    return render(request, 'partial/icn_list.html', {'icns': icns})
+    
+    return redirect('icns') 
 
+def activity_delete(request, pk):
+    activity = get_object_or_404(Activity, pk=pk)
+   
+    activity.delete()
+    
+    return redirect('activities') 
 
 def icn_submit_form(request, id, sid): 
     icn = get_object_or_404(Icn, pk=id)
@@ -353,9 +359,10 @@ def icn_submit_form(request, id, sid):
                         "program": icn.program,
                         "title": icn.title,
                         "id": icn.id,
-                        "initiator": icn.user,
-                        "submission_note": icnsubmit.submission_note,
-                        "version": icnsubmit.document,
+                        "cn_id": icn.icn_number,
+                        "initiator": icn.user.username,
+                        "user_role": "Concept Note Initiator",
+                       
                         "date": icnsubmit.submission_date,
                         }
                 template_name = "partial/intervention_mail.html"
@@ -375,14 +382,15 @@ def icn_submit_form(request, id, sid):
                 Icn.objects.filter(pk=id).update(status=False)
                 Icn.objects.filter(pk=id).update(approval_status="Pending Submission")
                 icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
-                subject = 'Approval Request Cancelled'
+                subject = 'Approval Request temporarily withdrawn - Pending Re-submission'
                 context = {
                         "program": icn.program,
                         "title": icn.title,
                         "id": icn.id,
-                        "initiator": icn.user,
-                        "submission_note": icnsubmit.submission_note,
-                        "version": icnsubmit.document,
+                        "cn_id": icn.icn_number,
+                        "initiator": icn.user.username,
+                        "user_role": "Concept Note Initiator",
+                       
                         "date": icnsubmit.submission_date,
                         }
                 template_name = "partial/intervention_mail.html"
@@ -466,9 +474,10 @@ def icn_approvalt(request, id, did):
                     "program": icn.program,
                     "title": icn.title,
                     "id": icn.id,
-                    "initiator": icnsubmitApproval_t.user,
-                    "submission_note": icnsubmit.submission_note,
-                    "version": icnsubmit.document,
+                    "cn_id": icn.icn_number,
+                    "initiator": icnsubmitApproval_t.user.user.username,
+                    "user_role": "Techncial Lead",
+                    
                     "date": icnsubmit.submission_date,
                     }
             template_name = "partial/intervention_mail.html"
@@ -534,9 +543,10 @@ def icn_approvalp(request, id, did):
                     "program": icn.program,
                     "title": icn.title,
                     "id": icn.id,
-                    "initiator": icn.user,
-                    "submission_note": icnsubmit.submission_note,
-                    "version": icnsubmit.document,
+                    "cn_id": icn.icn_number,
+                    "initiator": icn.program_lead.user.username,
+                    "user_role": "Program Lead",
+                    
                     "date": icnsubmit.submission_date,
                     }
             template_name = "partial/intervention_mail.html"
@@ -600,9 +610,10 @@ def icn_approvalf(request, id, did):
                     "program": icn.program,
                     "title": icn.title,
                     "id": icn.id,
-                    "initiator": icn.user,
-                    "submission_note": icnsubmit.submission_note,
-                    "version": icnsubmit.document,
+                    "cn_id": icn.icn_number,
+                    "initiator": icn.finance_lead.user.username,
+                    "user_role": "Finance Lead",
+                    
                     "date": icnsubmit.submission_date,
                     }
             template_name = "partial/intervention_mail.html"
@@ -1251,7 +1262,9 @@ def activity_submit_form(request, id, sid):
                             "program": activity.icn.program,
                             "title": activity.title,
                             "id": activity.id,
-                            "initiator": activity.user,
+                            "cn_id": activity.acn_number,
+                            "initiator": activity.user.username,
+                            "user_role": "Concept Note Initiator",
                         
                         
                             "date":activitysubmit.submission_date,
@@ -1279,12 +1292,14 @@ def activity_submit_form(request, id, sid):
             elif activitysubmit.submission_status_id == 1:
                 Activity.objects.filter(pk=id).update(status=False)
                 Activity.objects.filter(pk=id).update(approval_status="Pending Submission")
-                subject = 'Request for Approval Canceled'
+                subject = 'Approval Request temporarily withdrawn - Pending Re-submission'
                 context = {
                             "program": activity.icn.program,
                             "title": activity.title,
                             "id": activity.id,
-                            "initiator": activity.user,
+                            "cn_id": activity.acn_number,
+                            "initiator": activity.user.username,
+                            "user_role": "Concept Note Initiator",
                         
                         
                             "date":activitysubmit.submission_date,
@@ -1414,7 +1429,9 @@ def activity_approvalt(request, id, did):
                             "program": activity.icn.program,
                             "title": activity.title,
                             "id": activity.id,
-                            "initiator": activity.technical_lead.user,
+                            "cn_id": activity.acn_number,
+                            "initiator": activity.technical_lead.user.username,
+                            "user_role": "Technical Lead",
                         
                         
                             "date":activitysubmit.submission_date,
@@ -1477,7 +1494,9 @@ def activity_approvalp(request, id, did):
                             "program": activity.icn.program,
                             "title": activity.title,
                             "id": activity.id,
-                            "initiator": activity.program_lead.user,
+                            "cn_id": activity.acn_number,
+                            "initiator": activity.program_lead.user.username,
+                            "user_role": "Program Lead",
                         
                         
                             "date":activitysubmit.submission_date,
@@ -1540,7 +1559,9 @@ def activity_approvalf(request, id, did):
                             "program": activity.icn.program,
                             "title": activity.title,
                             "id": activity.id,
-                            "initiator": activity.finance_lead.user,
+                            "cn_id": activity.acn_number,
+                            "initiator": activity.finance_lead.user.username,
+                            "user_role": "Finance Lead",
                         
                         
                             "date":activitysubmit.submission_date,
@@ -1604,39 +1625,9 @@ def downloada(request, id):
 
 
 
-def formset_view(request):
-    template = 'formset.html'
-
-    if request.POST:
-        formset = BookFormSet(request.POST)
-        if formset.is_valid():
-            print(f">>>> form is valid. Request.post is {request.POST}")
-            return HttpResponseRedirect(reverse('app2:formset_view'))
-    else:
-        formset = BookFormSet()
-
-    return render(request, template, {'formset': formset})
-
-
-def add_formset(request, current_total_formsets):
-    formset = ImpactFormSet()
-    new_formset = build_new_formset(formset, current_total_formsets)
-    context = {
-        'new_formset': new_formset,
-        'new_total_formsets': current_total_formsets + 1,
-    }
-    return render(request, 'partial/formset_partial.html', context)
-
 
 # Helper to build the needed formset
-def build_new_formset(formset, new_total_formsets):
-    html = ""
 
-    for form in formset.empty_form:
-        html += form.label_tag().replace('__prefix__', str(new_total_formsets))
-        html += str(form).replace('__prefix__', str(new_total_formsets))
-    
-    return mark_safe(html)
 
 def add_impact_form(request):
     impact_form = ImpactForm()
@@ -1658,6 +1649,20 @@ def icn_approval_invoice(request, id):
         context = {'icn':icn}
 
     return render(request, 'icn_approval_invoice.html', context)
+
+def activity_approval_invoice(request, id):
+    context ={}
+ 
+    # add the dictionary during initialization
+  
+    activity = Activity.objects.get(pk=id)
+    if ActivitySubmit.objects.filter(activity_id=activity.id).exists():
+        activitysubmit = ActivitySubmit.objects.filter(activity_id=activity.id).latest('id')
+        context = {'activity':activity, 'activitysubmit':activitysubmit}
+    else:
+        context = {'activity':activity}
+
+    return render(request, 'activity_approval_invoice.html', context)
 
 def program_lead(request):
     form = IcnForm(request.GET, user=request.user)

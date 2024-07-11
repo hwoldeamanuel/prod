@@ -198,14 +198,20 @@
     </td>
    
     <td>
-    
-														<button type="button" class="btn btn-sm btn-{% if 'Rejected' in icn.approval_status %} bg-red {% elif 'Approved' in icn.approval_status %} bg-green {% else %} bg-warning {% endif %}">{% if icn.approval_status %} {{ icn.approval_status}} {% else %} Pending Approval{% endif %}<span class="caret"></span>
+    <div class="btn-group">
+														<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-sm dropdown-toggle btn-{% if 'Rejected' in icn.approval_status %} bg-red {% elif 'Approved' in icn.approval_status %} bg-green {% else %} bg-warning {% endif %}">{% if icn.approval_status %} {{ icn.approval_status}} {% else %} Pending Approval{% endif %}<span class="caret"></span>
 														</button>
 													
-												
+												 <div class="dropdown-menu">
+                      <a class="dropdown-item {% if icn.approval_status != '100% Approved' %}disabled{% endif %}" href="{% url 'icn_approval_invoice' icn.id %}">Approval Invoice</a>
+                    
+                    </div>
+                  </div>
 
                     </td>
-                     <td></td>
+                     <td>
+                    
+                     </td>
 </tr>
     </tbody>
   </table>

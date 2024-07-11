@@ -176,9 +176,11 @@ def icnreport_submit_form(request, id, sid):
                         "program": icn.program,
                         "title": icn.title,
                         "id": icnreport.id,
+                        "cn_id": icnreport.icn.icn_number,
                         "initiator": icnreport.user,
+                        "user_role": "Concept Note Initiator",
                        
-                        "version": icnreportsubmit.document,
+                       
                         "date": icnreportsubmit.submission_date,
                         }
                 template_name = "report/partial/report_mail.html"
@@ -203,14 +205,16 @@ def icnreport_submit_form(request, id, sid):
             elif icnreportsubmit.submission_status_id == 1:
                 IcnReport.objects.filter(pk=id).update(status=False)
                 IcnReport.objects.filter(pk=id).update(approval_status="Pending Submission")
-                subject = 'Request for Report Approval Canceled'
+                subject = 'Approval Request temporarily withdrawn - Pending Re-submission'
                 context = {
                         "program": icn.program,
                         "title": icn.title,
                         "id": icnreport.id,
+                        "cn_id": icn.icn_number,
                         "initiator": icnreport.user,
+                        "user_role": "Concept Note Initiator",
                        
-                        "version": icnreportsubmit.document,
+                      
                         "date": icnreportsubmit.submission_date,
                         }
                 template_name = "report/partial/report_mail.html"
@@ -279,9 +283,11 @@ def icnreport_approvalt(request, id, did):
             subject = 'Report Approval Status Changed'
             context = {
                         "program": icnreport.icn.program,
-                        "title": icnreport.title,
+                        "title": icnreport.icn.title,
                         "id": icnreport.id,
+                        "cn_id": icnreport.icn.icn_number,
                         "initiator": icnreport.technical_lead.user,
+                        "user_role": "Techncial Lead",
                        
                        
                         "date": icnreportsubmit.submission_date,
@@ -336,9 +342,11 @@ def icnreport_approvalp(request, id, did):
             subject = 'Report Approval Status Changed'
             context = {
                         "program": icnreport.icn.program,
-                        "title": icnreport.title,
+                        "title": icnreport.icn.title,
                         "id": icnreport.id,
+                        "cn_id": icnreport.icn.icn_number,
                         "initiator": icnreport.program_lead.user,
+                        "user_role": "Program Lead",
                        
                        
                         "date": icnreportsubmit.submission_date,
@@ -393,9 +401,11 @@ def icnreport_approvalf(request, id, did):
             subject = 'Report Approval Status Changed'
             context = {
                         "program": icnreport.icn.program,
-                        "title": icnreport.title,
+                        "title": icnreport.icn.title,
                         "id": icnreport.id,
+                        "cn_id": icnreport.icn.icn_number,
                         "initiator": icnreport.finance_lead.user,
+                        "user_role": "Finance Lead",
                        
                        
                         "date": icnreportsubmit.submission_date,
@@ -942,12 +952,14 @@ def activityreport_submit_form(request, id, sid):
                         "program": activity.icn.program,
                         "title": activity.title,
                         "id": activityreport.id,
+                        "cn_id": activityreport.activity.acn_number,
                         "initiator": activityreport.user,
+                        "user_role": "Concept Note Initiator",
                        
                      
                         "date": activityreportsubmit.submission_date,
                         }
-                template_name = "report/partial/report_mail.html"
+                template_name = "report/partial/activityreport_mail.html"
                 convert_to_html_content =  render_to_string(
                 template_name=template_name,
                 context=context
@@ -971,17 +983,19 @@ def activityreport_submit_form(request, id, sid):
             elif activityreportsubmit.submission_status_id == 1:
                 ActivityReport.objects.filter(pk=id).update(status=False)
                 ActivityReport.objects.filter(pk=id).update(approval_status="Pending Submission")
-                subject = 'Report Approval Request Canceled'
+                subject = 'pproval Request temporarily withdrawn - Pending Re-submission'
                 context = {
                         "program": activity.icn.program,
                         "title": activity.title,
                         "id": activityreport.id,
+                        "cn_id": activityreport.activity.acn_number,
                         "initiator": activityreport.user,
+                        "user_role": "Concept Note Initiator",
                        
                      
                         "date": activityreportsubmit.submission_date,
                         }
-                template_name = "report/partial/report_mail.html"
+                template_name = "report/partial/activityreport_mail.html"
                 convert_to_html_content =  render_to_string(
                 template_name=template_name,
                 context=context
@@ -1102,12 +1116,14 @@ def activityreport_approvalt(request, id, did):
                         "program": activityreport.activity.icn.program,
                         "title": activityreport.activity.title,
                         "id": activityreport.id,
+                        "cn_id": activityreport.activity.acn_number,
                         "initiator": activityreport.technical_lead.user,
+                        "user_role": "Techncial Lead",
                        
                      
                         "date": activityreportsubmit.submission_date,
                         }
-            template_name = "report/partial/report_mail.html"
+            template_name = "report/partial/activityreport_mail.html"
             convert_to_html_content =  render_to_string(
             template_name=template_name,
             context=context
@@ -1161,12 +1177,14 @@ def activityreport_approvalp(request, id, did):
                     "program": activityreport.activity.icn.program,
                     "title": activityreport.activity.title,
                     "id": activityreport.id,
+                    "cn_id": activityreport.activity.acn_number,
                     "initiator": activityreport.program_lead.user,
+                    "user_role": "Program Lead",
                     
                     
                     "date": activityreportsubmit.submission_date,
                     }
-            template_name = "report/partial/report_mail.html"
+            template_name = "report/partial/activityreport_mail.html"
             convert_to_html_content =  render_to_string(
             template_name=template_name,
             context=context
@@ -1220,12 +1238,14 @@ def activityreport_approvalf(request, id, did):
                     "program": activityreport.activity.icn.program,
                     "title": activityreport.activity.title,
                     "id": activityreport.id,
+                    "cn_id": activityreport.activity.acn_number,
                     "initiator": activityreport.finance_lead.user,
+                    "user_role": "Finance Lead",
                     
                     
                     "date": activityreportsubmit.submission_date,
                     }
-            template_name = "report/partial/report_mail.html"
+            template_name = "report/partial/activityreport_mail.html"
             convert_to_html_content =  render_to_string(
             template_name=template_name,
             context=context

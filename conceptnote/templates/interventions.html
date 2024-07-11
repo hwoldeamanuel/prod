@@ -139,9 +139,19 @@
                     <span class="badge {% if icn.icnreport and icn.icnreport.status == True %}badge bg-green {% else %} badge bg-warning {% endif %}">{{ icn.icnreport.get_status_display}}</span>
                      {% endif %}
                     </td>
-                    
-                    
-                      <td class=" last"><a href="{% url 'icn_detail' icn.id %}">View</a>
+                    <td>
+                    <div class="btn-group">
+                    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Action
+                    </button>
+                    <div class="dropdown-menu">
+                      <a class="dropdown-item" href="{% url 'icn_detail' icn.id %}">View</a>
+                     
+                      <div class="dropdown-divider"></div>
+                      <a class="dropdown-item {% if request.user != icn.user or icn.impact_set.all.count > 0 %}disabled{% endif %}" href="{% url 'icn_delete' icn.id %}">Delete</a>
+                    </div>
+                  </div>
+                     
                     
                      
                     </td>

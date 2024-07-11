@@ -1,19 +1,17 @@
+
 {% autoescape off %}
 Program: {{program}}
+Concept Note Workflow: Intervention Concept Note
+ID: {{ cn_id }}
 Title: {{title}}
-Submitted by: {{initiator }}
-Concept Note Version: {{version}}
-Submission note: 
-{{submission_note }}
+By {{ initiator|add:" - "|add:user_role }}
 Date: {{date}}
 
-http://127.0.0.1:8000{% url 'icn_submit_approval' id  %}
 
-https://cnms.onrender.com{% url 'icn_submit_approval' id  %}
+ http://paqcnms.azurewebsites.net{% url 'icn_submit_approval' id  %}
 
 Please visit above link to review and approve the concept note.
-If clicking the link above doesn't work, please copy and paste the URL in a new browser
-window instead.
+If clicking the link above doesn't work, please copy and paste the URL in a new browser window instead.
 
   Sincerely,
   CNMS App

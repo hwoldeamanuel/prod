@@ -1,14 +1,14 @@
 
 {% autoescape off %}
 Program: {{program}}
-Concept Note Workflow: Intervention Concept Note Report
+Concept Note Workflow: Activity Concept Note Report
 ID: {{ cn_id }}
 Title: {{title}}
 By: {{ initiator|add:" - "|add:user_role }}
 Date: {{date}}
 
 
- http://paqcnms.azurewebsites.net{% url 'icnreport_submit_approval' id  %}
+ http://paqcnms.azurewebsites.net{% url 'activityreport_submit_approval' id  %}
 
 Please visit above link to review and approve the concept note.
 If clicking the link above doesn't work, please copy and paste the URL in a new browser window instead.

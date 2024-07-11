@@ -27,6 +27,7 @@ urlpatterns = [
     path('download/<int:id>/', views.download, name='download'),
     path('downloada/<int:id>/', views.downloada, name='downloadacnd'),
     path('delete_icn/<int:pk>/', views.icn_delete, name='icn_delete'),
+     path('delete_activity/<int:pk>/', views.activity_delete, name='activity_delete'),
     path('intervention/program_lead/', views.program_lead, name='program_lead'),
     
     path('download_env_att/<int:id>/', views.download_env_att, name='download_env_att'),
@@ -50,7 +51,7 @@ htmxpatterns = [
  path('icn_submit_detail/<int:id>/', views.icn_submit_detail, name='icn_submit_detail'),
  path('icn_submit_list/<int:id>/', views.icn_submit_list, name='icn_submit_list'),
  path('icn_approval_invoice/<int:id>/', views.icn_approval_invoice, name='icn_approval_invoice'),
-
+ path('activity_approval_invoice/<int:id>/', views.activity_approval_invoice, name='activity_approval_invoice'),
  path('icn_submit_form/<int:id>/<int:sid>/', views.icn_submit_form, name='icn_submit_form'),
  path('activity_submit_form/<int:id>/<int:sid>/', views.activity_submit_form, name='activity_submit_form'),
  path('icn_submit_document/<int:id>/', views.icn_submit_document, name='icn_submit_document'),
@@ -80,7 +81,7 @@ htmxpatterns = [
  path('edit_activity_impact/<int:pk>/', views.edit_activity_impact, name='edit_activity_impact'),
  path('impact/<int:pk>/remove/', views.remove_impact, name='remove_impact'),
  path('activity_impact/<int:pk>/remove', views.remove_activity_impact, name='remove_activity_impact'),
- path('add_formset/<int:current_total_formsets>/', views.add_formset, name='add_formset'),
+ 
  path('add_impact_form/', views.add_impact_form, name='add_impact_form'),
  
 ]

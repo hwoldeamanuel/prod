@@ -9,7 +9,7 @@
          
           <div class="page-title">
               <div class="title_left">
-                <h3>Concept Note :: Intervention</h3>
+                <h3>Concept Note :: Activity</h3>
               </div>
 
               
@@ -20,7 +20,7 @@
               <div class="col-md-12 col-sm-12  ">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2>Intervention Approval Report</h2>
+                    <h2>Activity Approval Report</h2>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                       </li>
@@ -38,9 +38,9 @@
                   </div>
                    
 
-<p>Program: <strong>{{ icn.program.title }}</strong>  &emsp;Title: <strong>{{ icn.title }}</strong>  &emsp; ID: <strong>{{ icn.icn_number }}</strong></p> 
+<p>Program: <strong>{{ activity.icn.program.title }}</strong>  &emsp;Title: <strong>{{ activity.title }}</strong>  &emsp; ID: <strong>{{ activity.acn_number }}</strong></p> 
 
-                            <p><strong>Description: </strong> {{ icn.description }}</p>
+                            <p><strong>Description: </strong> {{ activitydescription }}</p>
                     <section class="content invoice">
                       <!-- title row -->
                      
@@ -49,43 +49,43 @@
                         <div class="col-sm-3 invoice-col">
                           Initited By:
                           <address>
-                                          <strong>{{icn.user.profile.full_name}}</strong>
-                                          <br>{{icn.user.profile.job_title}}
-                                          <br>{{icn.user.profile.portfolio}}
-                                          <br>{{icn.user.profile.contact_number}}
-                                          <br>{{icn.user.email }}
+                                          <strong>{{activity.user.profile.full_name}}</strong>
+                                          <br>{{activity.user.profile.job_title}}
+                                          <br>{{activity.user.profile.portfolio}}
+                                          <br>{{activity.user.profile.contact_number}}
+                                          <br>{{activity.user.email }}
                                       </address>
                         </div>
                         <!-- /.col -->
                         <div class="col-sm-3 invoice-col">
                           Techncial Lead:
                           <address>
-                                          <strong>{{icn.technical_lead.user.profile.full_name}}</strong>
-                                           <br>{{icn.technical_lead.user.profile.job_title}}
-                                          <br>{{icn.technical_lead.user.profile.portfolio}}
-                                          <br>{{icn.technical_lead.user.profile.contact_number}}
-                                          <br>{{icn.technical_lead.user.email }}
+                                          <strong>{{activity.technical_lead.user.profile.full_name}}</strong>
+                                           <br>{{activity.technical_lead.user.profile.job_title}}
+                                          <br>{{activity.technical_lead.user.profile.portfolio}}
+                                          <br>{{activity.technical_lead.user.profile.contact_number}}
+                                          <br>{{activity.technical_lead.user.email }}
                                       </address>
                         </div>
                         <!-- /.col -->
                        <div class="col-sm-3 invoice-col">
                           Finance Lead:
                           <address>
-                                           <strong>{{icn.finance_lead.user.profile.full_name}}</strong>
-                                         <br>{{icn.finance_lead.user.profile.job_title}}
-                                          <br>{{icn.finance_lead.user.profile.portfolio}}
-                                          <br>{{icn.finance_lead.user.profile.contact_number}}
-                                          <br>{{icn.finance_lead.user.email }}
+                                           <strong>{{activity.finance_lead.user.profile.full_name}}</strong>
+                                         <br>{{activity.finance_lead.user.profile.job_title}}
+                                          <br>{{activity.finance_lead.user.profile.portfolio}}
+                                          <br>{{activity.finance_lead.user.profile.contact_number}}
+                                          <br>{{activity.finance_lead.user.email }}
                                       </address>
                         </div>
                            <div class="col-sm-3 invoice-col">
                           Program Lead:
                           <address>
-                                          <strong>{{icn.program_lead.user.profile.full_name}}</strong>
-                                          <br>{{icn.program_lead.user.profile.job_title}}
-                                          <br>{{icn.program_lead.user.profile.portfolio}}
-                                          <br>{{icn.program_lead.user.profile.contact_number}}
-                                          <br>{{icn.program_lead.user.email }}
+                                          <strong>{{activity.program_lead.user.profile.full_name}}</strong>
+                                          <br>{{activity.program_lead.user.profile.job_title}}
+                                          <br>{{activity.program_lead.user.profile.portfolio}}
+                                          <br>{{activity.program_lead.user.profile.contact_number}}
+                                          <br>{{activity.program_lead.user.email }}
                                       </address>
                         </div>
                         <!-- /.col -->
@@ -110,38 +110,38 @@
                             <tbody>
                               <tr>
                                 <td>1</td>
-                                <td>Initiator</br>{{icn.user.profile.full_name}}</td>
-                                <td>{{icnsubmit.submission_date}}</td>
+                                <td>Initiator</br>{{activity.user.profile.full_name}}</td>
+                                <td>{{activitysubmit.submission_date}}</td>
                                
-                                <td>{{icnsubmit.submission_note}}</td>
-                                 <td>{{icnsubmit.submission_status.name }}
+                                <td>{{activitysubmit.submission_note}}</td>
+                                 <td>{{activitysubmit.submission_status.name }}
                                 </td>
                               </tr>
                               <tr>
                                 <td>2</td>
-                                <td>Techncial Lead</br>{{icn.technical_lead.user.profile.full_name}}</td>
-                                <td>{{icnsubmit.icnsubmitapproval_t.approval_date}}</td>
+                                <td>Techncial Lead</br>{{activity.technical_lead.user.profile.full_name}}</td>
+                                <td>{{activitysubmit.activitysubmitapproval_t.approval_date}}</td>
                                 
-                                <td>{{icnsubmit.icnsubmitapproval_t.approval_note }}</td>
-                                <td>{{icnsubmit.icnsubmitapproval_t.approval_status.name}}
+                                <td>{{activitysubmit.activitysubmitapproval_t.approval_note }}</td>
+                                <td>{{activitysubmit.activitysubmitapproval_t.approval_status.name}}
                                 </td>
                               </tr>
                               <tr>
                                <td>3</td>
-                                <td>Finance Lead</br>{{icn.finance_lead.user.profile.full_name}}</td>
-                                <td>{{icnsubmit.icnsubmitapproval_f.approval_date}}</td>
+                                <td>Finance Lead</br>{{activity.finance_lead.user.profile.full_name}}</td>
+                                <td>{{activitysubmit.activitysubmitapproval_f.approval_date}}</td>
                                
-                                <td>{{icnsubmit.icnsubmitapproval_f.approval_note }}</td>
-                                 <td>{{icnsubmit.icnsubmitapproval_f.approval_status.name }}
+                                <td>{{activitysubmit.activitysubmitapproval_f.approval_note }}</td>
+                                 <td>{{activitysubmit.activitysubmitapproval_f.approval_status.name }}
                                 </td>
                               </tr>
                               <tr>
                                 <td>4</td>
-                                <td>Program Lead</br>{{icn.program_lead.user.profile.full_name}}</td>
-                                <td>{{icnsubmit.icnsubmitapproval_p.approval_date}}</td>
+                                <td>Program Lead</br>{{activity.program_lead.user.profile.full_name}}</td>
+                                <td>{{activitysubmit.activitysubmitapproval_p.approval_date}}</td>
                                 
-                                <td>{{icnsubmit.icnsubmitapproval_p.approval_note }}</td>
-                                <td>{{icnsubmit.icnsubmitapproval_p.approval_status.name }}
+                                <td>{{activitysubmit.activitysubmitapproval_p.approval_note }}</td>
+                                <td>{{activitysubmit.activitysubmitapproval_p.approval_status.name }}
                                 </td>
                               </tr>
                               <tr>
@@ -150,7 +150,7 @@
                                 <td></td>
                                 
                                 <td></td>
-                                <td>{{icn.approval_status}}
+                                <td>{{activity.approval_status}}
                                 </td>
                               </tr>
                             </tbody>
@@ -170,23 +170,23 @@
                         </div>
                         <!-- /.col -->
                         <div class="col-md-6">
-                          <p class="lead">Approved Intervention Budget</p>
+                          <p class="lead">Approved Activity Budget</p>
                           <div class="table-responsive">
                             <table class="table">
                               <tbody>
                                 <tr>
                                   <th style="width:50%">Mercy Corps:</th>
-                                  <td> {{ icn.mc_budget|floatformat:2|intcomma }}{{icn.get_mc_currency_display }}</td>
+                                  <td> {{ activity.mc_budget|floatformat:2|intcomma }}{{activity.get_mc_currency_display }}</td>
                                  
                                 </tr>
                                 <tr>
                                   <th>Cost Share contributions</th>
-                                  <td>{% if icn.cost_sharing_budget %} {{ icn.cost_sharing_budget }}{{icn.get_cs_currency_display }}{% else %}0.00USD{% endif %}</td>
+                                  <td>{% if activity.cost_sharing_budget %} {{ activity.cost_sharing_budget }}{{activity.get_cs_currency_display }}{% else %}0.00USD{% endif %}</td>
                                 </tr>
                                
                                 <tr>
                                   <th>Total:</th>
-                                  <td> {{ icn.mc_budget|add:icn.cost_sharing_budget|floatformat:"2g" }}{{icn.get_mc_currency_display }}</td>
+                                  <td> {{ activity.mc_budget|add:activity.cost_sharing_budget|floatformat:"2g" }}{{activity.get_mc_currency_display }}</td>
                                 </tr>
                               </tbody>
                             </table>
@@ -200,8 +200,8 @@
                       <div class="row no-print">
                         <div class=" ">
                           <button class="btn btn-default" onclick="window.print();"><i class="fa fa-print"></i> Print</button>
-                           <a href="{% url 'icn_detail' icn.id %}" class="btn btn-primary btn-xs"><i class="fa fa-credit-card"></i>Intervention</a>
-                           <a href="{% url 'icn_submit_approval' icn.id %}" class="btn btn-success btn-xs"><i class="fa fa-mail-forward"></i> Approval Workflow</a>
+                           <a href="{% url 'activity_detail' activity.id %}" class="btn btn-primary btn-xs"><i class="fa fa-credit-card"></i>Activity</a>
+                           <a href="{% url 'activity_submit_approval' activity.id %}" class="btn btn-success btn-xs"><i class="fa fa-mail-forward"></i> Approval Workflow</a>
                         </div>
                       </div>
                     </section>
