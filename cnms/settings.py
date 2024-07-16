@@ -74,7 +74,7 @@ INSTALLED_APPS = [
   
     
 ]
-
+#fdjfkd
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     #'whitenoise.middleware.WhiteNoiseMiddleware',
