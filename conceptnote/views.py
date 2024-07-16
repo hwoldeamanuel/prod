@@ -13,7 +13,7 @@ from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView
 from django.contrib.auth import get_user_model
 from .models import Icn, Activity, ActivityImpact,ActivityImplementationArea,  Indicator, IcnImplementationArea,  Impact, IcnSubmit, Document, Icn_Approval, IcnSubmitApproval_P, IcnSubmitApproval_F, IcnSubmitApproval_T, ActivityDocument, ActivitySubmit, ActivitySubmitApproval_F,ActivitySubmitApproval_P,ActivitySubmitApproval_T
-from .forms import IcnForm, ActivityForm,ImpactForm, ActivityImpactForm, ActivityAreaFormE, IcnAreaFormE, IcnSubmitForm, IcnAreaFormset, IcnDocumentForm, IcnApprovalTForm, IcnApprovalFForm, IcnApprovalPForm, ActivitySubmitForm, ActivityDocumentForm, ActivityApprovalFForm, ActivityApprovalPForm,ActivityApprovalTForm, ImpactFormSet
+from .forms import IcnForm, ActivityForm,ImpactForm, ActivityImpactForm, ActivityAreaFormE, IcnAreaFormE, IcnSubmitForm, IcnAreaFormset, IcnDocumentForm, IcnApprovalTForm, IcnApprovalFForm, IcnApprovalPForm, ActivitySubmitForm, ActivityDocumentForm, ActivityApprovalFForm, ActivityApprovalPForm,ActivityApprovalTForm
 from program.models import  Program,  ImplementationArea
 from django.http import QueryDict
 from django.conf import settings
@@ -772,7 +772,7 @@ def iarea_list(request, id):
 def icn_submit_approval_list(request, id):
    
 
-    icnsubmitlist = IcnSubmit.objects.filter(icn_id=id)[:10]
+    icnsubmitlist = IcnSubmit.objects.filter(icn_id=id, submission_status=2)[:10]
     context = {'icnsubmitlist':icnsubmitlist}
    
   
@@ -1224,13 +1224,13 @@ def activity_submit_form(request, id, sid):
     activity = get_object_or_404(Activity, pk=id)
     
     
-    if sid== 1:
+    if sid== 1 and  ActivitySubmit.objects.filter(activity_id=activity.id).exists():
+        activitysubmit = ActivitySubmit.objects.filter(activity_id=activity.id).latest('id')
         form = ActivitySubmitForm(sid=sid, activity=activity, user=request.user)
-        form.fields['document'].choices = [
-                (document.pk, document) for document in ActivityDocument.objects.filter(id=activitysubmit.document.id)
-                ]
+       
+        
     
-    elif sid == 2:
+    elif (sid== 1 and ActivitySubmit.objects.filter(activity_id=activity.id).exists()==False) or (sid == 2):
         form = ActivitySubmitForm(user=request.user,activity=activity, sid=sid)
         form.fields['document'].choices = [
                 (document.pk, document) for document in ActivityDocument.objects.none()
@@ -1323,6 +1323,8 @@ def activity_submit_form(request, id, sid):
                         "showMessage": f"{instance.id} added."
                     })
                 })
+            
+        form = ActivitySubmitForm(request.POST,user=request.user,activity=activity, sid=sid)
 
       
     context = {'form':form, 'activity':activity, 'sid':sid}
@@ -1405,12 +1407,12 @@ def activity_approvalt(request, id, did):
         if did != 2:
             form = ActivityApprovalTForm(instance=activitysubmitApproval_t, did=did)
             form.fields['document'].choices = [
-                (document.pk, document) for document in Document.objects.filter(id=activitysubmitApproval_t.document.id)
+                (document.pk, document) for document in ActivityDocument.objects.filter(id=activitysubmitApproval_t.document.id)
                 ]
         else:
             form = ActivityApprovalTForm(instance=activitysubmitApproval_t, did=did)
        
-        context = {'activitysubmitapproval_t':activitysubmitApproval_t, 'form': form, 'activity':activity, }
+        context = {'activitysubmitapproval_t':activitysubmitApproval_t, 'form': form, 'activity':activity, 'did':did }
         return render(request, 'activity_approval_tform.html', context)
     
     elif request.method == "PUT":
@@ -1465,30 +1467,31 @@ def activity_approvalp(request, id, did):
     activitysubmit = get_object_or_404(ActivitySubmit, pk=id)
     
     activity =  get_object_or_404(Activity, id=activitysubmit.activity_id)
-       
+
     if request.method == "GET":
         activitysubmitApproval_p = get_object_or_404(ActivitySubmitApproval_P, submit_id_id=id)
         if did != 2:
             form = ActivityApprovalPForm(instance=activitysubmitApproval_p, did=did)
             form.fields['document'].choices = [
-                (document.pk, document) for document in Document.objects.filter(id=activitysubmitApproval_p.document.id)
+                (document.pk, document) for document in ActivityDocument.objects.filter(id=activitysubmitApproval_p.document.id)
                 ]
         else:
             form = ActivityApprovalPForm(instance=activitysubmitApproval_p, did=did)
-        
-        context = {'activitysubmitapproval_p':activitysubmitApproval_p, 'form': form, 'activity':activity, }
+       
+        context = {'activitysubmitapproval_p':activitysubmitApproval_p, 'form': form, 'activity':activity, 'did':did }
         return render(request, 'activity_approval_pform.html', context)
     
     elif request.method == "PUT":
         activitysubmitApproval_p = get_object_or_404(ActivitySubmitApproval_P, submit_id_id=id)
         data = QueryDict(request.body).dict()
-        form = ActivityApprovalPForm(data, instance=activitysubmitApproval_p)
+        form = ActivityApprovalPForm(data, instance=activitysubmitApproval_p, did=did)
         if form.is_valid():
             instance =form.save()
-            
+           
             activitysubmit = get_object_or_404(ActivitySubmit, pk=id)
             activity =  get_object_or_404(Activity, id=activitysubmit.activity_id)
             update_activity_approval_status(activitysubmit.id)
+           
             subject = 'Approval Status Changed'
             context = {
                             "program": activity.icn.program,
@@ -1520,8 +1523,10 @@ def activity_approvalp(request, id, did):
                         "showMessage": f"{instance.id} added."
                     })
                 })
-        
-        return render(request, 'activity_approval_pform.html', {'form':form, 'did':did})
+    activitysubmitApproval_p = get_object_or_404(ActivitySubmitApproval_P, submit_id_id=id)
+    data = QueryDict(request.body).dict()
+    form = ActivityApprovalPForm(data, instance=activitysubmitApproval_p, did=did)
+    return render(request, 'activity_approval_pform.html',  context = {'activitysubmitapproval_p':activitysubmitApproval_p, 'form': form, 'activity':activity, 'did':did })
 
  
 def activity_approvalf(request, id, did):
@@ -1536,12 +1541,12 @@ def activity_approvalf(request, id, did):
         if did != 2:
             form = ActivityApprovalFForm(instance=activitysubmitApproval_f, did=did)
             form.fields['document'].choices = [
-                (document.pk, document) for document in Document.objects.filter(id=activitysubmitApproval_f.document.id)
+                (document.pk, document) for document in ActivityDocument.objects.filter(id=activitysubmitApproval_f.document.id)
                 ]
         else:
             form = ActivityApprovalFForm(instance=activitysubmitApproval_f, did=did)
      
-        context = {'activitysubmitapproval_f':activitysubmitApproval_f, 'form': form, 'activity':activity, }
+        context = {'activitysubmitapproval_f':activitysubmitApproval_f, 'form': form, 'activity':activity,'did':did }
         return render(request, 'activity_approval_fform.html', context)
     
     elif request.method == "PUT":
@@ -1586,7 +1591,7 @@ def activity_approvalf(request, id, did):
                     })
                 })
         
-        return render(request, 'activity_approval_fform.html', {'form':form, 'did':did })
+        return render(request, 'activity_approval_fform.html', {'form':form, 'did':did, 'activity':activity })
 
 def update_activity_approval_status(id):
     activitysubmit = get_object_or_404(ActivitySubmit, pk=id)

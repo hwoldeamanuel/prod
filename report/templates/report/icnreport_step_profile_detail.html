@@ -30,22 +30,22 @@
                      
                          
                          
-                                                      <div class="col-md-12 col-sm-12 project_detail">
+                                                      
                        <div class="col-md-9 col-sm-9 project_detail">
                           
                           <p>Title:<strong> {{ icnreport.icn.title }}</strong></p>
                          
                          </div>
                          <div class="col-md-3 col-sm-3 project_detail">
-                         <p>Program:<strong>  {{ icnreport.icn.program }}</strong></p>
+                       
                           <p>ID:<strong> {{ icnreport.icn.icn_number }}</strong> </p>
                           
                           
+                        
                         </div>
-                        </div>
-<div class="col-md-12 col-sm-12 project_detail">
- <p><strong>Description:</strong> {{ icnreport.description }}</p>
-</div>
+                      <p></br></p>
+
+
                           <div class="col-md-4 col-sm-4 project_detail">
 
                            <p>Lead Agency:<strong> {{ icnreport.icn.ilead_agency }}</strong></p>
@@ -53,23 +53,34 @@
                       {% for colead in icnreport.icn.ilead_co_agency.all %}
                       <strong>{{colead}},</strong>
                       {% endfor %}</p>
-                             <p class="">Actual Start Date<strong>
+                       <p class="">Proposed Start Date:
+                      {{icnreport.icn.proposed_start_date}}</p>
+                             <p class="">Actual Start Date:<strong>
                       {{icnreport.actual_start_date}}</strong></p>
-                        <p class="">Actual End Date<strong>
+                       <p class="">Proposed End Date:
+                      {{icnreport.icn.proposed_end_date}}</p>
+                        <p class="">Actual End Date:<strong>
                       {{icnreport.actual_end_date}}</strong></p>
-                            
+                             <p class="">Proposed Report Date:
+                      {{icnreport.icn.final_report_due_date }}</p>
+                      <p>Actual Report Date: <strong>  {{ icnreport.actual_report_date}}</strong></p>
                           </div>
   <div class="col-md-4 col-sm-4 project_detail">
 
-                      <p>Report Date: <strong>  {{ icnreport.actual_report_date}}</strong></p>
-  <p>Implementation Woredas:
+  <p>Proposed Implementation Woredas:
+                      {% for woreda in icnreport.icn.iworeda.all %}
+                      {{woreda}},
+                      {% endfor %}</p>
+                             
+  <p>Actual Implementation Woredas:
                       {% for woreda in icnreport.iworeda.all %}
                       <strong>{{woreda}},</strong>
                       {% endfor %}</p>
                              
-
-                              <p>Total Mercy Corps budget:<strong> {{ icnreport.actual_mc_budget|floatformat:2|intcomma }}</strong>{{icnreport.get_mc_currency_display }}</p>
-                              <p>Cost-share budget:<strong> {{ icnreport.actual_cost_sharing_budget|floatformat:2|intcomma }}</strong>{{icnreport.get_cs_currency_display }}</p>
+ <p>Proposed Mercy Corps budget:<strong> {{ icnreport.icn.mc_budget|floatformat:2|intcomma }}</strong>{{icnreport.icn.get_mc_currency_display }}</p>
+                              <p>Actual Mercy Corps budget:<strong> {{ icnreport.actual_mc_budget|floatformat:2|intcomma }}</strong>{{icnreport.get_mc_currency_display }}</p>
+                               <p>Proposed Cost-share budget:<strong> {{ icnreport.icn.cost_sharing_budget|floatformat:2|intcomma }}</strong>{{icnreport.icn.get_cs_currency_display }}</p>
+                              <p>Actual Cost-share budget:<strong> {{ icnreport.actual_cost_sharing_budget|floatformat:2|intcomma }}</strong>{{icnreport.get_cs_currency_display }}</p>
                               </br>
  </div>
                          
@@ -86,8 +97,13 @@
                             </p>
                             <p >Submission Status: <strong>{{ icnreport.get_status_display }}</strong>
                             </p>
+                            {% if icnreport.approval_status %}
+                             <p >Approval Status: <strong>{{ icnreport.approval_status }}</strong>
+                             {% endif %}
                           </ul>
-                          
+                          <div class="col-md-12 col-sm-12 project_detail">
+ <p><strong>Description:</strong> {{ icnreport.description }}</p>
+
 <div class="ln_solid"></div>
                           <div class="text-center mtop20">
                             <a class="btn btn-success source" {% if icnreport.status == True or icnreport.user != request.user %} onclick="new PNotify({

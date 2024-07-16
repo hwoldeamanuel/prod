@@ -38,7 +38,7 @@
                           
                           
                         </div>
-                       
+                       <p></br></p>
  
                           
 
@@ -70,7 +70,7 @@
  </div>
                          
                          
-                          <ul class="list-unstyled project_detail">
+                  <div class="col-md-4 col-sm-4 project_detail">
                             <p>Initited By:<strong> {{ icn.user.profile.full_name }}</strong>
                             </p>
                              <p>Technical Lead:<strong> {{ icn.technical_lead.user.profile.full_name }}</strong>
@@ -82,7 +82,10 @@
                             </p>
                             <p >Submission Status: <strong>{{ icn.get_status_display }}</strong>
                             </p>
-                          </ul>
+                            {% if icn.approval_status %}
+                            <p >Approval Status: <strong>{{ icn.approval_status }}</strong>
+                            </p>
+                         {% endif %}
                           </div>
                                                 <div class="col-md-12 col-sm-12 project_detail">
    

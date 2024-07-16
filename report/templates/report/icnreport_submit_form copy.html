@@ -24,7 +24,7 @@
   <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.document.id_for_label }}">Document Version <span class="required">*</span>
   </label>
   <div class="col-md-4 col-sm-4" >
-    <div hx-trigger="load, DocListChanged from:body" hx-get="{% url 'icnreport_submit_form_partial' icnreport.id %}" hx-target="this"> 
+    <div hx-trigger="DocListChanged from:body" hx-get="{% url 'icnreport_submit_form_partial' icnreport.id %}" hx-target="this"> 
     {%  render_field form.document class+="form-control form-control-sm" %}
     </div>
     <div class="invalid-feedback">{{ form.document.errors|first }}</div>

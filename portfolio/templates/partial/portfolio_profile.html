@@ -6,7 +6,7 @@
                       <section class="panel">
 
                         <div class="x_title">
-                          <h2>Portfolio Description</h2>
+                          <h2> {{portfolio.title}}</h2>
                           <div class="clearfix"></div>
 
                         
@@ -16,7 +16,7 @@
                           <!-- Current avatar -->
                           {% if portfolio.logo %}
                           <div id="crop-avatar">
-                          <img class="img-responsive avatar-view" src="{{portfolio.logo.url}}" alt="Avatar" title="Change the avatar">
+                          <img class="img-responsive avatar-view" src="{{portfolio.logo.url}}" alt="Avatar" title="Change the avatar" style="width: auto; height: 60px;">
                         </div>
                         {% else %}
                           <h3 class="green"><i class="fa fa-university"></i> {{portfolio.title}}</h3>

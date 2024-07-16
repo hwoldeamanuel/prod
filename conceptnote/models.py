@@ -497,7 +497,7 @@ class ActivitySubmitApproval_P(models.Model):
     
     def save(self, *args, **kwargs):
         if (self.approval_status and self.old_approval_status != self.approval_status) or (self.document and self.old_document != self.document):
-            self.approval_date = timezone.now()
+           self.approval_date = timezone.now()
         super(ActivitySubmitApproval_P, self).save(*args, **kwargs)
         
     

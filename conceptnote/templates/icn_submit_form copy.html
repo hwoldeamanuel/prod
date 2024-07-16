@@ -25,7 +25,7 @@
   </label>
   <div class="col-md-4 col-sm-4" >
     <div hx-trigger="DocListChanged from:body" hx-get="{% url 'icn_submit_form_partial' icn.id %}" hx-target="this"> 
-    {%  render_field form.document class+="form-control form-control-sm" %}
+    {%  render_field form.document class+="form-control form-control-sm required" %}
     </div>
     <div class="invalid-feedback">{{ form.document.errors|first }}</div>
 </div>

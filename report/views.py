@@ -33,6 +33,8 @@ from render_block import render_block_to_string
 from django_htmx.http import HttpResponseClientRedirect
 from django_htmx.http import HttpResponseClientRedirect
 from django_htmx.http import HttpResponseClientRefresh
+from portfolio.models import Portfolio
+from program.models import ImplementationArea
 from app_admin.models import Approvalf_Status, Approvalt_Status, Submission_Status
 # Create your views here.
 
@@ -56,10 +58,16 @@ def icnreport_add(request, id):
         if form.is_valid():
             instance = form.save(commit=False)
             instance.user = request.user
-            
+                       
+            selected_woredas = request.POST.getlist("iworeda")
+            selected_co_agency = request.POST.getlist("ilead_co_agency")
+            items_woreda = ImplementationArea.objects.filter(id__in=selected_woredas)
+            items_co_agency = Portfolio.objects.filter(id__in=selected_co_agency)
             instance.save()
-           
-            return redirect('icnreport_detail',instance.pk) 
+            instance.iworeda.add(*items_woreda)
+            instance.ilead_co_agency.add(*items_co_agency)
+                     
+            return redirect('icnreport_detail',instance.icn_id) 
         
         
         form = IcnReportForm(request.POST,request.FILES, user=request.user, icn=icn)   
@@ -103,6 +111,7 @@ def icnreport_edit(request, id):
 
  
 def icnreport_detail(request, id):
+
     icn = Icn.objects.get(id=id)
 
     context ={}
@@ -149,7 +158,19 @@ def activityreport_step_impact(request, id):
 def icnreport_submit_form(request, id, sid): 
     icn = Icn.objects.get(id=id)
     icnreport = IcnReport.objects.get(icn_id=icn.id)
-    form = IcnReportSubmitForm(user=request.user,icnreport=icnreport, sid=sid)
+   
+    if sid== 1 and  IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).exists():
+        icnreportsubmit = IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).latest('id')
+        form = IcnReportSubmitForm(sid=sid, icnreport=icnreport, user=request.user)
+        form.fields['document'].choices = [
+                (document.pk, document) for document in IcnReportDocument.objects.filter(id=icnreportsubmit.document.id)
+                ]
+    elif (sid== 1 and IcnReportSubmit.objects.filter(icnreport_id=icnreport.id).exists()==False) or (sid == 2):
+        form = IcnReportSubmitForm(user=request.user, icnreport=icnreport, sid=sid)
+        form.fields['document'].choices = [
+                (document.pk, document) for document in IcnReportDocument.objects.none()
+                ]
+        
     
     if request.method == "POST":
         form = IcnReportSubmitForm(request.POST, request.FILES)

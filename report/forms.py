@@ -252,16 +252,19 @@ class IcnReportSubmitForm(forms.ModelForm):
          sid = kwargs.pop('sid', None)
          super(IcnReportSubmitForm, self).__init__(*args, **kwargs)
 
-         self.fields['document'].choices = [
-             (document.pk, document) for document in IcnReportDocument.objects.filter(user=user, icnreport=icnreport)
-         ]
-
          self.fields['submission_status'].choices = [
             (submission_status.id, submission_status.name) for submission_status in Submission_Status.objects.filter(id=sid)
         ]   
       # invalid input from the client; ignore and fallback to empty City queryset
         
-  
+         if sid:
+            self.fields['document'].choices = [
+                (document.pk, document) for document in IcnReportDocument.objects.none()
+            ] 
+         else:
+               self.fields['document'].choices = [
+                (document.pk, document) for document in IcnReportDocument.objects.filter(user=user, icnreport=icnreport)
+            ] 
     
 
          self.fields['submission_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )

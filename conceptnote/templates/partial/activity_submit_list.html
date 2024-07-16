@@ -40,7 +40,7 @@
        
  </td>
   <td>
-  {% if activitysubmit.submission_status.name == 'Request Canceled' %}
+  {% if activitysubmit.submission_status_id == 1 %}
   <div class="btn-group">
                     <button type="button" class="{% if request.user.id != activity.user.id %}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       Action
