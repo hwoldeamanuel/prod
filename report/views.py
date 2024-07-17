@@ -75,10 +75,10 @@ def icnreport_add(request, id):
     
     elif request.method == "GET":
         icn = Icn.objects.get(id = icn.id)
-        
+        program = Program.objects.filter(id=icn.program_id)
         current_user = request.user
-   
-        if Program.objects.filter(id=icn.program_id, users_role__in=current_user,userroles__is_pcn_initiator=True).exists():
+        program_users = UserRoles.objects.filter(program__in=program, is_pcn_initiator=True)
+        if User.objects.filter(id=current_user.id,userroles__in=program_users).exists():
             form = IcnReportForm(user=request.user, icn=icn)   
             context = {'form':form, 'icn':icn}
             return render(request, 'report/icnreport_step_profile_new.html', context)
@@ -786,10 +786,12 @@ def activityreport_add(request, id):
 
     if request.method == "GET":
         activity = Activity.objects.get(id = id)
-        
+        program = Program.objects.filter(id=activity.icn.program_id)
         current_user = request.user
+        program_users = UserRoles.objects.filter(program__in=program, is_pcn_initiator=True)
+   
+        if User.objects.filter(id=current_user.id,userroles__in=program_users).exists():
         
-        if Program.objects.filter(id=activity.icn.program_id, users_role__in=current_user,userroles__is_pcn_initiator=True).exists():
             form = ActivityReportForm(user=request.user, activity=activity)   
             context = {'form':form, 'activity':activity}
             return render(request, 'report/activityreport_step_profile_add.html', context)
