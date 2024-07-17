@@ -32,7 +32,7 @@ def program(request):
         return redirect('program_detail',pk=program.id) 
     
     else:
-        programs =  program = Program.objects.filter(users_role=user)
+        program = Program.objects.filter(users_role=user)
     
    
     context = {'programs': programs}

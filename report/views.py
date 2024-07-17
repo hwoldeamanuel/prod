@@ -34,7 +34,7 @@ from django_htmx.http import HttpResponseClientRedirect
 from django_htmx.http import HttpResponseClientRedirect
 from django_htmx.http import HttpResponseClientRefresh
 from portfolio.models import Portfolio
-from program.models import ImplementationArea
+from program.models import ImplementationArea, UserRoles
 from app_admin.models import Approvalf_Status, Approvalt_Status, Submission_Status
 # Create your views here.
 
@@ -69,14 +69,27 @@ def icnreport_add(request, id):
                      
             return redirect('icnreport_detail',instance.icn_id) 
         
-        
         form = IcnReportForm(request.POST,request.FILES, user=request.user, icn=icn)   
         context = {'form':form}
         return render(request, 'report/icnreport_step_profile_new.html', context)
     
-    form = IcnReportForm(user=request.user, icn=icn)   
-    context = {'form':form, 'icn':icn}
-    return render(request, 'report/icnreport_step_profile_new.html', context)
+    elif request.method == "GET":
+        icn = Icn.objects.get(id = icn.id)
+        program = Program.objects.filter(id=icn.program_id)
+        current_user = request.user
+        elig = UserRoles.objects.get(program__in=program,is_pcn_initiator=True)
+        if current_user.id == elig.user_id:
+            form = IcnReportForm(user=request.user, icn=icn)   
+            context = {'form':form, 'icn':icn}
+            return render(request, 'report/icnreport_step_profile_new.html', context)
+    
+    return redirect('icn_step_approval',icn.id) 
+    
+
+           
+        
+    
+   
 
 
 
@@ -757,19 +770,32 @@ def activityreport_add(request, id):
             instance = form.save(commit=False)
             instance.user = request.user
            
+            selected_woredas = request.POST.getlist("aworeda")
+            selected_co_agency = request.POST.getlist("alead_co_agency")
+            items_woreda = ImplementationArea.objects.filter(id__in=selected_woredas)
+            items_co_agency = Portfolio.objects.filter(id__in=selected_co_agency)
             instance.save()
-           
-           
+            instance.aworeda.add(*items_woreda)
+            instance.alead_co_agency.add(*items_co_agency)
             return redirect('activityreport_detail',instance.pk) 
-        
-        
+              
         form = ActivityReportForm(request.POST,request.FILES, user=request.user, activity=activity)   
         context = {'form':form, 'activity':activity}
         return render(request, 'report/activityreport_step_profile_add.html', context)
     
-    form = ActivityReportForm(user=request.user, acn=activity)   
-    context = {'form':form, 'activity':activity}
-    return render(request, 'report/activityreport_step_profile_add.html', context)
+
+    if request.method == "GET":
+        activity = Activity.objects.get(id = id)
+        program_id = activity.icn.program_id
+        program = Program.objects.filter(id=program_id)
+        current_user = request.user
+        elig = UserRoles.objects.get(program__in=program,is_pcn_initiator=True)
+        if current_user.id == elig.user_id:
+            form = ActivityReportForm(user=request.user, activity=activity)   
+            context = {'form':form, 'activity':activity}
+            return render(request, 'report/activityreport_step_profile_add.html', context)
+    
+    return redirect('activity_step_approval',activity.id) 
 
  
 def activityreport_edit(request, id): 
