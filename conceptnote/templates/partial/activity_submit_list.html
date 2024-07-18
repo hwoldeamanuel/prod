@@ -6,7 +6,7 @@
         <th>Team Lead</th>
         <th>Date</th>
        
-        <th>Concept Note Ver#</th>
+        <th>Activity Concept Note Ver#</th>
         <th>Status</th>
         <th>Action</th>
       
@@ -80,7 +80,7 @@
           <small>{{ activity.technical_lead.user.profile.full_name }}</small>
         </td>
         {% if activitysubmit %}
-        <td>{% if activitysubmit.activitysubmitapproval_t.approval_date|time == activitysubmit.submission_date|time %}{{ activitysubmit.submission_date|timesince }} {% else %} {{activitysubmit.activitysubmitapproval_t.approval_date}} {% endif %}</td>
+        <td>{% if activitysubmit.activitysubmitapproval_t.approval_date|time == activitysubmit.submission_date|time %}{{ activitysubmit.submission_date|timesince }} {% else %} {{activitysubmit.activitysubmitapproval_t.approval_date|date:"M d,Y"}}</br><small>{{activitysubmit.activitysubmitapproval_t.approval_date|time}}</small> {% endif %}</td>
        
         <td>{{activitysubmit.activitysubmitapproval_t.document }}</td>
         <td>
@@ -119,7 +119,7 @@
       <small>{{ activity.finance_lead.user.profile.full_name }}</small>
     </td>
     {% if activitysubmit %}
-    <td> {% if activitysubmit.activitysubmitapproval_f.approval_date|time == activitysubmit.submission_date|time %}{{ activitysubmit.submission_date|timesince }}{% else %}{{activitysubmit.activitysubmitapproval_f.approval_date}}{% endif %}</td>
+    <td> {% if activitysubmit.activitysubmitapproval_f.approval_date|time == activitysubmit.submission_date|time %}{{ activitysubmit.submission_date|timesince }}{% else %}{{activitysubmit.activitysubmitapproval_f.approval_date|date:"M d,Y"}}</br><small>{{activitysubmit.activitysubmitapproval_f.approval_date|time}}</small>{% endif %}</td>
        
     <td>{{activitysubmit.activitysubmitapproval_f.document }}</td>
     <td>
@@ -156,7 +156,7 @@
       <small>{{ activity.program_lead.user.profile.full_name }}</small>
     </td>
     {% if activitysubmit %}
-    <td>{% if activitysubmit.activitysubmitapproval_p.approval_date|time == activitysubmit.submission_date|time %}{{ activitysubmit.submission_date|timesince }}{% else %}{{activitysubmit.activitysubmitapproval_p.approval_date}}{% endif %}</td>
+    <td>{% if activitysubmit.activitysubmitapproval_p.approval_date|time == activitysubmit.submission_date|time %}{{ activitysubmit.submission_date|timesince }}{% else %}{{activitysubmit.activitysubmitapproval_p.approval_date|date:"M d,Y"}}</br><small>{{activitysubmit.activitysubmitapproval_p.approval_date|time}}</small>{% endif %}</td>
         
     <td>{{activitysubmit.activitysubmitapproval_p.document}}</td>
     <td>

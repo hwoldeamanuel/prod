@@ -80,7 +80,7 @@
           <small>{{ icn.technical_lead.user.profile.full_name }}</small>
         </td>
         {% if icnsubmit %}
-        <td>{% if icnsubmit.icnsubmitapproval_t.approval_date|time == icnsubmit.submission_date|time %}{{ icnsubmit.submission_date|timesince }} {% else %} {{icnsubmit.icnsubmitapproval_t.approval_date}} {% endif %}</td>
+        <td>{% if icnsubmit.icnsubmitapproval_t.approval_date|time == icnsubmit.submission_date|time %}{{ icnsubmit.submission_date|timesince }} {% else %} {{icnsubmit.icnsubmitapproval_t.approval_date|date:"M d,Y"}}</br><small>{{icnsubmit.icnsubmitapproval_t.approval_date|time}}</small> {% endif %}</td>
        
         <td>{{icnsubmit.icnsubmitapproval_t.document }}</td>
         <td>
@@ -119,7 +119,7 @@
       <small>{{ icn.finance_lead.user.profile.full_name }}</small>
     </td>
     {% if icnsubmit %}
-    <td> {% if icnsubmit.icnsubmitapproval_f.approval_date|time == icnsubmit.submission_date|time %}{{ icnsubmit.submission_date|timesince }}{% else %}{{icnsubmit.icnsubmitapproval_f.approval_date}}{% endif %}</td>
+    <td> {% if icnsubmit.icnsubmitapproval_f.approval_date|time == icnsubmit.submission_date|time %}{{ icnsubmit.submission_date|timesince }}{% else %}{{icnsubmit.icnsubmitapproval_f.approval_date|date:"M d,Y"}}</br><small>{{icnsubmit.icnsubmitapproval_f.approval_date|time}}</small>{% endif %}</td>
        
     <td>{{icnsubmit.icnsubmitapproval_f.document }}</td>
     <td>
@@ -156,7 +156,7 @@
       <small>{{ icn.program_lead.user.profile.full_name }}</small>
     </td>
     {% if icnsubmit %}
-    <td>{% if icnsubmit.icnsubmitapproval_p.approval_date|time == icnsubmit.submission_date|time %}{{ icnsubmit.submission_date|timesince }}{% else %}{{icnsubmit.icnsubmitapproval_p.approval_date}}{% endif %}</td>
+    <td>{% if icnsubmit.icnsubmitapproval_p.approval_date|time == icnsubmit.submission_date|time %}{{ icnsubmit.submission_date|timesince }}{% else %}{{icnsubmit.icnsubmitapproval_p.approval_date|date:"M d,Y"}}</br><small>{{icnsubmit.icnsubmitapproval_p.approval_date|time}}</small>{% endif %}</td>
         
     <td>{{icnsubmit.icnsubmitapproval_p.document}}</td>
     <td>

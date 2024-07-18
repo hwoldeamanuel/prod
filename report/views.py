@@ -200,7 +200,7 @@ def icnreport_submit_form(request, id, sid):
             #Document.objects.create(user = icnreport.user, document = instance.document,  icnreport=instance.icnreport, description = document_i)
             if icnreportsubmit.submission_status_id == 2:
                 IcnReport.objects.filter(icn_id=icn.id).update(status=True)
-                IcnReport.objects.filter(icn_id=icn.id).update(approval_status="Pending Submission")
+                IcnReport.objects.filter(icn_id=icn.id).update(approval_status="Pending Approval")
                 IcnReportSubmitApproval_T.objects.create(user = icnreport.technical_lead,submit_id = instance, document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
                 IcnReportSubmitApproval_P.objects.create(user = icnreport.program_lead,submit_id = instance,document = instance.document, approval_status=Approvalf_Status.objects.get(id=1))
                 IcnReportSubmitApproval_F.objects.create(user = icnreport.finance_lead,submit_id = instance,document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
@@ -502,8 +502,9 @@ def icnreport_submit_document(request, id):
     context ={}
     icnreport = get_object_or_404(IcnReport, pk=id)
     dform = IcnReportDocumentForm()
-    major = IcnReportDocument.objects.filter(icnreport=icnreport.id, user=icnreport.user).count() 
-    minor = IcnReportDocument.objects.filter(icnreport=icnreport.id).exclude(user=icnreport.user)
+    major = IcnReportDocument.objects.filter(icnreport=icnreport.id, user=icnreport.user).count()
+    last_initiator_doc = IcnReportDocument.objects.filter(icnreport=icnreport.id, user=icnreport.user).latest('id') 
+    minor = IcnReportDocument.objects.filter(icnreport=icnreport.id, id__gt=last_initiator_doc.id).exclude(user=icnreport.user)
     minor = minor.count()
     context = {'dform':dform}
     if request.method == 'POST':
@@ -514,7 +515,7 @@ def icnreport_submit_document(request, id):
             instance.user = request.user
             if instance.user == icnreport.user:
                  major = major + 1
-                 minor = minor
+                 minor = 0
             else:
                  major = major 
                  minor = minor + 1
@@ -1075,7 +1076,8 @@ def activityreport_submit_document(request, id):
     activityreport = get_object_or_404(ActivityReport, pk=id)
     dform = ActivityReportDocumentForm()
     major = ActivityReportDocument.objects.filter(activityreport=activityreport.id, user=activityreport.user).count() 
-    minor = ActivityReportDocument.objects.filter(activityreport=activityreport.id).exclude(user=activityreport.user)
+    last_initiator_doc = ActivityReportDocument.objects.filter(activityeport=activityreport.id, user=activityreport.user).latest('id') 
+    minor = ActivityReportDocument.objects.filter(activityreport=activityreport.id, id__gt=last_initiator_doc.id).exclude(user=activityreport.user)
     minor = minor.count()
     context = {'dform':dform}
     if request.method == 'POST':
@@ -1086,7 +1088,7 @@ def activityreport_submit_document(request, id):
             instance.user = request.user
             if instance.user == activityreport.user:
                  major = major + 1
-                 minor = minor
+                 minor = 0
             else:
                  major = major 
                  minor = minor + 1

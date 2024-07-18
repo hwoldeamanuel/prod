@@ -7,7 +7,7 @@
  <div class="form-group row">
   <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.submission_note.id_for_label }}">Submission Note <span class="required">*</span>
   </label>
-  <div class="col-md-10 col-sm-10">
+  <div class="col-md-8 col-sm-8">
     {%  render_field form.submission_note class+="form-control required" %}
     <div class="invalid-feedback">{{ form.submission_note.errors|first }}</div>
 </div>

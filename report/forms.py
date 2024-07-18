@@ -269,6 +269,7 @@ class IcnReportSubmitForm(forms.ModelForm):
 
          self.fields['submission_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
          self.fields['submission_note'].required = True 
+         self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
         
      class Meta:
             model = IcnReportSubmit
@@ -308,7 +309,7 @@ class IcnReportApprovalTForm(forms.ModelForm):
     
      
         
-         self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3'  }    )
+         self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required': 'True'  }    )
          self.fields['approval_status'].choices = [
              (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalt_Status.objects.filter(id=did)
          ]
@@ -318,11 +319,11 @@ class IcnReportApprovalTForm(forms.ModelForm):
              (document.pk, document) for document in IcnReportDocument.objects.none()
          ]
        
-         if did == 3:
+         if did == 3 or did == 4:
                self.fields['document'].widget.attrs['readonly'] = True
 
-        
-        
+         self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
+         
     class Meta:
             model = IcnReportSubmitApproval_T
             fields = ('approval_note','approval_status','document')
@@ -339,7 +340,7 @@ class IcnReportApprovalFForm(forms.ModelForm):
     
      
         
-         self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3'  }    )
+         self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required': 'True'  }    )
          self.fields['approval_status'].choices = [
              (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalt_Status.objects.filter(id=did)
          ]
@@ -349,10 +350,10 @@ class IcnReportApprovalFForm(forms.ModelForm):
              (document.pk, document) for document in IcnReportDocument.objects.none()
          ]
        
-         if did == 3:
+         if did == 3 or did == 4:
                self.fields['document'].widget.attrs['readonly'] = True
 
-        
+         self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
         
     class Meta:
             model = IcnReportSubmitApproval_F
@@ -368,7 +369,7 @@ class IcnReportApprovalPForm(forms.ModelForm):
     
      
         
-         self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3'  }    )
+         self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'  }    )
          self.fields['approval_status'].choices = [
              (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalf_Status.objects.filter(id=did)
          ]
@@ -378,8 +379,10 @@ class IcnReportApprovalPForm(forms.ModelForm):
              (document.pk, document) for document in IcnReportDocument.objects.none()
          ]
        
-         if did == 3:
+         if did == 3 or did == 4:
                self.fields['document'].widget.attrs['readonly'] = True
+        
+         self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
 
         
     
@@ -704,9 +707,9 @@ class ActivityReportApprovalTForm(forms.ModelForm):
              (document.pk, document) for document in ActivityReportDocument.objects.none()
          ]
        
-         if did == 3:
+         if did == 3 or did == 4:
                self.fields['document'].widget.attrs['readonly'] = True
-        
+         self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
     class Meta:
             model = ActivityReportSubmitApproval_T
             fields = ('approval_note','approval_status','document')
@@ -731,8 +734,10 @@ class ActivityReportApprovalPForm(forms.ModelForm):
              (document.pk, document) for document in ActivityReportDocument.objects.none()
          ]
        
-         if did == 3:
+         if did == 3 or did==4:
                self.fields['document'].widget.attrs['readonly'] = True
+        
+         self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
         
         
     class Meta:
@@ -759,9 +764,9 @@ class ActivityReportApprovalFForm(forms.ModelForm):
              (document.pk, document) for document in ActivityReportDocument.objects.none()
          ]
        
-         if did == 3:
+         if did == 3 or did == 4:
                self.fields['document'].widget.attrs['readonly'] = True
-        
+         self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
     class Meta:
             model = ActivityReportSubmitApproval_F
             fields = ('approval_note','approval_status','document')

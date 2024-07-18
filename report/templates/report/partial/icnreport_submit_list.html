@@ -6,7 +6,7 @@
         <th>Team Lead</th>
         <th>Date</th>
        
-        <th>Concept Note Ver#</th>
+        <th>ICN Report Ver#</th>
         <th>Status</th>
         <th>Action</th>
       
@@ -80,7 +80,7 @@
           <small>{{ icnreport.technical_lead.user.profile.full_name }}</small>
         </td>
         {% if icnreportsubmit %}
-        <td>{% if icnreportsubmit.icnreportsubmitapproval_t.approval_date|time == icnreportsubmit.submission_date|time %}{{ icnreportsubmit.submission_date|timesince }} {% else %} {{icnreportsubmit.icnreportsubmitapproval_t.approval_date}} {% endif %}</td>
+        <td>{% if icnreportsubmit.icnreportsubmitapproval_t.approval_date|time == icnreportsubmit.submission_date|time %}{{ icnreportsubmit.submission_date|timesince }} {% else %} {{icnreportsubmit.icnreportsubmitapproval_t.approval_date|date:"M d,Y"}} </br><small>{{icnreportsubmit.icnreportsubmitapproval_t.approval_date|time}}</small> {% endif %}</td>
        
         <td>{{icnreportsubmit.icnreportsubmitapproval_t.document }}</td>
         <td>
@@ -119,7 +119,7 @@
       <small>{{ icnreport.finance_lead.user.profile.full_name }}</small>
     </td>
     {% if icnreportsubmit %}
-    <td> {% if icnreportsubmit.icnreportsubmitapproval_f.approval_date|time == icnreportsubmit.submission_date|time %}{{ icnreportsubmit.submission_date|timesince }}{% else %}{{icnreportsubmit.icnreportsubmitapproval_f.approval_date}}{% endif %}</td>
+    <td> {% if icnreportsubmit.icnreportsubmitapproval_f.approval_date|time == icnreportsubmit.submission_date|time %}{{ icnreportsubmit.submission_date|timesince }}{% else %}{{icnreportsubmit.icnreportsubmitapproval_f.approval_date|date:"M d,Y"}}</br><small>{{icnreportsubmit.icnreportsubmitapproval_f.approval_date|time}}</small>{% endif %}</td>
        
     <td>{{icnreportsubmit.icnreportsubmitapproval_f.document }}</td>
     <td>
@@ -156,7 +156,7 @@
       <small>{{ icnreport.program_lead.user.profile.full_name }}</small>
     </td>
     {% if icnreportsubmit %}
-    <td>{% if icnreportsubmit.icnreportsubmitapproval_p.approval_date|time == icnreportsubmit.submission_date|time %}{{ icnreportsubmit.submission_date|timesince }}{% else %}{{icnreportsubmit.icnreportsubmitapproval_p.approval_date}}{% endif %}</td>
+    <td>{% if icnreportsubmit.icnreportsubmitapproval_p.approval_date|time == icnreportsubmit.submission_date|time %}{{ icnreportsubmit.submission_date|timesince }}{% else %}{{icnreportsubmit.icnreportsubmitapproval_p.approval_date|date:"M d,Y"}}</br><small>{{icnreportsubmit.icnreportsubmitapproval_p.approval_date|time}}</small>{% endif %}</td>
         
     <td>{{icnreportsubmit.icnreportsubmitapproval_p.document}}</td>
     <td>

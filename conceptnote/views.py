@@ -676,7 +676,9 @@ def icn_submit_document(request, id):
     icn = get_object_or_404(Icn, pk=id)
     dform = IcnDocumentForm()
     major = Document.objects.filter(icn=icn.id, user=icn.user).count() 
-    minor = Document.objects.filter(icn=icn.id).exclude(user=icn.user)
+    last_initiator_doc = Document.objects.filter(icn=icn.id, user=icn.user).latest('id') 
+    
+    minor = Document.objects.filter(icn=icn.id, id__gt=last_initiator_doc.id).exclude(user=icn.user)
     minor = minor.count()
     context = {'dform':dform}
     if request.method == 'POST':
@@ -687,7 +689,7 @@ def icn_submit_document(request, id):
             instance.user = request.user
             if instance.user == icn.user:
                  major = major + 1
-                 minor = minor
+                 minor = 0
             else:
                  major = major 
                  minor = minor + 1
@@ -1337,7 +1339,9 @@ def activity_submit_document(request, id):
     activity = get_object_or_404(Activity, pk=id)
     dform = ActivityDocumentForm()
     major = ActivityDocument.objects.filter(activity=activity.id, user=activity.user).count() 
-    minor = ActivityDocument.objects.filter(activity=activity.id).exclude(user=activity.user)
+    last_initiator_doc = ActivityDocument.objects.filter(activity=activity.id, user=activity.user).latest('id') 
+    
+    minor = ActivityDocument.objects.filter(activity=activity.id, id__gt=last_initiator_doc.id).exclude(user=activity.user)
     minor = minor.count()
     context = {'dform':dform}
     if request.method == 'POST':
@@ -1348,7 +1352,7 @@ def activity_submit_document(request, id):
             instance.user = request.user
             if instance.user == activity.user:
                  major = major + 1
-                 minor = minor
+                 minor = 0
             else:
                  major = major 
                  minor = minor + 1
