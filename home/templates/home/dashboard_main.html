@@ -57,8 +57,9 @@
                     <h3>Program Activities <small>Program Users</small></h3>
                   </div>
                   <div class="col-md-6">
-                    <div id="reportrange" class="pull-right" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
-                      <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                    <div type = "text" id="reportrange" class="pull-right" style="background: #fff;  cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
+                    <input type="text" class="flat" disabled="disabled" style="position: absolute; opacity: 0;">
+                      <i class="glyphicon glyphicon-calendar fa fa-calendar" ></i>
                       <span>December 30, 2014 - January 28, 2015</span> <b class="caret"></b>
                     </div>
                   </div>
@@ -212,7 +213,7 @@
             <div class="col-md-4 col-sm-4 ">
               <div class="x_panel tile fixed_height_320 overflow_hidden">
                 <div class="x_title">
-                  <h2>Device Usage</h2>
+                  <h2>Intervention</h2>
                   <ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                     </li>
@@ -229,69 +230,21 @@
                   <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
-                  <table class="" style="width:100%">
-                    <tr>
-                      <th style="width:37%;">
-                        <p>Top 5</p>
-                      </th>
-                      <th>
-                        <div class="col-lg-7 col-md-7 col-sm-7 ">
-                          <p class="">Device</p>
-                        </div>
-                        <div class="col-lg-5 col-md-5 col-sm-5 ">
-                          <p class="">Progress</p>
-                        </div>
-                      </th>
-                    </tr>
-                    <tr>
-                      <td>
-                        <canvas class="canvasDoughnut" height="140" width="140" style="margin: 15px 10px 10px 0"></canvas>
-                      </td>
-                      <td>
-                        <table class="tile_info">
-                          <tr>
-                            <td>
-                              <p><i class="fa fa-square blue"></i>IOS </p>
-                            </td>
-                            <td>30%</td>
-                          </tr>
-                          <tr>
-                            <td>
-                              <p><i class="fa fa-square green"></i>Android </p>
-                            </td>
-                            <td>10%</td>
-                          </tr>
-                          <tr>
-                            <td>
-                              <p><i class="fa fa-square purple"></i>Blackberry </p>
-                            </td>
-                            <td>20%</td>
-                          </tr>
-                          <tr>
-                            <td>
-                              <p><i class="fa fa-square aero"></i>Symbian </p>
-                            </td>
-                            <td>15%</td>
-                          </tr>
-                          <tr>
-                            <td>
-                              <p><i class="fa fa-square red"></i>Others </p>
-                            </td>
-                            <td>30%</td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
+                 
+                       <div id="canvas-holder" style="width:85%"> 
+        <canvas id="chart-area" height="100" width="100" style="margin: 5px 10px 10px 0">
+
+    </div>
+                     
                 </div>
               </div>
             </div>
 
 
             <div class="col-md-4 col-sm-4 ">
-              <div class="x_panel tile fixed_height_320">
+              <div class="x_panel tile fixed_height_320 overflow_hidden">
                 <div class="x_title">
-                  <h2>Quick Settings</h2>
+                  <h2>Activity</h2>
                   <ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                     </li>
@@ -308,37 +261,15 @@
                   <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
-                  <div class="dashboard-widget-content">
-                    <ul class="quick-list">
-                      <li><i class="fa fa-calendar-o"></i><a href="#">Settings</a>
-                      </li>
-                      <li><i class="fa fa-bars"></i><a href="#">Subscription</a>
-                      </li>
-                      <li><i class="fa fa-bar-chart"></i><a href="#">Auto Renewal</a> </li>
-                      <li><i class="fa fa-line-chart"></i><a href="#">Achievements</a>
-                      </li>
-                      <li><i class="fa fa-bar-chart"></i><a href="#">Auto Renewal</a> </li>
-                      <li><i class="fa fa-line-chart"></i><a href="#">Achievements</a>
-                      </li>
-                      <li><i class="fa fa-area-chart"></i><a href="#">Logout</a>
-                      </li>
-                    </ul>
+                 
+                       <div id="canvas-holder" style="width:85%"> 
+        <canvas id="chart-area2" height="100" width="100" style="margin: 5px 10px 10px 0">
 
-                    <div class="sidebar-widget">
-                        <h4>Profile Completion</h4>
-                        <canvas width="150" height="80" id="chart_gauge_01" class="" style="width: 160px; height: 100px;"></canvas>
-                        <div class="goal-wrapper">
-                          <span id="gauge-text" class="gauge-value pull-left">0</span>
-                          <span class="gauge-value pull-left">%</span>
-                          <span id="goal-text" class="goal-value pull-right">100%</span>
-                        </div>
-                    </div>
-                  </div>
+    </div>
+                     
                 </div>
               </div>
             </div>
-
-          </div>
 
 
          
@@ -352,7 +283,7 @@
 {% block content_page_js %}
 <script>
 
-var ctx = document.getElementById("myChart").getContext("2d");;
+var ctx = document.getElementById("myChart").getContext("2d");
 var myChart = new Chart(ctx, {
     type: 'bar',
     
@@ -382,5 +313,105 @@ var myChart = new Chart(ctx, {
         }
     }
 });
+</script>
+<script>
+var randomScalingFactor = function() {
+        return Math.round(Math.random() * 100);
+    };
+    var randomColorFactor = function() {
+        return Math.round(Math.random() * 255);
+    };
+    var randomColor = function(opacity) {
+        return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',' + (opacity || '.3') + ')';
+    };
+var ctx = document.getElementById("chart-area").getContext("2d");
+myDoughnut = new Chart(ctx, 
+{
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [{% for icn in icn_status %} {{icn.icn_count }},{% endfor %}],
+                backgroundColor: [{% for isn in icn_status %} randomColor(0.7),{% endfor %}
+                ],
+                label: 'Dataset 1'
+            }, {
+                
+                data: [{% for asn in icn_report_status %} {{asn.icn_count }},{% endfor %}],
+                backgroundColor: [{% for asn in acn_status %} randomColor(0.7),{% endfor %}
+                ],
+                label: 'Dataset 2'
+            }],
+            labels: [{% for isn in icn_status %} {% if isn.approval_status is None %}"Draft"{% else %} "{{isn.approval_status }}" {% endif %},{% endfor %}
+                ],
+        },
+        options: {
+           legend: {
+           responsive:true,
+      display: true,
+    },
+            title: {
+                display: false,
+                text: 'Doughnut Chart'
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            }
+        }
+    }
+
+   
+
+);
+</script>
+<script>
+var randomScalingFactor = function() {
+        return Math.round(Math.random() * 100);
+    };
+    var randomColorFactor = function() {
+        return Math.round(Math.random() * 255);
+    };
+    var randomColor = function(opacity) {
+        return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',' + (opacity || '.3') + ')';
+    };
+var ctx = document.getElementById("chart-area2").getContext("2d");
+myDoughnut = new Chart(ctx, 
+{
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [{% for acn in acn_status %} {{acn.acn_count }},{% endfor %}],
+                backgroundColor: [{% for asn in acn_status %} randomColor(0.7),{% endfor %}
+                ],
+                label: 'Dataset 1'
+            }, {
+                
+                data: [{% for asn in acn_report_status %} {{asn.acn_count }},{% endfor %}],
+                backgroundColor: [{% for asn in acn_status %} randomColor(0.7),{% endfor %}
+                ],
+                label: 'Dataset 2'
+            }],
+            labels: [{% for isn in acn_status %} {% if isn.approval_status is None %}"Draft"{% else %} "{{isn.approval_status }}" {% endif %},{% endfor %}
+                ],
+        },
+        options: {
+           legend: {
+           responsive:true,
+      display: true,
+    },
+            title: {
+                display: false,
+                text: 'Doughnut Chart'
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            }
+        }
+    }
+
+   
+
+);
 </script>
 {% endblock %}

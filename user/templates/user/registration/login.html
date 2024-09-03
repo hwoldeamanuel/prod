@@ -39,7 +39,7 @@
                                         {% with WIDGET_ERROR_CLASS='is-invalid' %}
             <form method="POST"  autocomplete="off">
 {% csrf_token %}
-              <h1>Login Form</h1>
+              <h1>Login</h1>
               <div>
                  {% render_field form.username class="form-control" placeholder="username" %}
                 <div class="invalid-feedback">{{ form.username.errors|first }}</div>

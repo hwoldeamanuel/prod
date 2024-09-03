@@ -62,10 +62,10 @@ def user(request):
         collector[collectible['datetime__date']].update(collectible.items())
 
     all_request = list(collector.values()) 
-
+    
   
     
-    context = {'user_activity':user_activity, 'all_request':all_request,}
+    context = {'user_activity':user_activity, 'all_request':all_request, 'last_month_filter':last_month_filter}
     return render(request, 'user/accounts.html', context)
 
 @register.filter(name='jsonify')
@@ -77,6 +77,9 @@ def jsonify(data):
 
 @login_required(login_url='login')
 def user_activity(request):
+    query = request.GET.get('reservation', '')
+    print(query)
+    print('hello')
     last_month_filter = timezone.now() - timedelta(days=get_lapse())
     qs1 = RequestEvent.objects.filter(user_id=request.user, datetime__gte=last_month_filter).values('datetime__date').annotate(id_count=Count('id', distinct=True))
     qs2 = RequestEvent.objects.filter(user_id=request.user, method='POST', datetime__gte=last_month_filter).values('datetime__date').annotate(count_login=Count('id', distinct=True))
@@ -188,7 +191,7 @@ def user_profile(request):
     
     return render(request, 'user/partial/user_profile.html', context)
 
-
+@login_required(login_url='login')
 def change_password(request):
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
@@ -231,6 +234,7 @@ def newuserprofile(request):
     context = {'profile_form':profile_form}
     return render(request, 'user/partial/profile_form_new.html', context)
 
+@login_required(login_url='login')
 def user_program_roles(request):
     user = get_object_or_404(User, pk=request.user.id)
     program_users = UserRoles.objects.filter(user=user)

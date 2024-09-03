@@ -2,12 +2,12 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.db.models import Max, Avg,Sum,Count
-
+from django.db.models import Q
 
 from program.models import Program, ImplementationArea
 from portfolio.models import Portfolio
 from django.contrib.auth.models import User
-
+from report.models import IcnReport, ActivityReport
 from django.shortcuts import render
 from django.contrib.auth.views import LoginView
 from django.views.generic import FormView
@@ -47,12 +47,17 @@ def home(request):
   total_cn=0
   program_users = Program.objects.annotate(num_user=Count("users_role")).order_by('-num_user')[:12]
   program_cn = Program.objects.annotate(num_cn=Count("icn__activity") + Count("icn")).filter(num_cn__gte=1).order_by('-num_cn')
+  
   for program in program_cn:
      total_cn = program.num_cn + total_cn
 
   total_woreda = ImplementationArea.objects.count
+  icn_status =  Icn.objects.values('approval_status').annotate(icn_count=Count('id', distinct=True))
+  acn_status = Activity.objects.values('approval_status').annotate(acn_count=Count('id', distinct=True))
+  icn_report_status =  IcnReport.objects.values('approval_status').annotate(icn_count=Count('id', distinct=True))
+  acn_report_status = ActivityReport.objects.values('approval_status').annotate(acn_count=Count('id', distinct=True))
   
-  context = {'program_users':program_users, 'total_program': total_program,'total_cn':total_cn,'program_cn':program_cn, 'total_portfolio':total_portfolio, 'total_user':total_user,  'total_woreda':total_woreda, 'total_icn':total_icn, 'total_activity':total_activity}
+  context = {'program_users':program_users, 'total_program': total_program,'total_cn':total_cn,'program_cn':program_cn, 'total_portfolio':total_portfolio, 'total_user':total_user,  'total_woreda':total_woreda, 'total_icn':total_icn, 'total_activity':total_activity,'icn_status':icn_status, 'acn_status':acn_status, 'icn_report_status':icn_report_status, 'acn_report_status':acn_report_status}
   return render(request, 'home/dashboard_main.html', context)
 
 

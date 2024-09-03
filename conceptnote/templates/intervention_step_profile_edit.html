@@ -43,7 +43,7 @@
                                 
                             <div class="col-md-2 col-sm-2">
                               {%  render_field form.program class+="form-control form-control-sm" readonly="readonly" %}
-
+ <div class="invalid-feedback">{{ form.program.errors|first }}</div>
                             </div>
                                 
                           </div>

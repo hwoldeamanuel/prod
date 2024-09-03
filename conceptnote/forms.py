@@ -141,7 +141,7 @@ class IcnForm(forms.ModelForm):
         
     def clean(self):
          cleaned_data = super().clean()
-         
+         program = self.cleaned_data.get('program')
          program_lead = self.cleaned_data.get('program_lead')
          finance_lead = self.cleaned_data.get('finance_lead')
          technical_lead = self.cleaned_data.get('technical_lead')
@@ -153,9 +153,10 @@ class IcnForm(forms.ModelForm):
          ilead_agency = self.cleaned_data.get('ilead_agency')
        
          ilead_co_agency = self.cleaned_data.get('ilead_co_agency')
+         if program_lead not in UserRoles.objects.filter(program=program) or technical_lead not in UserRoles.objects.filter(program=program) or finance_lead not in UserRoles.objects.filter(program=program):
+               self._errors['program'] = self.error_class(['At least 1 of the Leads not belong this program'])
 
-
-         if (technical_lead==program_lead or technical_lead==finance_lead):
+         elif (technical_lead==program_lead or technical_lead==finance_lead):
               self._errors['technical_lead'] = self.error_class(['Lead should take up only one role'])
          elif (program_lead==technical_lead or program_lead==finance_lead):
               self._errors['program_lead'] = self.error_class(['Lead should take up only one role'])

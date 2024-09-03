@@ -23,6 +23,7 @@ from report.models import IcnReport, ActivityReport
 from django.contrib.auth.decorators import permission_required
 
 @login_required(login_url='login')
+
 def program(request):
     user = request.user
     if user.is_superuser:
@@ -39,6 +40,7 @@ def program(request):
     return render(request, 'programs.html', context)
 
 @login_required(login_url='login')
+
 def program_profile(request, id):
     program = Program.objects.get(pk=id)
     context = {'program': program}
@@ -118,7 +120,8 @@ def edit_view(request, id):
     context = {'form':form}
     return render(request, 'add_program.html', context)
 
-
+@login_required(login_url='login')
+@permission_required("program.can_change_program", raise_exception=True)
 def edit_program_profile(request, id):
     program = Program.objects.get(pk=id)
     if request.method == "POST":
@@ -186,7 +189,8 @@ def area_update(request, pk):
         return render(request, 'area_form_edit.html', context)
 
 
-
+@login_required(login_url='login')
+@permission_required("program.can_add_implementationarea", raise_exception=True)
 def region(request, id):
     program = get_object_or_404(Program, pk=id)
     if request.method == "POST":
@@ -220,6 +224,8 @@ def woredas(request):
     form = AddProgramAreaForm(request.GET)
     return HttpResponse(form['woreda'])
 
+@login_required(login_url='login')
+@permission_required("program.can_change_implementationarea", raise_exception=True)
 def area_edit_form(request, pk):
     area = get_object_or_404(ImplementationArea, pk=pk)    
     if request.method == "GET":
@@ -248,7 +254,8 @@ def area_edit_form(request, pk):
 
 
 
-
+@login_required(login_url='login')
+@permission_required("program.can_change_userroles", raise_exception=True)
 def edit_user_role(request, uid):
    
     user = User.objects.get(pk=uid)
@@ -294,6 +301,8 @@ def indicator_list(request, id):
     })
 
 
+@login_required(login_url='login')
+@permission_required("program.can_add_indicator", raise_exception=True)
 def add_indicator(request, id):
     if request.method == "POST":
         form = IndicatorForm(request.POST)
@@ -315,7 +324,8 @@ def add_indicator(request, id):
         'form': form,
     })
 
-
+@login_required(login_url='login')
+@permission_required("program.can_change_indicator", raise_exception=True)
 def edit_indicator(request, pk):
     indicator = get_object_or_404(Indicator, pk=pk)
     if request.method == "POST":
@@ -339,7 +349,8 @@ def edit_indicator(request, pk):
     })
 
 
-
+@login_required(login_url='login')
+@permission_required("program.can_delete_indicator", raise_exception=True)
 def remove_indicator(request, pk):
     indicator = get_object_or_404(Indicator, pk=pk)
     indicator.delete()
@@ -359,6 +370,8 @@ def user_list(request, id):
         'users': program_users,
     })
 
+@login_required(login_url='login')
+@permission_required("program.can_add_userroles", raise_exception=True)
 def add_user(request, id):
     program = Program.objects.get(pk=id)
     if request.method == "POST":
@@ -388,7 +401,8 @@ def area_list(request, id):
         'areas': ImplementationArea.objects.filter(program_id=id),
     })
 
-
+@login_required(login_url='login')
+@permission_required("program.can_change_userroles", raise_exception=True)
 def update_user_roles(request, id):
     
     user_role = UserRoles.objects.get(pk=id)
@@ -419,7 +433,8 @@ def update_user_roles(request, id):
         'user_role': user_role,
     })
 
-
+@login_required(login_url='login')
+@permission_required("program.can_delete_userroles", raise_exception=True)
 def remove_user_role(request, pk):
     user_role = get_object_or_404(UserRoles, pk=pk)
     user_role.delete()
