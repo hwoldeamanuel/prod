@@ -502,10 +502,15 @@ def icnreport_submit_document(request, id):
     context ={}
     icnreport = get_object_or_404(IcnReport, pk=id)
     dform = IcnReportDocumentForm()
-    major = IcnReportDocument.objects.filter(icnreport=icnreport.id, user=icnreport.user).count()
-    last_initiator_doc = IcnReportDocument.objects.filter(icnreport=icnreport.id, user=icnreport.user).latest('id') 
-    minor = IcnReportDocument.objects.filter(icnreport=icnreport.id, id__gt=last_initiator_doc.id).exclude(user=icnreport.user)
-    minor = minor.count()
+    if IcnReportDocument.objects.filter(icnreport=icnreport.id).exists():
+        major = IcnReportDocument.objects.filter(icnreport=icnreport.id, user=icnreport.user).count()
+        last_initiator_doc = IcnReportDocument.objects.filter(icnreport=icnreport.id, user=icnreport.user).latest('id') 
+        minor = IcnReportDocument.objects.filter(icnreport=icnreport.id, id__gt=last_initiator_doc.id).exclude(user=icnreport.user)
+        minor = minor.count()
+    else:
+        major = 0
+        minor = 0
+
     context = {'dform':dform}
     if request.method == 'POST':
         dform = IcnReportDocumentForm(request.POST, request.FILES)
@@ -1075,10 +1080,15 @@ def activityreport_submit_document(request, id):
     context ={}
     activityreport = get_object_or_404(ActivityReport, pk=id)
     dform = ActivityReportDocumentForm()
-    major = ActivityReportDocument.objects.filter(activityreport=activityreport.id, user=activityreport.user).count() 
-    last_initiator_doc = ActivityReportDocument.objects.filter(activityeport=activityreport.id, user=activityreport.user).latest('id') 
-    minor = ActivityReportDocument.objects.filter(activityreport=activityreport.id, id__gt=last_initiator_doc.id).exclude(user=activityreport.user)
-    minor = minor.count()
+    if ActivityReportDocument.objects.filter(activityreport=activityreport.id).exists():
+        major = ActivityReportDocument.objects.filter(activityreport=activityreport.id, user=activityreport.user).count() 
+        last_initiator_doc = ActivityReportDocument.objects.filter(activityeport=activityreport.id, user=activityreport.user).latest('id') 
+        minor = ActivityReportDocument.objects.filter(activityreport=activityreport.id, id__gt=last_initiator_doc.id).exclude(user=activityreport.user)
+        minor = minor.count()
+    else:
+        major = 0
+        minor = 0
+        
     context = {'dform':dform}
     if request.method == 'POST':
         dform = ActivityReportDocumentForm(request.POST, request.FILES)

@@ -675,11 +675,15 @@ def icn_submit_document(request, id):
     context ={}
     icn = get_object_or_404(Icn, pk=id)
     dform = IcnDocumentForm()
-    major = Document.objects.filter(icn=icn.id, user=icn.user).count() 
-    last_initiator_doc = Document.objects.filter(icn=icn.id, user=icn.user).latest('id') 
-    
-    minor = Document.objects.filter(icn=icn.id, id__gt=last_initiator_doc.id).exclude(user=icn.user)
-    minor = minor.count()
+    if Document.objects.filter(icn_id=icn.id).exists():
+        major = Document.objects.filter(icn=icn.id, user=icn.user).count() 
+        last_initiator_doc = Document.objects.filter(icn=icn.id, user=icn.user).latest('id') 
+        minor = Document.objects.filter(icn=icn.id, id__gt=last_initiator_doc.id).exclude(user=icn.user)
+        minor = minor.count()
+    else:
+        major = 0
+        minor = 0
+
     context = {'dform':dform}
     if request.method == 'POST':
         dform = IcnDocumentForm(request.POST, request.FILES)
@@ -1338,11 +1342,17 @@ def activity_submit_document(request, id):
     context ={}
     activity = get_object_or_404(Activity, pk=id)
     dform = ActivityDocumentForm()
-    major = ActivityDocument.objects.filter(activity=activity.id, user=activity.user).count() 
-    last_initiator_doc = ActivityDocument.objects.filter(activity=activity.id, user=activity.user).latest('id') 
+ 
+    if ActivityDocument.objects.filter(activity=activity.id).exists():
+        major = ActivityDocument.objects.filter(activity=activity.id, user=activity.user).count() 
+        last_initiator_doc = ActivityDocument.objects.filter(activity=activity.id, user=activity.user).latest('id') 
     
-    minor = ActivityDocument.objects.filter(activity=activity.id, id__gt=last_initiator_doc.id).exclude(user=activity.user)
-    minor = minor.count()
+        minor = ActivityDocument.objects.filter(activity=activity.id, id__gt=last_initiator_doc.id).exclude(user=activity.user)
+        minor = minor.count()
+    else:
+        major = 0
+        minor = 0
+
     context = {'dform':dform}
     if request.method == 'POST':
         dform = ActivityDocumentForm(request.POST, request.FILES)
