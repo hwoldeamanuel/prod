@@ -811,7 +811,9 @@ def update_approval_status(id):
     
     if approval_t == 4 or approval_p== 4 or approval_f== 4:
         Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="100% Rejected")
-    elif approval_t < 3 and approval_p < 3 and approval_f < 3:
+    elif approval_t == 2 or approval_p == 2 or approval_f == 2:
+        Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="Revision Required")
+    elif approval_t == 1 and approval_p == 1 and approval_f == 1:
         Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="Pending Approval")
     elif approval_t == 3 and approval_p ==3 and approval_f==3:
          Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="100% Approved")
@@ -819,7 +821,11 @@ def update_approval_status(id):
         Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="67% Approved")
     elif (approval_t == 3 and approval_p !=3 and approval_f !=3) or (approval_t != 3 and approval_p ==3 and approval_f !=3) or (approval_t != 3 and approval_p !=3 and approval_f ==3):
         Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="33% Approved") 
-        
+ 
+   
+   
+   
+   
     
 
     
@@ -1620,10 +1626,15 @@ def update_activity_approval_status(id):
     approval_f = activitysubmitapproval_f.approval_status
     approval_f = int(approval_f)
     
+ 
+    
     if approval_t == 4 or approval_p== 4 or approval_f== 4:
         Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="100% Rejected")
-    elif approval_t < 3 and approval_p < 3 and approval_p < 3:
+    elif approval_t == 2 or approval_p == 2 or approval_p == 2:
+        Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="Revision Required")
+    elif approval_t == 1 and approval_p == 1 and approval_p == 1:
         Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="Pending Approval")
+    
     elif approval_t == 3 and approval_p ==3 and approval_f==3:
         Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="100% Approved")
     elif (approval_t == 3 and approval_p ==3 and approval_f !=3) or (approval_t == 3 and approval_p !=3 and approval_f ==3) or (approval_t != 3 and approval_p ==3 and approval_f ==3):

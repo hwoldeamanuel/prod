@@ -503,6 +503,8 @@ class ActivityForm(forms.ModelForm):
         self.fields['aworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
         self.fields['aworeda'].queryset = ImplementationArea.objects.all()
         self.fields['aworeda'].required = True 
+        self.fields['mc_budget'].required = True 
+        self.fields['cost_sharing_budget'].required = True 
         
          
     class Meta:
@@ -543,7 +545,25 @@ class ActivityForm(forms.ModelForm):
          icn = self.cleaned_data.get('icn')
          icn = Icn.objects.get(title=icn)
          alead_agency = self.cleaned_data.get('alead_agency')
-       
+         if self.cleaned_data.get('mc_budget') != None:
+              
+            mc_budget = self.cleaned_data.get('mc_budget')
+         else:
+             mc_budget = 0
+
+         if  self.cleaned_data.get('cost_sharing_budget') != None:
+              cs_budget = self.cleaned_data.get('cost_sharing_budget')
+         else:
+              cs_budget = 0
+         mc_currency = self.cleaned_data.get('mc_currency')
+         cs_currency = self.cleaned_data.get('cs_currency')
+         if mc_currency == 2:
+              mc_budget = mc_budget/120
+         
+         if cs_currency == 2:
+              cs_budget = cs_budget/120
+         tactbud = mc_budget + cs_budget
+         rembud = icn.get_remaining_budget()
          alead_co_agency = self.cleaned_data.get('alead_co_agency')
          
          program_lead = self.cleaned_data.get('program_lead')
@@ -574,6 +594,8 @@ class ActivityForm(forms.ModelForm):
              self._errors['final_report_due_date'] = self.error_class(['Activity Date should align with its parent intervention period'])
          elif (alead_agency != None and alead_co_agency != None and alead_co_agency.contains(alead_agency)):
              self._errors['alead_agency'] = self.error_class(['Lead Agency & Co-Lead Agency should be different'])
+         elif ((mc_budget != None and cs_budget != None) and tactbud > rembud  ):
+              self._errors['mc_budget'] = self.error_class(['Please check Intervention & Activity Budget '])
          return cleaned_data
 
 class ActivityAreaFormE(forms.ModelForm):

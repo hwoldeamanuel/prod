@@ -91,11 +91,11 @@
                       Action
                     </button>
                     <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
-                      <a class="dropdown-item" hx-get={% url 'activity_approvalt' activitysubmit.id 2 %} hx-target="#SubmitList">Require Doc Update</a>
+                      <a class="dropdown-item" hx-get={% url 'activity_approvalt' activitysubmit.id 2 %} hx-target="#SubmitList">Require Revision</a>
                       <a class="dropdown-item" hx-get={% url 'activity_approvalt' activitysubmit.id 3 %} hx-target="#SubmitList">Endorese Request</a>
-                      <a class="dropdown-item" hx-get={% url 'activity_approvalt' activitysubmit.id 4 %} hx-target="#SubmitList">Reject Request</a>
+                    
                       <div class="dropdown-divider"></div>
-                      <a class="dropdown-item" href="#">Separated link</a>
+                        <a class="dropdown-item" hx-get={% url 'activity_approvalt' activitysubmit.id 4 %} hx-target="#SubmitList">Reject Request</a>
                     </div>
                   </div></td>
         {% else %}
@@ -130,11 +130,11 @@
                       Action
                     </button>
                     <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
-                      <a class="dropdown-item" hx-get={% url 'activity_approvalf' activitysubmit.id 2 %} hx-target="#SubmitList">Require Doc Update</a>
+                      <a class="dropdown-item" hx-get={% url 'activity_approvalf' activitysubmit.id 2 %} hx-target="#SubmitList">Require Revision</a>
                       <a class="dropdown-item" hx-get={% url 'activity_approvalf' activitysubmit.id 3 %} hx-target="#SubmitList">Endorese Request</a>
-                      <a class="dropdown-item" hx-get={% url 'activity_approvalf' activitysubmit.id 4 %} hx-target="#SubmitList">Reject Request</a>
+    
                       <div class="dropdown-divider"></div>
-                      <a class="dropdown-item" href="#">Separated link</a>
+                                        <a class="dropdown-item" hx-get={% url 'activity_approvalf' activitysubmit.id 4 %} hx-target="#SubmitList">Reject Request</a>
                     </div>
                   </div>
      </td>

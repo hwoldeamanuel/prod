@@ -100,7 +100,7 @@
                             <label class="col-form-label col-md-2 col-sm-2 label-align" >Mercy Corps Budget: <span class+="required"></span>
                             </label>
                             <div class="col-md-2 col-sm-2">
-                                   {% render_field form.mc_budget class="form-control form-control-sm" %}
+                                   {% render_field form.mc_budget class="form-control form-control-sm required" %}
                                  <div class="invalid-feedback">{{ form.mc_budget.errors|first }}</div>
                             </div>
                              <div class="col-md-1 col-sm-1">
@@ -111,7 +111,7 @@
                             <label class="col-form-label col-md-2 col-sm-2 label-align" >Cost Share Budget:
                             </label>
                             <div class="col-md-2 col-sm-2 ">
-                                    {% render_field form.cost_sharing_budget class="form-control form-control-sm" %}
+                                    {% render_field form.cost_sharing_budget class="form-control form-control-sm required" %}
                                  <div class="invalid-feedback">{{ form.cost_sharing_budget.errors|first }}</div>
                             </div>
                             <div class="col-md-1 col-sm-1">
@@ -155,7 +155,7 @@
                         <div class="ln_solid"></div>
 										<div class="form-group row">
 											<div class="col-md-9 col-sm-9 offset-md-4">
-												<button class="btn btn-primary" type="button">Cancel</button>
+												<button onclick="window.history.back()" class="btn btn-secondary" type="button">Cancel</button>
 												<button class="btn btn-primary" type="reset">Reset</button>
 												<button type="submit" class="btn btn-success">Submit</button>
 											</div>

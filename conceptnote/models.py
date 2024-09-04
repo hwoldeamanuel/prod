@@ -65,14 +65,59 @@ class Icn(models.Model):
    
     
 
+    def get_remaining_budget(self):
+        if Activity.objects.filter(icn_id=self).exists():
+            qs = Activity.objects.filter(icn_id=self, status = True)
+            mcbt = 0
+                
+            for qs in qs:
+                if qs.mc_currency == 2:
+                    mcb = qs.mc_budget/120
+                else:
+                    mcb = qs.mc_budget
+                if qs.cs_currency == 2:
+                    csb = qs.cost_sharing_budget/120
+                else:
+                    csb = qs.cost_sharing_budget
+                    
+
+                mcbt= mcbt + mcb + csb
+                
+            if qs.icn.cs_currency == 2:
+                imcb = qs.icn.mc_budget/120
+            else:
+                imcb = qs.icn.mc_budget
+
+            if qs.icn.cs_currency == 2:
+                icsb = qs.icn.cost_sharing_budget/120
+            else:
+                icsb = qs.icn.cost_sharing_budget
+
+            itotalb = imcb + icsb
+            remainb = itotalb - mcbt
+        else:
+            if qs.icn.mc_currency == 2:
+                imcb = qs.icn.mc_budget/120
+            else:
+                imcb = qs.icn.mc_budget
+
+            if qs.icn.cs_currency == 2:
+                icsb = qs.icn.cost_sharing_budget/120
+            else:
+                icsb = qs.icn.cost_sharing_budget
+            
+            itotalb = imcb + icsb
+            remainb = itotalb
+               
+        return remainb
+
     def get_num_indicator(self):
-        if Impact.objects.filter(icn_id=self).exists():
+        if Activity.objects.filter(icn_id=self).exists():
+            mc_budge_usd = Activity.objects.filter(icn_id=self).annotate(Sum('mc_budget', distinct=True), Count('impact__indicators', distinct=True))
             qs = Icn.objects.filter(title=self).annotate(Count('impact', distinct=True), Count('impact__indicators', distinct=True))
             num = qs[0].impact__indicators__count
         else:
             num = 0
-       
-        
         return num
     def get_name(self):
         return "Intervention"

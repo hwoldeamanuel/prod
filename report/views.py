@@ -632,7 +632,9 @@ def update_approval_status(id):
         
     if approval_t == 4 or approval_p== 4 or approval_f== 4:
         IcnReport.objects.filter(pk=icnreportsubmit.icnreport_id).update(approval_status="Rejected")
-    elif approval_t < 3 and approval_p < 3 and approval_p < 3:
+    if approval_t == 2 or approval_p== 2 or approval_f== 2:
+        IcnReport.objects.filter(pk=icnreportsubmit.icnreport_id).update(approval_status="Revision Required")
+    elif approval_t == 1 and approval_p == 1 and approval_p == 1:
         IcnReport.objects.filter(pk=icnreportsubmit.icnreport_id).update(approval_status="Pending Approval")
     elif approval_t == 3 and approval_p ==3 and approval_f==3:
          IcnReport.objects.filter(pk=icnreportsubmit.icnreport_id).update(approval_status="100% Approved")
@@ -1088,7 +1090,7 @@ def activityreport_submit_document(request, id):
     else:
         major = 0
         minor = 0
-        
+
     context = {'dform':dform}
     if request.method == 'POST':
         dform = ActivityReportDocumentForm(request.POST, request.FILES)
@@ -1342,8 +1344,10 @@ def update_activityreport_approval_status(id):
     approval_f = int(approval_f)
     
     if approval_t == 4 or approval_p== 4 or approval_f== 4:
-        ActivityReport.objects.filter(pk=activityreportsubmit.activityreport_id).update(approval_status="100% Rejected")
-    elif approval_t < 3 and approval_p < 3 and approval_f < 3:
+        ActivityReport.objects.filter(pk=activityreportsubmit.activityreport_id).update(approval_status="Rejected")
+    if approval_t == 2 or approval_p== 2 or approval_f== 2:
+        ActivityReport.objects.filter(pk=activityreportsubmit.activityreport_id).update(approval_status="Revision Required")
+    elif approval_t == 1 and approval_p == 1 and approval_f == 1:
         ActivityReport.objects.filter(pk=activityreportsubmit.activityreport_id).update(approval_status="Pending Approval")
     elif approval_t == 3 and approval_p ==3 and approval_f==3:
         ActivityReport.objects.filter(pk=activityreportsubmit.activityreport_id).update(approval_status="100% Approved")

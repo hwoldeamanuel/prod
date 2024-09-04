@@ -38,7 +38,8 @@
                   </div>
                    
 
-<p>Program: <strong>{{ activity.icn.program.title }}</strong>  &emsp;Title: <strong>{{ activity.title }}</strong>  &emsp; ID: <strong>{{ activity.acn_number }}</strong></p> 
+<p>Activity Title: <strong>{{ activity.title }}</strong>  &emsp; ID: <strong>{{ activity.acn_number }}</strong></p> 
+<p>Intervention Title: <strong>{{ activity.icn.title }}</strong>  &emsp; ID: <strong>{{ activity.icn.icn_number }}</strong></p> 
 
                             <p><strong>Description: </strong> {{ activity.description }}</p>
                     <section class="content invoice">
@@ -200,7 +201,7 @@
                       <div class="row no-print">
                         <div class=" ">
                           <button class="btn btn-default" onclick="window.print();"><i class="fa fa-print"></i> Print</button>
-                           <a href="{% url 'activity_detail' activity.id %}" class="btn btn-primary btn-xs"><i class="fa fa-credit-card"></i>Activity</a>
+                           <a href="{% url 'activity_detail' activity.id %}" class="btn btn-primary btn-xs"><i class="fa fa-credit-card"></i> Activity</a>
                            <a href="{% url 'activity_submit_approval' activity.id %}" class="btn btn-success btn-xs"><i class="fa fa-mail-forward"></i> Approval Workflow</a>
                         </div>
                       </div>
