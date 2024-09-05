@@ -70,7 +70,7 @@ INSTALLED_APPS = [
    
   
     'widget_tweaks',
-    'storages',
+   
  
   
     
