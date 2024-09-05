@@ -30,7 +30,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 AZURE_ACCOUNT_NAME = 'ipts'
 
-AZURE_ACCOUNT_KEY = 'pBS7+MuZdKGrsGKEW5zyr8xTZinsvQnyAdT0zGs2326RLkIAQu0BTWxlA2n6/lKetiDJjH738Yrl+AStgc1YIQ=='
+AZURE_ACCOUNT_KEY = os.environ['AZURE_ACCOUNT_KEY']
+
 AZURE_CONTAINER = 'media'
 AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net/'
 
