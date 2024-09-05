@@ -212,6 +212,7 @@ EMAIL_HOST_PASSWORD = "rnqc nqhx ijse kebm"
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
+"""
 
 AZURE_ACCOUNT_NAME = 'ipts'
 
@@ -223,7 +224,7 @@ DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
 MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{AZURE_CONTAINER}/'
 AZURE_URL_EXPIRATION_SECS = None
 
-
+"""
 
 SELECT2_JS = "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/js/select2.min.js"
 SELECT2_CSS = "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/css/select2.min.css"
