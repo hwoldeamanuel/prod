@@ -70,6 +70,7 @@ INSTALLED_APPS = [
    
   
     'widget_tweaks',
+    'storages',
  
   
     
@@ -210,6 +211,20 @@ EMAIL_HOST_PASSWORD = "rnqc nqhx ijse kebm"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
+
+
+AZURE_ACCOUNT_NAME = 'ipts'
+
+AZURE_ACCOUNT_KEY = 'pBS7+MuZdKGrsGKEW5zyr8xTZinsvQnyAdT0zGs2326RLkIAQu0BTWxlA2n6/lKetiDJjH738Yrl+AStgc1YIQ=='
+AZURE_CONTAINER = 'media'
+AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net/'
+
+DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
+MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{AZURE_CONTAINER}/'
+AZURE_URL_EXPIRATION_SECS = None
+
+
+
 SELECT2_JS = "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/js/select2.min.js"
 SELECT2_CSS = "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/css/select2.min.css"
 SELECT2_I18N_PATH = "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/js/i18n"
