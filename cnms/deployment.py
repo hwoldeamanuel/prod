@@ -28,11 +28,12 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-AZURE_ACCOUNT_NAME = 'ipts'
+AZURE_ACCOUNT_NAME = os.environ['AZURE_ACCOUNT_NAME']
 
 AZURE_ACCOUNT_KEY = os.environ['AZURE_ACCOUNT_KEY']
 
-AZURE_CONTAINER = 'media'
+AZURE_CONTAINER = os.environ['AZURE_CONTAINER']
+
 AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net/'
 
 DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
