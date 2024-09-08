@@ -69,11 +69,11 @@
                                     {% render_field form.title class="form-control form-control-sm" %}
                                     <div class="invalid-feedback">{{ form.title.errors|first }}</div>
                             </div>
-                            <label class="col-form-label col-md-2 col-sm-2 label-align" for="first-name">Fund Code:<span class="required">*</span>
+                            <label class="col-form-label col-md-2 col-sm-2 label-align">Fund Code:<span class="required">*</span>
                             </label>
                             <div class="col-md-1 col-sm-1">
                                 
-                                {% render_field form.fund_code class="form-control form-control-sm" %}
+                                {% render_field form.fund_code class="form-control form-control-sm required='required' " %}
                                 <div class="invalid-feedback">{{ form.fund_code.errors|first }}</div>
                             </div>
                         </div>

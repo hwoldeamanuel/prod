@@ -57,7 +57,7 @@
                                     <div class="invalid-feedback">{{ form.donor.errors|first }}</div>
                             </div>
                                   <div class="col-md-2 col-sm-2">
-                                {% render_field form.fund_code class="form-control form-control-sm" placeholder="fund code" %}
+                               {% render_field form.fund_code class="form-control form-control-sm" required="required"  %}
                                 <div class="invalid-feedback">{{ form.fund_code.errors|first }}</div>
                                 </div>
                           

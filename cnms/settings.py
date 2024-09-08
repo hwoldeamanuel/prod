@@ -32,7 +32,7 @@ environ.Env.read_env()
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECRET_KEY = "django-insecure-&3ep*035k@21#4lh)ex_l&=797@9u6af_3!*%$mx_8^p8=(d*^')"
+SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -185,6 +185,20 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     # and renames the files with unique names for each version to support long-term caching
     #STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+DEFAULT_FILE_STORAGE = 'cnms.custom_azure_1.AzureMediaStorage'
+STATICFILES_STORAGE = 'cnms.custom_azure_1.AzureStaticStorage'
+
+STATIC_LOCATION = "static"
+MEDIA_LOCATION = "media"
+
+AZURE_ACCOUNT_NAME = "ipts"
+AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
+
+STATIC_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{MEDIA_LOCATION}/'
+MEDIA_ROOT = BASE_DIR / 'mediafiles'
 
 
 LOGIN_REDIRECT_URL = 'user'

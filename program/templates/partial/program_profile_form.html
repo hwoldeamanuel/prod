@@ -22,7 +22,7 @@
                  </div>
                  
                    <div class="col-2 col-sm-2">
-                       {% render_field form.fund_code class="form-control form-control-sm"  %}
+                       {% render_field form.fund_code class="form-control form-control-sm" required="required"  %}
               
                      <div class="invalid-feedback">{{ form.fund_code.errors|first }}</div>
                  </div>

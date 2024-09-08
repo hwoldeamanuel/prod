@@ -28,7 +28,20 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+DEFAULT_FILE_STORAGE = 'cnms.custom_azure.AzureMediaStorage'
+STATICFILES_STORAGE = 'cnms.custom_azure.AzureStaticStorage'
 
+STATIC_LOCATION = "static"
+MEDIA_LOCATION = "media"
+
+AZURE_ACCOUNT_NAME = "ipts"
+AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
+
+STATIC_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{MEDIA_LOCATION}/'
+MEDIA_ROOT = BASE_DIR / 'mediafiles'
 
 conn_str = os.environ['AZURE_POSTGRESQL_CONNECTIONSTRING']
 conn_str_params = {pair.split('=')[0]: pair.split('=')[1] for pair in conn_str.split(' ')}
@@ -43,6 +56,7 @@ DATABASES = {
     }
 }
 
+"""
 CACHES = {
         "default": {  
             "BACKEND": "django_redis.cache.RedisCache",
@@ -53,3 +67,4 @@ CACHES = {
         },
     }
 }
+"""
