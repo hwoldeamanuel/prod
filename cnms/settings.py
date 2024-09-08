@@ -192,7 +192,7 @@ STATICFILES_STORAGE = 'cnms.custom_azure_1.AzureStaticStorage'
 STATIC_LOCATION = "static"
 MEDIA_LOCATION = "media"
 
-AZURE_ACCOUNT_NAME = "ipts"
+AZURE_ACCOUNT_NAME = "paqcnmsblob"
 AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
 
 STATIC_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
