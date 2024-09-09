@@ -32,7 +32,7 @@ environ.Env.read_env()
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = "django-insecure-&3ep*035k@21#4lh)ex_l&=797@9u6af_3!*%$mx_8^p8=(d*^')"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -70,8 +70,6 @@ INSTALLED_APPS = [
    
   
     'widget_tweaks',
-   
-   
  
   
     
@@ -188,7 +186,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 
-
 LOGIN_REDIRECT_URL = 'user'
 LOGOUT_REDIRECT_URL = 'login'
 
@@ -216,4 +213,3 @@ EMAIL_HOST_PASSWORD = "rnqc nqhx ijse kebm"
 SELECT2_JS = "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/js/select2.min.js"
 SELECT2_CSS = "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/css/select2.min.css"
 SELECT2_I18N_PATH = "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/js/i18n"
-
