@@ -181,6 +181,27 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     # and renames the files with unique names for each version to support long-term caching
     #STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
+
+
+
+MEDIA_LOCATION = "media"
+
+# AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.azureedge.net'  # CDN URL
+DEFAULT_FILE_STORAGE = 'cnms.custom_azure.AzureMediaStorage'
+
+
+MEDIA_LOCATION = "media"
+
+AZURE_ACCOUNT_NAME = "paqcnmsblob"
+AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
+
+
+
+MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{MEDIA_LOCATION}/'
+MEDIA_ROOT = BASE_DIR / 'mediafiles'
+
+
 
 
 LOGIN_REDIRECT_URL = 'user'
