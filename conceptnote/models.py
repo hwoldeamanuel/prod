@@ -66,6 +66,7 @@ class Icn(models.Model):
     
 
     def get_remaining_budget(self):
+        
         if Activity.objects.filter(icn_id=self).exists():
             qs = Activity.objects.filter(icn_id=self, status = True)
             mcbt = 0
@@ -96,7 +97,7 @@ class Icn(models.Model):
             itotalb = imcb + icsb
             remainb = itotalb - mcbt
         else:
-            icn = Icn.objects.filter(id=self)
+            icn = Icn.objects.get(title=self)
             if icn.mc_currency == 2:
                 imcb = icn.mc_budget/120
             else:
