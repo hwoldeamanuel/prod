@@ -197,7 +197,8 @@ DEFAULT_FILE_STORAGE = 'cnms.custom_azure.AzureMediaStorage'
 
 MEDIA_LOCATION = "media"
 
-AZURE_ACCOUNT_NAME =   env('ACCOUNT_NAME')
+AZURE_ACCOUNT_NAME = env('ACCOUNT_NAME')
+
 AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
 
 
