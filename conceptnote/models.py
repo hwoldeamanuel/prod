@@ -83,16 +83,17 @@ class Icn(models.Model):
                     
 
                 mcbt= mcbt + mcb + csb
-                
-            if qs.icn.cs_currency == 2:
-                imcb = qs.icn.mc_budget/120
-            else:
-                imcb = qs.icn.mc_budget
 
-            if qs.icn.cs_currency == 2:
-                icsb = qs.icn.cost_sharing_budget/120
+            icn = Icn.objects.get(title=self)    
+            if icn.cs_currency == 2:
+                imcb = icn.mc_budget/120
             else:
-                icsb = qs.icn.cost_sharing_budget
+                imcb = icn.mc_budget
+
+            if icn.cs_currency == 2:
+                icsb = icn.cost_sharing_budget/120
+            else:
+                icsb = icn.cost_sharing_budget
 
             itotalb = imcb + icsb
             remainb = itotalb - mcbt
