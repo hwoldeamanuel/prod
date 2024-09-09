@@ -10,21 +10,21 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 
 """
-
+import environ
 import os
 from pathlib import Path
-import environ
 
-env = environ.Env()
 
-environ.Env.read_env()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env()
 
+environ.Env.read_env()
 
 
 # Quick-start development settings - unsuitable for production
@@ -190,18 +190,19 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.azureedge.net'  # CDN URL
 DEFAULT_FILE_STORAGE = 'cnms.custom_azure.AzureMediaStorage'
 
-AZURE_MEDIA_CONTAINER = os.environ.get('AZURE_MEDIA_CONTAINER', 'media')
-
-AZURE_ACCOUNT_NAME = os.environ.get('AZURE_ACCOUNT_NAME', False)
-
-AZURE_STORAGE_KEY = os.environ.get('AZURE_STORAGE_KEY', False)
-
-
-AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
+AZURE_CONTAINER = env('AZURE_CONTAINER')
 
 
 
-MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{AZURE_MEDIA_CONTAINER}/'
+ACCOUNT_NAME = env('ACCOUNT_NAME')
+
+AZURE_STORAGE_KEY = env('ACCOUNT_KEY')
+
+AZURE_CUSTOM_DOMAIN = f'{ACCOUNT_NAME}.blob.core.windows.net'
+
+
+
+MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{AZURE_CONTAINER}/'
 MEDIA_ROOT = BASE_DIR / 'mediafiles'
 
 
