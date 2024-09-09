@@ -1,4 +1,4 @@
 .env
 /scripts
 /__pycache__
-custome_azure.py
+custom_azure.py
