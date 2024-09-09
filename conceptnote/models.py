@@ -96,15 +96,16 @@ class Icn(models.Model):
             itotalb = imcb + icsb
             remainb = itotalb - mcbt
         else:
-            if qs.icn.mc_currency == 2:
-                imcb = qs.icn.mc_budget/120
+            icn = Icn.objects.filter(id=self)
+            if icn.mc_currency == 2:
+                imcb = icn.mc_budget/120
             else:
-                imcb = qs.icn.mc_budget
+                imcb = icn.mc_budget
 
-            if qs.icn.cs_currency == 2:
-                icsb = qs.icn.cost_sharing_budget/120
+            if icn.cs_currency == 2:
+                icsb = icn.cost_sharing_budget/120
             else:
-                icsb = qs.icn.cost_sharing_budget
+                icsb = icn.cost_sharing_budget
             
             itotalb = imcb + icsb
             remainb = itotalb
@@ -113,7 +114,7 @@ class Icn(models.Model):
 
     def get_num_indicator(self):
         if Activity.objects.filter(icn_id=self).exists():
-            mc_budge_usd = Activity.objects.filter(icn_id=self).annotate(Sum('mc_budget', distinct=True), Count('impact__indicators', distinct=True))
+            qs = Activity.objects.filter(icn_id=self).annotate(Sum('mc_budget', distinct=True), Count('impact__indicators', distinct=True))
             qs = Icn.objects.filter(title=self).annotate(Count('impact', distinct=True), Count('impact__indicators', distinct=True))
             num = qs[0].impact__indicators__count
         else:
