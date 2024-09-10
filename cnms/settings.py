@@ -177,6 +177,9 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'), ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # This production code might break development mode, so we check whether we're in DEBUG mode
 #if not DEBUG:
     # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
@@ -185,25 +188,25 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     # and renames the files with unique names for each version to support long-term caching
     #STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.azure_storage.AzureStorage",
+        "OPTIONS": {
+            "connection_string": env('AZURE_STORAGEBLOB_CONNECTIONSTRING'),
+            "azure_container": "media",
+        },
+    },
+     "staticfiles": {
+        "BACKEND": "storages.backends.azure_storage.AzureStorage",
+        "OPTIONS": {
+            "connection_string": env('AZURE_STORAGEBLOB_CONNECTIONSTRING'),
+           
+            "azure_container": "static",
+        },
+    },
+}
 
 # AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.azureedge.net'  # CDN URL
-DEFAULT_FILE_STORAGE = 'cnms.custom_azure.AzureMediaStorage'
-
-AZURE_CONTAINER = env('AZURE_CONTAINER')
-
-
-
-ACCOUNT_NAME = env('ACCOUNT_NAME')
-
-AZURE_STORAGE_KEY = env('ACCOUNT_KEY')
-
-AZURE_CUSTOM_DOMAIN = f'{ACCOUNT_NAME}.blob.core.windows.net'
-
-
-
-MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{AZURE_CONTAINER}/'
-MEDIA_ROOT = BASE_DIR / 'mediafiles'
 
 
 
