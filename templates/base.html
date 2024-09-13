@@ -5,6 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <!-- Meta, title, CSS, favicons, etc. -->
+    
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,14 +13,14 @@
     <title>CNMS | </title>
 
       <!-- Bootstrap -->
-    
+   
     <link href="{% static 'vendors/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="{% static 'vendors/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
     <!-- NProgress -->
     <link href="{% static 'vendors/nprogress/nprogress.css' %}" rel="stylesheet">
     <!-- Custom Theme Style -->
- 
+ <link href="{% static 'vendors/iCheck/skins/flat/green.css' %}" rel="stylesheet">
      <link href="{% static 'vendors/bootstrap-daterangepicker/daterangepicker.css' %}" rel="stylesheet">
 
     <link href="{% static 'build/css/custom.min.css' %}" rel="stylesheet">
@@ -246,6 +247,10 @@
 <script src="{% static 'vendors/pdfmake/build/vfs_fonts.js' %}"></script>
 <script src="{% static 'vendors/validator/multifield.js' %}"></script>
 <script src="{% static 'vendors/validator/validator.js' %}"></script>
+ 
+</body>
+</html>
+
 <script>
   document.body.addEventListener('htmx:configRequest', (event) => {
       event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';

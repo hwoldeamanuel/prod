@@ -78,7 +78,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    #'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -188,23 +188,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
     # and renames the files with unique names for each version to support long-term caching
     #STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-STORAGES = {
-    "default": {
-        "BACKEND": "storages.backends.azure_storage.AzureStorage",
-        "OPTIONS": {
-            "connection_string": env('AZURE_STORAGEBLOB_CONNECTIONSTRING'),
-            "azure_container": "media",
-        },
-    },
-     "staticfiles": {
-        "BACKEND": "storages.backends.azure_storage.AzureStorage",
-        "OPTIONS": {
-            "connection_string": env('AZURE_STORAGEBLOB_CONNECTIONSTRING'),
-           
-            "azure_container": "static",
-        },
-    },
-}
+
 
 # AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.azureedge.net'  # CDN URL
 
