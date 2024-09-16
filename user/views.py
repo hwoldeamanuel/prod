@@ -34,18 +34,9 @@ from django.utils import timezone
 from datetime import datetime, date
 
 from dateutil.relativedelta import relativedelta
-register = template.Library()
 
 
 
-
-
-def jsonify(data):
-    if isinstance(data, dict):
-        return data
-    else:
-        return json.loads(data)
-    
 
 @login_required(login_url='login')
 def user(request):
@@ -54,9 +45,7 @@ def user(request):
     current_date = date.today()
     last_month_filter =  current_date - relativedelta(months=1)
   
-    user_activity = CRUDEvent.objects.filter(user=request.user, datetime__gte=last_month_filter).order_by('-id')
-    for item in  user_activity:
-        item.object_json_repr = jsonify(item.object_json_repr)
+  
     qs1 = RequestEvent.objects.filter(user_id=request.user, datetime__gte=last_month_filter).values('datetime__date').annotate(id_count=Count('id', distinct=True))
     qs2 = RequestEvent.objects.filter(user_id=request.user, method='POST', datetime__gte=last_month_filter).values('datetime__date').annotate(count_login=Count('id', distinct=True))
     collector = defaultdict(dict)
@@ -71,12 +60,7 @@ def user(request):
     context = {'user':user,'user_activity':user_activity, 'all_request':all_request, 'last_month_filter':last_month_filter}
     return render(request, 'user/accounts.html', context)
 
-@register.filter(name='jsonify')
-def jsonify(data):
-    if isinstance(data, dict):
-        return data
-    else:
-        return json.loads(data)
+
 
 @login_required(login_url='login')
 def user_activity(request):
@@ -90,6 +74,8 @@ def user_activity(request):
        
         start_date = datetime.strptime(start_date, '%m/%d/%Y')
         end_date = datetime.strptime(end_date, '%m/%d/%Y')
+        
+      
        
         qs1 = RequestEvent.objects.filter(user_id=request.user, datetime__date__gte=start_date, datetime__date__lte=end_date).values('datetime__date').annotate(id_count=Count('id', distinct=True))
         qs2 = RequestEvent.objects.filter(user_id=request.user, method='POST', datetime__date__gte=start_date, datetime__date__lte=end_date).values('datetime__date').annotate(count_login=Count('id', distinct=True))
@@ -97,9 +83,7 @@ def user_activity(request):
         current_date = date.today()
         last_month_filter =  current_date - relativedelta(months=1)
     
-        user_activity = CRUDEvent.objects.filter(user=request.user, datetime__gte=last_month_filter).order_by('-id')
-        for item in  user_activity:
-            item.object_json_repr = jsonify(item.object_json_repr)
+       
         qs1 = RequestEvent.objects.filter(user_id=request.user, datetime__gte=last_month_filter).values('datetime__date').annotate(id_count=Count('id', distinct=True))
         qs2 = RequestEvent.objects.filter(user_id=request.user, method='POST', datetime__gte=last_month_filter).values('datetime__date').annotate(count_login=Count('id', distinct=True))
     
