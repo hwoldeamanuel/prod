@@ -167,7 +167,7 @@
 {% endblock %}
 {% block content_page_js %}
 <script>
-var MONTHS = [{% for activity in all_request %} "{{ activity.datetime__date|date:'M-d'}}", {% endfor %}];
+var MONTHS = [{% for activity in all_request reversed %} "{{ activity.datetime__date|date:'M-d'}}", {% endfor %}];
 var randomScalingFactor = function() {
       return Math.round(Math.random() * 100 * (Math.random() > 0.5 ? -1 : 1));
     };
@@ -184,9 +184,9 @@ var myChart = new Chart(ctx, {
     
     
      data: {
-        labels: [{% for activity in all_request %} "{{ activity.datetime__date|date:'M-d'}}", {% endfor %}],
+        labels: [{% for activity in all_request reversed %} "{{ activity.datetime__date|date:'M-d'}}", {% endfor %}],
         datasets: [{
-          label: "ALL Event",
+          label: "CRUD Event",
           data: [{% for activity in all_request %} {{ activity.id_count }}, {% endfor %}],
           backgroundColor:'rgba(38, 185, 154, .6)',
           borderColor:'rgba(38, 185, 154, 1)',

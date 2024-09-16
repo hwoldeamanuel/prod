@@ -406,7 +406,7 @@ def area_list(request, id):
 def update_user_roles(request, id):
     
     user_role = UserRoles.objects.get(pk=id)
-    user = get_object_or_404(User, pk=id)
+    user = get_object_or_404(User, pk=user_role.user_id)
     if request.method == "PUT":
         user_role = UserRoles.objects.get(pk=id)
         data = QueryDict(request.body).dict()

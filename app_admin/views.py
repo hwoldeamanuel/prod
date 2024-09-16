@@ -22,11 +22,16 @@ from django.contrib.auth.views import PasswordResetView
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Sum, Count
-from easyaudit.models import RequestEvent,LoginEvent
+from easyaudit.models import RequestEvent,LoginEvent, CRUDEvent
 from collections import defaultdict
 from itertools import chain
 from django.contrib.auth.models import Group, Permission
 from program.models import Program,UserRoles
+from datetime import datetime, timedelta
+from django.utils import timezone
+from datetime import datetime, date
+
+from dateutil.relativedelta import relativedelta
 
 
 @login_required(login_url='login') 
@@ -601,21 +606,41 @@ def type_filter(request):
 
 def user_detail(request, id):
     user = get_object_or_404(User, id=id)
-    qs1 =RequestEvent.objects.filter(user_id=id).values('datetime__date').annotate(id_count=Count('id', distinct=True))
-    qs2 = RequestEvent.objects.filter(user_id=id, method='POST').values('datetime__date').annotate(count_login=Count('id', distinct=True))
-  
-
-
+    if request.GET.get('reservation', ''):
+        
+        query = request.GET.get('reservation', '')
+        query = query.split("-")
+        for q in query:
+            start_date = query[0].strip()
+            end_date = query[1].strip()
+       
+        start_date = datetime.strptime(start_date, '%m/%d/%Y')
+        end_date = datetime.strptime(end_date, '%m/%d/%Y')
+        
+      
+       
+        qs1 = CRUDEvent.objects.filter(user_id=id, datetime__date__gte=start_date, datetime__date__lte=end_date).order_by("-datetime__date").values('datetime__date').annotate(id_count=Count('id', distinct=True))
+        qs2 = LoginEvent.objects.filter(user_id=id,  datetime__date__gte=start_date, datetime__date__lte=end_date).order_by("-datetime__date").values('datetime__date').annotate(count_login=Count('id', distinct=True))
+    else:
+        current_date = date.today()
+        last_month_filter =  current_date - relativedelta(months=1)
+    
+       
+        qs1 = CRUDEvent.objects.filter(user_id=id,  datetime__gte=last_month_filter).order_by("-datetime__date").values('datetime__date').annotate(id_count=Count('id',distinct=True))
+        qs2 = LoginEvent.objects.filter(user_id=id, datetime__gte=last_month_filter).order_by("-datetime__date").values('datetime__date').annotate(count_login=Count('id',distinct=True))
+    
 
 
     collector = defaultdict(dict)
 
     for collectible in chain(qs1, qs2):
         collector[collectible['datetime__date']].update(collectible.items())
+    
 
-    user_activity = list(collector.values())
+    
+    all_request = list(collector.values())
 
-    context = {'user': user, 'user_activity':user_activity,}
+    context = {'user': user, 'all_request':all_request,  'last_month_filter':last_month_filter}
     return render(request, 'user_setting_accounts.html', context)
 
 def user_detail_profile(request, id):

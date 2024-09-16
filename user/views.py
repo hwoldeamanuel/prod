@@ -46,8 +46,8 @@ def user(request):
     last_month_filter =  current_date - relativedelta(months=1)
   
   
-    qs1 = RequestEvent.objects.filter(user_id=request.user, datetime__gte=last_month_filter).values('datetime__date').annotate(id_count=Count('id', distinct=True))
-    qs2 = RequestEvent.objects.filter(user_id=request.user, method='POST', datetime__gte=last_month_filter).values('datetime__date').annotate(count_login=Count('id', distinct=True))
+    qs1 = CRUDEvent.objects.filter(user_id=request.user, datetime__gte=last_month_filter).values('datetime__date').annotate(id_count=Count('id', distinct=True))
+    qs2 = LoginEvent.objects.filter(user_id=request.user, datetime__gte=last_month_filter).values('datetime__date').annotate(count_login=Count('id', distinct=True))
     collector = defaultdict(dict)
 
     for collectible in chain(qs1, qs2):
@@ -77,15 +77,15 @@ def user_activity(request):
         
       
        
-        qs1 = RequestEvent.objects.filter(user_id=request.user, datetime__date__gte=start_date, datetime__date__lte=end_date).values('datetime__date').annotate(id_count=Count('id', distinct=True))
-        qs2 = RequestEvent.objects.filter(user_id=request.user, method='POST', datetime__date__gte=start_date, datetime__date__lte=end_date).values('datetime__date').annotate(count_login=Count('id', distinct=True))
+        qs1 = CRUDEvent.objects.filter(user_id=request.user, datetime__date__gte=start_date, datetime__date__lte=end_date).order_by("-datetime__date").values('datetime__date').annotate(id_count=Count('id', distinct=True))
+        qs2 = LoginEvent.objects.filter(user_id=request.user,  datetime__date__gte=start_date, datetime__date__lte=end_date).order_by("-datetime__date").values('datetime__date').annotate(count_login=Count('id', distinct=True))
     else:
         current_date = date.today()
         last_month_filter =  current_date - relativedelta(months=1)
     
        
-        qs1 = RequestEvent.objects.filter(user_id=request.user, datetime__gte=last_month_filter).values('datetime__date').annotate(id_count=Count('id', distinct=True))
-        qs2 = RequestEvent.objects.filter(user_id=request.user, method='POST', datetime__gte=last_month_filter).values('datetime__date').annotate(count_login=Count('id', distinct=True))
+        qs1 = CRUDEvent.objects.filter(user_id=request.user,  datetime__gte=last_month_filter).order_by("-datetime__date").values('datetime__date').annotate(id_count=Count('id',distinct=True))
+        qs2 = LoginEvent.objects.filter(user_id=request.user, datetime__gte=last_month_filter).order_by("-datetime__date").values('datetime__date').annotate(count_login=Count('id',distinct=True))
     
 
 
@@ -93,6 +93,7 @@ def user_activity(request):
 
     for collectible in chain(qs1, qs2):
         collector[collectible['datetime__date']].update(collectible.items())
+    
 
     all_request = list(collector.values())
 

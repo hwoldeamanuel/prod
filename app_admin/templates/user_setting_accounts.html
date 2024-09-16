@@ -32,31 +32,30 @@
                   <div class="x_content">
                     <div class="col-md-3 col-sm-3  profile_left" id="admin_list" hx-trigger="load, UserprofileChanged from:body " hx-get="{% url 'user_detail_profile' user.id %}" hx-target="this">
                     </div>
-                    <div class="col-md-9 col-sm-9" >
+                  <div class="col-md-9 col-sm-9" >
 
                       <div class="profile_title" >
-                        <div class="col-md-6">
+                        <div class="col-md-7">
                           <h2>User Activity Report</h2>
                         </div>
-                        <div class="col-md-6">
-                          <div id="reportrange" class="pull-right" style="margin-top: 5px; background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #E6E9ED">
-                            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
-                            <span>December 30, 2014 - January 28, 2015</span> <b class="caret"></b>
-                          </div>
                         </div>
-                      </div>
+                         
+                     
+                     
+                       
                       <!-- start of user-activity-graph -->
                      <div style="width:100%;">
-        <canvas id="canvas" class="flot-overlay"></canvas>
+          <canvas id="myChart" width="400" height="160"></canvas>
+
     </div>
                       <!-- end of user-activity-graph -->
+                      </br>
 
                       <div class="" role="tabpanel" data-example-id="togglable-tabs">
                         <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
                           <li role="presentation" class="active"><a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">Concept Note Roles</a>
                           </li>
-                          <li role="presentation" class=""><a href="#tab_content2" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">Projects Worked on</a>
-                          </li>
+                         
                            <li role="presentation" class=""><a href="#tab_content3" role="tab" id="profile-tab2" data-toggle="tab" aria-expanded="false">User Group/Permission</a>
                           </li>
                           
@@ -74,69 +73,7 @@
                                     </button>
                             
                           </div>
-                          <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="profile-tab">
-
-                            <!-- start user projects -->
-                            <table class="data table table-striped no-margin">
-                              <thead>
-                                <tr>
-                                  <th>#</th>
-                                  <th>Project Name</th>
-                                  <th>Client Company</th>
-                                  <th class="hidden-phone">Hours Spent</th>
-                                  <th>Contribution</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr>
-                                  <td>1</td>
-                                  <td>New Company Takeover Review</td>
-                                  <td>Deveint Inc</td>
-                                  <td class="hidden-phone">18</td>
-                                  <td class="vertical-align-mid">
-                                    <div class="progress">
-                                      <div class="progress-bar progress-bar-success" data-transitiongoal="35"></div>
-                                    </div>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>2</td>
-                                  <td>New Partner Contracts Consultanci</td>
-                                  <td>Deveint Inc</td>
-                                  <td class="hidden-phone">13</td>
-                                  <td class="vertical-align-mid">
-                                    <div class="progress">
-                                      <div class="progress-bar progress-bar-danger" data-transitiongoal="15"></div>
-                                    </div>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>3</td>
-                                  <td>Partners and Inverstors report</td>
-                                  <td>Deveint Inc</td>
-                                  <td class="hidden-phone">30</td>
-                                  <td class="vertical-align-mid">
-                                    <div class="progress">
-                                      <div class="progress-bar progress-bar-success" data-transitiongoal="45"></div>
-                                    </div>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>4</td>
-                                  <td>New Company Takeover Review</td>
-                                  <td>Deveint Inc</td>
-                                  <td class="hidden-phone">28</td>
-                                  <td class="vertical-align-mid">
-                                    <div class="progress">
-                                      <div class="progress-bar progress-bar-success" data-transitiongoal="75"></div>
-                                    </div>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                            <!-- end user projects -->
-
-                          </div>
+                         
                         <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="profile-tab">
                         
                             <div id="usergroup" hx-trigger="load, UserGroupChanged from:body" hx-get="{% url 'user_group' user.id %}" hx-target="this">
@@ -162,83 +99,75 @@
 {% endblock %}
 
 {% block content_page_js%}
+
+
+
 <script>
-        var MONTHS = [];
+var MONTHS = [{% for activity in all_request reversed %} "{{ activity.datetime__date|date:'M-d'}}", {% endfor %}];
+var randomScalingFactor = function() {
+      return Math.round(Math.random() * 100 * (Math.random() > 0.5 ? -1 : 1));
+    };
+var randomColorFactor = function() {
+      return Math.round(Math.random() * 255);
+    };
+var randomColor = function(opacity) {
+      return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',' + (opacity || '1') + ')';
+    };
 
-        var randomScalingFactor = function() {
-            return Math.round(Math.random() * 100);
-            //return 0;
-        };
-        var randomColorFactor = function() {
-            return Math.round(Math.random() * 255);
-        };
-        var randomColor = function(opacity) {
-            return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',' + (opacity || '.3') + ')';
-        };
-
-        var config = {
-            type: 'line',
-            data: {
-                labels: [{% for activity in user_activity %} "{{ activity.datetime__date|date:'M-d'}}", {% endfor %}],
-                datasets: [{
-                    label: "All Activity",
-
-                    // Skip a point in the middle
-                    data: [{% for activity in user_activity %} {{ activity.id_count}}, {% endfor %}],
-                    
-                }, {
-                
-                    label: "Post Activity",
-
-                    // Skip first and last points
-                    data: [{% for activity in user_activity %} {{ activity.count_login}}, {% endfor %}],
-                    
-                }]
-            },
-            options: {
-                responsive: true,
-                title:{
-                    display:true,
-                    text:'Chart.js Line Chart - Skip Points'
-                },
-                tooltips: {
-                    mode: 'label',
-                },
-                hover: {
-                    mode: 'label'
-                },
-                scales: {
-                    xAxes: [{
+var ctx = document.getElementById("myChart").getContext("2d");
+var myChart = new Chart(ctx, {
+    type: 'line',
+    
+    
+     data: {
+        labels: [{% for activity in all_request reversed  %} "{{ activity.datetime__date|date:'M-d'}}", {% endfor %}],
+        datasets: [{
+          label: "CRUD Event",
+          data: [{% for activity in all_request %} {{ activity.id_count }}, {% endfor %}],
+          backgroundColor:'rgba(23, 162, 184, .4)', 
+          borderColor:'rgba(23, 162, 184, 1)',
+          borderWidth: 1
+        }, {
+          label: "LogIn Event",
+          data: [{% for activity in all_request %} {{ activity.count_login }}, {% endfor %}],
+          backgroundColor: 'rgba(121, 224, 145, .4)',
+          borderColor:'rgba(38, 185, 154, 1)',
+          borderWidth: 1
+        },   ]
+      },
+    options: {
+                 
+                    title:{
+                        display:false,
+                        text:''
+                    },
+                    tooltips: {
+                        mode: 'label',
+                    },
+                    hover: {
+                        mode: 'label'
+                    },
+            scales: {
+                yAxes: [{
                         display: true,
                         scaleLabel: {
-                            display: true,
+                            display: false,
+                            labelString: '# activity'
+                        },
+                    }],
+                xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: false,
                             labelString: 'Days'
                         }
                     }],
-                    yAxes: [{
-                        display: true,
-                        scaleLabel: {
-                            display: true,
-                            labelString: '# activity'
-                        },
-                    }]
-                }
             }
-        };
+    },
+  
 
-        $.each(config.data.datasets, function(i, dataset) {
-            dataset.borderColor = randomColor(0.4);
-            dataset.backgroundColor = randomColor(0.5);
-            dataset.pointBorderColor = randomColor(0.7);
-            dataset.pointBackgroundColor = randomColor(0.5);
-            dataset.pointBorderWidth = 1;
-        });
+});
+ 
 
-        window.onload = function() {
-            var ctx = document.getElementById("canvas").getContext("2d");
-            window.myLine = new Chart(ctx, config);
-        };
-
-       
-    </script>
-{% endblock %}
+</script>
+{% endblock%}
