@@ -29,13 +29,13 @@ from django import template
 from easyaudit.models import CRUDEvent, RequestEvent, LoginEvent
 from .forms import LoginForm, ProfileFormAdd
 from .models import Profile
-
 from datetime import datetime, timedelta
 from django.utils import timezone
- 
+from datetime import datetime, date
 
+from dateutil.relativedelta import relativedelta
 register = template.Library()
-import datetime
+
 
 
 
@@ -49,8 +49,11 @@ def jsonify(data):
 
 @login_required(login_url='login')
 def user(request):
-    last_month_filter = timezone.now() - timedelta(days=get_lapse())
-    print(last_month_filter)
+    user = User.objects.get(pk=request.user.id)
+    
+    current_date = date.today()
+    last_month_filter =  current_date - relativedelta(months=1)
+  
     user_activity = CRUDEvent.objects.filter(user=request.user, datetime__gte=last_month_filter).order_by('-id')
     for item in  user_activity:
         item.object_json_repr = jsonify(item.object_json_repr)
@@ -65,7 +68,7 @@ def user(request):
     
   
     
-    context = {'user_activity':user_activity, 'all_request':all_request, 'last_month_filter':last_month_filter}
+    context = {'user':user,'user_activity':user_activity, 'all_request':all_request, 'last_month_filter':last_month_filter}
     return render(request, 'user/accounts.html', context)
 
 @register.filter(name='jsonify')
@@ -77,15 +80,29 @@ def jsonify(data):
 
 @login_required(login_url='login')
 def user_activity(request):
-    query = request.GET.get('reservation', '')
-    print(query)
-    print('hello')
-    last_month_filter = timezone.now() - timedelta(days=get_lapse())
-    qs1 = RequestEvent.objects.filter(user_id=request.user, datetime__gte=last_month_filter).values('datetime__date').annotate(id_count=Count('id', distinct=True))
-    qs2 = RequestEvent.objects.filter(user_id=request.user, method='POST', datetime__gte=last_month_filter).values('datetime__date').annotate(count_login=Count('id', distinct=True))
-  
+    if request.GET.get('reservation', ''):
+        
+        query = request.GET.get('reservation', '')
+        query = query.split("-")
+        for q in query:
+            start_date = query[0].strip()
+            end_date = query[1].strip()
+       
+        start_date = datetime.strptime(start_date, '%m/%d/%Y')
+        end_date = datetime.strptime(end_date, '%m/%d/%Y')
+       
+        qs1 = RequestEvent.objects.filter(user_id=request.user, datetime__date__gte=start_date, datetime__date__lte=end_date).values('datetime__date').annotate(id_count=Count('id', distinct=True))
+        qs2 = RequestEvent.objects.filter(user_id=request.user, method='POST', datetime__date__gte=start_date, datetime__date__lte=end_date).values('datetime__date').annotate(count_login=Count('id', distinct=True))
+    else:
+        current_date = date.today()
+        last_month_filter =  current_date - relativedelta(months=1)
     
-
+        user_activity = CRUDEvent.objects.filter(user=request.user, datetime__gte=last_month_filter).order_by('-id')
+        for item in  user_activity:
+            item.object_json_repr = jsonify(item.object_json_repr)
+        qs1 = RequestEvent.objects.filter(user_id=request.user, datetime__gte=last_month_filter).values('datetime__date').annotate(id_count=Count('id', distinct=True))
+        qs2 = RequestEvent.objects.filter(user_id=request.user, method='POST', datetime__gte=last_month_filter).values('datetime__date').annotate(count_login=Count('id', distinct=True))
+    
 
 
     collector = defaultdict(dict)
@@ -265,30 +282,6 @@ def user_conceptnotes(request):
 
 
 
-def is_leap_year(year): 
-    if year % 100 == 0:
-        return year % 100 == 0
 
-    return year % 4 == 0
-
-def get_lapse():
-    last_month = timezone.now().month
-    current_year = timezone.now().year
-
-    #is last month a month with 30 days?
-    if last_month in [9, 4, 6, 11]:
-        lapse = 30
-
-    #is last month a month with 31 days?
-    elif last_month in [1, 3, 5, 7, 8, 10, 12]:
-        lapse = 31
-
-    #is last month February?
-    else:
-        if is_leap_year(current_year):
-            lapse = 29
-        else:
-            lapse = 30
-
-    return lapse
+  
 

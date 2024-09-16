@@ -1,6 +1,10 @@
+
   <canvas id="myChart" width="400" height="160"></canvas>
 
   {% block content_page_js %}
+  {% load static %}
+  <script src="{% static 'dist/Chart.bundle.js' %}"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script>
 var MONTHS = [{% for activity in all_request %} "{{ activity.datetime__date|date:'M-d'}}", {% endfor %}];
 var randomScalingFactor = function() {
@@ -35,10 +39,9 @@ var myChart = new Chart(ctx, {
         },   ]
       },
     options: {
-                    
-       
+                 
                     title:{
-                        display:true,
+                        display:false,
                         text:''
                     },
                     tooltips: {
@@ -51,14 +54,14 @@ var myChart = new Chart(ctx, {
                 yAxes: [{
                         display: true,
                         scaleLabel: {
-                            display: true,
+                            display: false,
                             labelString: '# activity'
                         },
                     }],
                 xAxes: [{
                         display: true,
                         scaleLabel: {
-                            display: true,
+                            display: false,
                             labelString: 'Days'
                         }
                     }],
@@ -68,11 +71,6 @@ var myChart = new Chart(ctx, {
 
 });
  
-var myChartData = new Chart(ctx, config);
-defaults.global.legend.display = true;
-defaults.global.legend.align = "start";
-defaults.global.legend.position = "bottom";
-defaults.global.legend.labels.padding = 30;
-defaults.global.legend.labels.boxWidth = 15;
+
 </script>
 {% endblock%}
