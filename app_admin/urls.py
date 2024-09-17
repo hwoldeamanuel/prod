@@ -42,5 +42,6 @@ urlpatterns = [
     path('update_user_program_roles/<int:id>/', views.update_user_program_roles, name='update_user_program_roles'),
     path('add_user_program_role/<int:id>/', views.add_user_program_role, name='add_user_program_role'),
     path('remove_user_program_role/<int:pk>/', views.remove_user_program_role, name='remove_user_program_role'),
+    path('iworeda/', views.iworeda, name='iworeda'),
 
 ]

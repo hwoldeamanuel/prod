@@ -48,51 +48,28 @@
         </div>
           <!-- /top tiles -->
 
-          <div class="row">
+         <div class="row">
             <div class="col-md-12 col-sm-12 ">
               <div class="dashboard_graph">
 
                 <div class="row x_title">
                   <div class="col-md-6">
-                    <h3>Program Activities <small>Program Users</small></h3>
+                    <h3>Program <small> Concept Note</small></h3>
                   </div>
                   <div class="col-md-6">
-                    <div type = "text" id="reportrange" class="pull-right" style="background: #fff;  cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
-                    <input type="text" class="flat" disabled="disabled" style="position: absolute; opacity: 0;">
-                      <i class="glyphicon glyphicon-calendar fa fa-calendar" ></i>
-                      <span>December 30, 2014 - January 28, 2015</span> <b class="caret"></b>
+                    <div id="reportrange" class="pull-right" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
+                      <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                      <span>August 19, 2024 - September 17, 2024</span> <b class="caret"></b>
                     </div>
                   </div>
                 </div>
 
-                <div class="col-md-9 col-sm-9 ">
-                     <div style="width: 100%">
-                       <canvas id="myChart" width="400" height="160"></canvas>
+                <div class="col-md-12 col-sm-12">
+                  <div style="width: 100%">
+                       <canvas id="myChart" width="400" height="100"></canvas>
                       </div>
-                   
                 </div>
-                <div class="col-md-3 col-sm-3  bg-white">
-                  <div class="x_title">
-                    <h2>Top Concept Note </h2>
-                    <div class="clearfix"></div>
-                  </div>
-
-                  <div class="col-md-12 col-sm-12 ">
-                    <div>{% for program in program_cn %}
-                      <p>{{program.title}} - {% widthratio program.num_cn total_cn 100 %}%</p>
-                      <div class="">
-                        <div class="progress progress_sm" style="width: 76%;">
-                          <div class="progress-bar bg-blue" role="progressbar" data-transitiongoal="{% widthratio program.num_cn total_cn 100 %}"></div>
-                        </div>
-                      </div>
-                      {% endfor %}
-                    </div>
-                    <div>
-                      
-                  </div>
-
-                </div>
-
+                
                 <div class="clearfix"></div>
               </div>
             </div>
@@ -105,8 +82,9 @@
 
             <div class="col-md-4 col-sm-4 ">
               <div class="x_panel tile fixed_height_320">
-                <div class="x_title">
-                  <h2>App Versions</h2>
+            
+                 <div class="x_title">
+                  <h2>Top Concept Note</h2>
                   <ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                     </li>
@@ -123,91 +101,24 @@
                   <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
-                  <h4>App Usage across versions</h4>
-                  <div class="widget_summary">
-                    <div class="w_left w_25">
-                      <span>0.1.5.2</span>
-                    </div>
-                    <div class="w_center w_55">
-                      <div class="progress">
-                        <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 66%;">
-                          <span class="sr-only">60% Complete</span>
+                 
+                {% for program in program_cn %}
+                  
+                    <p>{{program.title}} - {% widthratio program.num_cn total_cn 100 %}%</p>
+                      <div class="">
+                        <div class="progress progress_sm" style="width: 76%;">
+                          <div class="progress-bar bg-blue" role="progressbar" data-transitiongoal="{% widthratio program.num_cn total_cn 100 %}"></div>
                         </div>
                       </div>
+                   
+                    {% endfor %}
                     </div>
-                    <div class="w_right w_20">
-                      <span>123k</span>
-                    </div>
-                    <div class="clearfix"></div>
-                  </div>
-
-                  <div class="widget_summary">
-                    <div class="w_left w_25">
-                      <span>0.1.5.3</span>
-                    </div>
-                    <div class="w_center w_55">
-                      <div class="progress">
-                        <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 45%;">
-                          <span class="sr-only">60% Complete</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="w_right w_20">
-                      <span>53k</span>
-                    </div>
-                    <div class="clearfix"></div>
-                  </div>
-                  <div class="widget_summary">
-                    <div class="w_left w_25">
-                      <span>0.1.5.4</span>
-                    </div>
-                    <div class="w_center w_55">
-                      <div class="progress">
-                        <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 25%;">
-                          <span class="sr-only">60% Complete</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="w_right w_20">
-                      <span>23k</span>
-                    </div>
-                    <div class="clearfix"></div>
-                  </div>
-                  <div class="widget_summary">
-                    <div class="w_left w_25">
-                      <span>0.1.5.5</span>
-                    </div>
-                    <div class="w_center w_55">
-                      <div class="progress">
-                        <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 5%;">
-                          <span class="sr-only">60% Complete</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="w_right w_20">
-                      <span>3k</span>
-                    </div>
-                    <div class="clearfix"></div>
-                  </div>
-                  <div class="widget_summary">
-                    <div class="w_left w_25">
-                      <span>0.1.5.6</span>
-                    </div>
-                    <div class="w_center w_55">
-                      <div class="progress">
-                        <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 2%;">
-                          <span class="sr-only">60% Complete</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="w_right w_20">
-                      <span>1k</span>
-                    </div>
-                    <div class="clearfix"></div>
-                  </div>
+                 
+                 
 
                 </div>
-              </div>
+
+                             
             </div>
 
             <div class="col-md-4 col-sm-4 ">
@@ -289,11 +200,11 @@ var myChart = new Chart(ctx, {
     
     
     data: {
-        labels: [{% for user in program_users %} "{{user|truncatechars:5 }}",{% endfor %}],
+        labels: [{% for program in program_cn %}  "{{program|truncatechars:10 }}",{% endfor %}],
         datasets: [{
-            label:'# of program users',
+            label:'# of Concept Note',
             
-            data: [{% for user in program_users %} {{user.num_user }},{% endfor %}],
+            data: [{% for program in program_cn %} {{program.num_cn}},{% endfor %}],
             backgroundColor: [{% for user in program_users %} 'rgba(38, 185, 154, 1)',{% endfor %}
                 
             ],
@@ -307,7 +218,7 @@ var myChart = new Chart(ctx, {
         scales: {
             yAxes: [{
                 ticks: {
-                    beginAtZero:false
+                    beginAtZero:true
                 }
             }]
         }
@@ -335,23 +246,28 @@ myDoughnut = new Chart(ctx,
                 ],
                 label: 'Dataset 1'
             }, {
-                
+                hidden: true,
                 data: [{% for asn in icn_report_status %} {{asn.icn_count }},{% endfor %}],
                 backgroundColor: [{% for asn in acn_status %} randomColor(0.7),{% endfor %}
                 ],
                 label: 'Dataset 2'
             }],
-            labels: [{% for isn in icn_status %} {% if isn.approval_status is None %}"Draft"{% else %} "{{isn.approval_status }}" {% endif %},{% endfor %}
+            labels: [{% for isn in icn_status %} {% if isn.approval_status is None %}"Draft - {% widthratio isn.icn_count total_icn 100 %}%"{% else %} "{{isn.approval_status }} - {% widthratio isn.icn_count total_icn 100 %}%" {% endif %},{% endfor %}
                 ],
+          
         },
         options: {
            legend: {
            responsive:true,
-      display: true,
+           display: true,
+           "labels": {
+            "fontSize": 8,
+          }
+     
     },
             title: {
                 display: false,
-                text: 'Doughnut Chart'
+                text: 'Approval Status'
             },
             animation: {
                 animateScale: true,
@@ -385,23 +301,27 @@ myDoughnut = new Chart(ctx,
                 ],
                 label: 'Dataset 1'
             }, {
-                
+                hidden: true,
                 data: [{% for asn in acn_report_status %} {{asn.acn_count }},{% endfor %}],
                 backgroundColor: [{% for asn in acn_status %} randomColor(0.7),{% endfor %}
                 ],
                 label: 'Dataset 2'
             }],
-            labels: [{% for isn in acn_status %} {% if isn.approval_status is None %}"Draft"{% else %} "{{isn.approval_status }}" {% endif %},{% endfor %}
+            labels:  [{% for isn in acn_status %} {% if isn.approval_status is None %}"Draft - {% widthratio isn.acn_count total_activity 100 %}%"{% else %} "{{isn.approval_status}} - {% widthratio isn.acn_count total_activity 100 %}%" {% endif %},{% endfor %}
                 ],
         },
         options: {
            legend: {
            responsive:true,
       display: true,
+        "labels": {
+            "fontSize": 8,
+          }
+     
     },
             title: {
                 display: false,
-                text: 'Doughnut Chart'
+                text: 'Approval Status'
             },
             animation: {
                 animateScale: true,

@@ -27,7 +27,7 @@ urlpatterns = [
     path('download/<int:id>/', views.download, name='download'),
     path('downloada/<int:id>/', views.downloada, name='downloadacnd'),
     path('delete_icn/<int:pk>/', views.icn_delete, name='icn_delete'),
-     path('delete_activity/<int:pk>/', views.activity_delete, name='activity_delete'),
+    path('delete_activity/<int:pk>/', views.activity_delete, name='activity_delete'),
     path('intervention/program_lead/', views.program_lead, name='program_lead'),
     
     path('download_env_att/<int:id>/', views.download_env_att, name='download_env_att'),

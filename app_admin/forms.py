@@ -55,24 +55,31 @@ class UserForm(forms.ModelForm):
      
      
 class WoredaForm(forms.ModelForm):  
-   
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        region = kwargs.pop('region', None)
+        super(WoredaForm, self).__init__(*args, **kwargs)
+
+
+        if region:
+            self.fields['zone'].choices = [
+            (zone.id, zone.name) for zone in Zone.objects.filter(region_id=region)
+        ]
         
-        self.fields['zone'].queryset = Zone.objects.filter(region_id=1)
+        else:
+             self.fields['zone'].choices = [
+            (zone.id, zone.name) for zone in Zone.objects.none()
+             ]
        
-        if 'region' in self.data:
-            try:
-                region = int(self.data.get('region'))
-                self.fields['zone'].queryset = Zone.objects.filter(region_id=region).order_by('name')
-            except (ValueError, TypeError):
-                pass  # invalid input from the client; ignore and fallback to empty City queryset
+ 
+
+        
         
     
     
     class Meta:
         model = Woreda
-        fields=['name',]
+        fields=['name','zone',]
+        
     
 class WoredaFormE(forms.ModelForm): 
       
@@ -83,7 +90,7 @@ class WoredaFormE(forms.ModelForm):
 class ZoneFormE(forms.ModelForm): 
       
       class Meta:
-        model = Woreda
+        model = Zone
         fields=['name']
         
 class RegionForm(forms.ModelForm): 
@@ -92,17 +99,14 @@ class RegionForm(forms.ModelForm):
         fields="__all__"
 
 class ZoneForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        
-        self.fields['region'].queryset = Region.objects.all()
-    class Meta:
+      class Meta:
         model = Zone
-        fields=['region','name',]           
-      # invalid input from the client; ignore and fallback to empty City queryset
+        fields="__all__"         
+      
         
 
 class TypeForm(forms.ModelForm):
+    
     class Meta:
         model = Portfolio_Type
         fields="__all__"  

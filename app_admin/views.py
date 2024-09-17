@@ -30,7 +30,7 @@ from program.models import Program,UserRoles
 from datetime import datetime, timedelta
 from django.utils import timezone
 from datetime import datetime, date
-
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from dateutil.relativedelta import relativedelta
 
 
@@ -167,14 +167,12 @@ def group_delete(request, id):
 
 @login_required(login_url='login') 
 def admin_boundary(request):
-    country = Country.objects.all().order_by('-id')
-    region = Region.objects.all().order_by('-id')
-    zone = Zone.objects.all().order_by('-id')
-    woreda_list = Woreda.objects.all().order_by('-id')
+   
+    woreda_list = Woreda.objects.all().order_by('id')
     
     page = request.GET.get('page', 1)
 
-    paginator = Paginator(woreda_list, 10)
+    paginator = Paginator(woreda_list, 20)
     try:
         woreda = paginator.page(page)
     except PageNotAnInteger:
@@ -183,7 +181,7 @@ def admin_boundary(request):
         woreda = paginator.page(paginator.num_pages)
 
   
-    context = {'country': country, 'region': region, 'zone': zone, 'woreda':woreda}
+    context = {'woreda':woreda}
     return render(request, 'admin_boundary.html', context)
 
 
@@ -294,18 +292,19 @@ class RegisterView(FormView):
   
 def admin_list(request):
     
-    woreda_list = Woreda.objects.all().order_by('id')
-    
-    page = request.GET.get('page', 1)
-
-    paginator = Paginator(woreda_list, 50)
+    woreda_list = Woreda.objects.all().order_by("id")  # fetching all post objects from database
+    p = Paginator(woreda_list, 25)  # creating a paginator object
+    # getting the desired page number from url
+    page_number = request.GET.get('page')
     try:
-        woreda = paginator.page(page)
+        woreda = p.get_page(page_number)  # returns the desired page object
     except PageNotAnInteger:
-        woreda = paginator.page(1)
+        # if page_number is not an integer then assign the first page
+        woreda = p.page(1)
     except EmptyPage:
-        woreda = paginator.page(paginator.num_pages)
-
+        # if page is empty then return last page
+        woreda = p.page(p.num_pages)
+    
   
     context = {'woreda':woreda}
     return render(request, 'partial/admin_boundary.html', context)
@@ -313,8 +312,8 @@ def admin_list(request):
   
 def admin_filter(request):
     query = request.GET.get('search', '')
-    print(query)
-    all_woredas = Woreda.objects.all()
+  
+    all_woredas = Woreda.objects.all().order_by("id")
     
     if query:
         qs1 = Woreda.objects.filter(name__icontains=query)
@@ -330,7 +329,7 @@ def admin_filter(request):
         
     page = request.GET.get('page', 1)
 
-    paginator = Paginator(woreda_list, 50)
+    paginator = Paginator(woreda_list, 20)
     try:
         woreda = paginator.page(page)
     except PageNotAnInteger:
@@ -391,10 +390,10 @@ def edit_zone(request, id):
 
   
 def add_woreda(request):
-    
+    region = Region.objects.all()
     form = WoredaForm()
     if request.method == "POST":
-        form = WoredaForm(request.POST)
+        form = WoredaForm(request.POST or None)
         if form.is_valid():
             
             instance = form.save()
@@ -413,7 +412,7 @@ def add_woreda(request):
     else:
         form = WoredaForm()
     return render(request, 'partial/woreda_form_new.html', {
-        'form': form,
+        'form': form,'region':region
     })
 
   
@@ -720,3 +719,11 @@ def remove_user_program_role(request, pk):
                 "showMessage": f"{user_role.user} deleted."
             })
         })
+
+
+def iworeda(request): 
+    region = request.GET.get('region', '')
+    print(region)
+    form = WoredaForm(region=region)
+    context = {'form':form,}
+    return render(request, 'partial/new_woreda_form.html', context)

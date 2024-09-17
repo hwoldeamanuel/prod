@@ -68,16 +68,16 @@
             
 
               <!-- start project list -->
-           <table class="table table-striped projects">
+    <table class="table table-striped projects">
                 <thead>
                   <tr>
                     <th style="width: 1%">#</th>
-                    <th>Portfolio</th>
-                    <th style="width: 25%">Program Name</th>
-                    <th>Team Members</th>
+                    <th style="width: 15%">Program</th>
+                    <th style="width: 25%">Title</th>
+                    <th style="width: 18%">Team Members</th>
                     
-                    <th>Dates</th>
-                    <th>Progress</th>
+                    <th style="width: 12%">Dates</th>
+                    <th style="width: 15%">Progress</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -85,11 +85,10 @@
                     {% for program in programs %}
                   <tr>
                     <td>{{ forloop.counter }}</td>
-                    <td> {{program.portfolio}}</td>
+                    <td> {{program.title}} </br><small>{{program.portfolio}}</small></td>
                     <td>
-                      <a>{{ program.title }}</a>
-                      <br />
-                     <small>{{ program.working_title }}</small>
+                     
+                    {{ program.working_title }}
                     </td>
                     <td>
                       
@@ -103,7 +102,7 @@
                     </ul>
                     </td>
                     <td>
-                        <a>{{ program.start_date }}</a>
+                         <small>{{ program.start_date }} </small>
                         <br />
                         <small>{{ program.end_date }}</small>
                     </td>
@@ -115,7 +114,7 @@
                     </td>
                     
                     <td>
-                      <a href="{% url 'program_detail' program.id %}" class="btn btn-sm btn-info btn-xs"><i class="fa fa-eye"></i> View </a>
+                      <a href="{% url 'program_detail' program.id %}" class="btn btn-sm btn-info"><i class="fa fa-eye"></i> View </a>
                       
                      
                     </td>

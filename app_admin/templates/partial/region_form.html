@@ -6,14 +6,18 @@
     <button type="button" class="btn-close" class="close" data-bs-dismiss="modal" aria-label="Close"></button>
   </div>
   <div class="modal-body">
-    <div class="mb-3">
-      <label for="{{ form.country.id_for_label }}" class="form-label">Country</label>
+    <div class="item form-group">
+                            <label class="col-form-label col-md-2 col-sm-2 label-align" for="first-name">Country:<span class="required">*</span>
+                            </label>
+                            <div class="col-md-8 col-sm-8 ">
        {% render_field form.country class="form-control form-control-sm" autocomplete="off"   %}
       <div class="invalid-feedback">{{ form.country.errors|first }}</div>
     </div>
- 
-    <div class="mb-3">
-      <label for="{{ form.name.id_for_label }}" class="form-label">Region</label >
+    </div>
+    <div class="item form-group">
+                            <label class="col-form-label col-md-2 col-sm-2 label-align" for="first-name">Region:<span class="required">*</span>
+                            </label>
+                            <div class="col-md-8 col-sm-8 ">
        {% render_field form.name class="form-control form-control-sm" %}
       <div class="invalid-feedback">{{ form.name.errors|first }}</div>
     </div>
