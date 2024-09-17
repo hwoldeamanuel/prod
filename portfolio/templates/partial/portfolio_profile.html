@@ -16,12 +16,12 @@
                           <!-- Current avatar -->
                           {% if portfolio.logo %}
                           <div id="crop-avatar">
-                          <img class="img-responsive avatar-view" src="{{portfolio.logo.url}}" alt="Avatar" title="Change the avatar" style="width: auto; height: 60px;">
+                          <img class="img-responsive avatar-view" src="{{portfolio.logo.url}}" alt="Avatar" title="Change the avatar" style="width: auto; height: 50px;">
                         </div>
                         {% else %}
                           <h3 class="green"><i class="fa fa-university"></i> {{portfolio.title}}</h3>
                         {% endif %}
-                          <p>{{portfolio.description}}</p>
+                         
                         
 
                           <div class="project_detail">
@@ -38,7 +38,7 @@
                           </div>
                           <br />
                          </div>
-
+ <p>{{portfolio.description}}</p>
                           <div class="text-center mtop20">
                          
                             <a class="btn btn-success" hx-get="{% url 'edit_portfolio' portfolio.id %}" hx-target = "#dialog"><i class="fa fa-edit m-right-xs"></i>Edit Profile</a>
