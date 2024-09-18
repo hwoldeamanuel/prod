@@ -618,14 +618,14 @@ def user_detail(request, id):
         
       
        
-        qs1 = CRUDEvent.objects.filter(user_id=id, datetime__date__gte=start_date, datetime__date__lte=end_date).order_by("-datetime__date").values('datetime__date').annotate(id_count=Count('id', distinct=True))
+        qs1 = RequestEvent.objects.filter(user_id=id, datetime__date__gte=start_date, datetime__date__lte=end_date).order_by("-datetime__date").values('datetime__date').annotate(id_count=Count('id', distinct=True))
         qs2 = LoginEvent.objects.filter(user_id=id,  datetime__date__gte=start_date, datetime__date__lte=end_date).order_by("-datetime__date").values('datetime__date').annotate(count_login=Count('id', distinct=True))
     else:
         current_date = date.today()
         last_month_filter =  current_date - relativedelta(months=1)
     
        
-        qs1 = CRUDEvent.objects.filter(user_id=id,  datetime__gte=last_month_filter).order_by("-datetime__date").values('datetime__date').annotate(id_count=Count('id',distinct=True))
+        qs1 = RequestEvent.objects.filter(user_id=id,  datetime__gte=last_month_filter).order_by("-datetime__date").values('datetime__date').annotate(id_count=Count('id',distinct=True))
         qs2 = LoginEvent.objects.filter(user_id=id, datetime__gte=last_month_filter).order_by("-datetime__date").values('datetime__date').annotate(count_login=Count('id',distinct=True))
     
 
