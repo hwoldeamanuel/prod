@@ -46,7 +46,7 @@ def user(request):
     last_month_filter =  current_date - relativedelta(months=1)
   
   
-    qs1 = RequestEvent.objects.filter(user_id=request.user, datetime__gte=last_month_filter).values('datetime__date').annotate(id_count=Count('id', distinct=True))
+    qs1 = CRUDEvent.objects.filter(user_id=request.user, datetime__gte=last_month_filter).values('datetime__date').annotate(id_count=Count('id', distinct=True))
     qs2 = LoginEvent.objects.filter(user_id=request.user, datetime__gte=last_month_filter).values('datetime__date').annotate(count_login=Count('id', distinct=True))
     collector = defaultdict(dict)
 

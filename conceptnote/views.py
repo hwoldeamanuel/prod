@@ -308,15 +308,35 @@ def icn_delete(request, pk):
     icn = get_object_or_404(Icn, pk=pk)
    
     icn.delete()
+    user = request.user
+    if user.is_superuser:
+        icns = Icn.objects.all()
+    else:
+        program = Program.objects.filter(users_role=user)
+        icns = Icn.objects.filter(program__in=program).order_by('-id')
+   
+        
     
-    return redirect('icns') 
+    context = {'icns': icns, }
+    return render(request, 'partial/icn_list.html', context)
 
 def activity_delete(request, pk):
     activity = get_object_or_404(Activity, pk=pk)
    
     activity.delete()
     
-    return redirect('activities') 
+    user = request.user
+    if user.is_superuser:
+        activities = Activity.objects.all()
+    else:
+        program = Program.objects.filter(users_role=user)
+        activities = Activity.objects.filter(program__in=program).order_by('-id')
+
+    context = {'activities': activities, 'count': activities.count()}
+    return render(request, 'partial/activity_list.html', context)
+       
+  
+
 
 def icn_submit_form(request, id, sid): 
     icn = get_object_or_404(Icn, pk=id)
@@ -1180,13 +1200,17 @@ def adelete_area(request, pk):
 
 def search_results_view2(request):
     user = request.user
-    program = Program.objects.filter(users_role=user)
+    if user.is_superuser:
+        all_activities = Activity.objects.all()
+    else:
+        program = Program.objects.filter(users_role=user)
    
-    icns = Icn.objects.filter(program__in=program).order_by('-id')
+        all_activities = Activity.objects.filter(program__in=program).order_by('-id')
+
     query = request.GET.get('search', '')
     
 
-    all_activities= Activity.objects.filter(icn__in=icns)
+   
     if query:
         qs1 = all_activities.filter(title__icontains=query)
         qs2 = all_activities.distinct().filter(icn__title__icontains=query)

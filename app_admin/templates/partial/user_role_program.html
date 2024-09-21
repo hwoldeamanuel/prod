@@ -20,10 +20,10 @@
        <td>{{ forloop.counter}}</td>
        <td>{{ program.program }}</td>
     
-       <td><input type="radio" class="checkbox" {% if program.is_pcn_initiator %}checked{% endif %} value=""></td>
-       <td><input type="radio" {% if program.is_pcn_technical_approver %}checked{% endif %} value=""></td>
-       <td><input type="radio" {% if program.is_pcn_program_approver %}checked{% endif %} value=""> </td>
-       <td><input type="radio" {% if program.is_pcn_finance_approver %}checked{% endif %} value="" ></td>
+        <td> <div class="icheckbox_flat-green {% if program.is_pcn_initiator %}checked{% endif %}" style="position: relative;"><input type="checkbox" class="flat" style="position: absolute; opacity: 0;"><ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 80%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins></div></td>
+       <td><div class="icheckbox_flat-green {% if program.is_pcn_technical_approver %}checked{% endif %} " style="position: relative;"><input type="checkbox" class="flat" style="position: absolute; opacity: 0;"><ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 80%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins></div></td>
+       <td><div class="icheckbox_flat-green {% if program.is_pcn_program_approver %}checked{% endif %}" style="position: relative;"><input type="checkbox" class="flat" style="position: absolute; opacity: 0;"><ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 80%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins></div></td>
+       <td><div class="icheckbox_flat-green {% if program.is_pcn_finance_approver %}checked{% endif %} " style="position: relative;"><input type="checkbox" class="flat" style="position: absolute; opacity: 0;"><ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 80%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins></div></td>
        <td><button class="btn btn-info btn-sm btn-xs" hx-get="{% url 'update_user_program_roles' program.id %}"   hx-target="#dialog" class="btn btn-primary"><i class="fa fa-edit"></i></button></td>
      </tr>
      {% endfor %}

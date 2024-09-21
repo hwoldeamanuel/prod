@@ -172,7 +172,7 @@ def admin_boundary(request):
     
     page = request.GET.get('page', 1)
 
-    paginator = Paginator(woreda_list, 20)
+    paginator = Paginator(woreda_list, 25)
     try:
         woreda = paginator.page(page)
     except PageNotAnInteger:
@@ -329,7 +329,7 @@ def admin_filter(request):
         
     page = request.GET.get('page', 1)
 
-    paginator = Paginator(woreda_list, 20)
+    paginator = Paginator(woreda_list, 25)
     try:
         woreda = paginator.page(page)
     except PageNotAnInteger:
@@ -625,7 +625,7 @@ def user_detail(request, id):
         last_month_filter =  current_date - relativedelta(months=1)
     
        
-        qs1 = RequestEvent.objects.filter(user_id=id,  datetime__gte=last_month_filter).order_by("-datetime__date").values('datetime__date').annotate(id_count=Count('id',distinct=True))
+        qs1 = CRUDEvent.objects.filter(user_id=id,  datetime__gte=last_month_filter).order_by("-datetime__date").values('datetime__date').annotate(id_count=Count('id',distinct=True))
         qs2 = LoginEvent.objects.filter(user_id=id, datetime__gte=last_month_filter).order_by("-datetime__date").values('datetime__date').annotate(count_login=Count('id',distinct=True))
     
 

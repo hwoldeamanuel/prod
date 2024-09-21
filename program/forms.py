@@ -275,10 +275,10 @@ class UserRoleForm(forms.ModelForm):
         
         if program:
             
-            self.fields['user'].queryset = User.objects.exclude(program=program.id)
+            self.fields['user'].queryset = User.objects.filter(is_active=True).exclude(program=program)
         else:
            
-            self.fields['user'].queryset = User.objects.all()
+            self.fields['user'].queryset = User.objects.filter(is_active=True)
         
             
     class Meta:

@@ -19,7 +19,7 @@
             </div>
           
             <div class="col-md-2 col-sm-4  tile_stats_count">
-              <span class="count_top"><i class="fa fa-briefcase"></i> Program </span>
+              <span class="count_top"><i class="fa fa-briefcase"></i> Programs </span>
               <div class="count">{{total_program}}</div>
               <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>3% </i> From last Week</span>
             </div>
@@ -204,11 +204,11 @@ var myChart = new Chart(ctx, {
         datasets: [{
             label:'# of Concept Note',
             
-            data: [{% for program in program_cn %} {{program.num_cn}},{% endfor %}],
-            backgroundColor: [{% for user in program_users %} 'rgba(38, 185, 154, 1)',{% endfor %}
+            data: [{% for program in program_cn %} {{  program.num_cn   }},{% endfor %}],
+            backgroundColor: [{% for program in program_cn  %} 'rgba(38, 185, 154, 1)',{% endfor %}
                 
             ],
-            borderColor: [{% for user in program_users %} 'rgba(38, 185, 154, 1)',{% endfor %}
+            borderColor: [{% for program in program_cn  %} 'rgba(38, 185, 154, 1)',{% endfor %}
                 
             ],
             borderWidth: 1
@@ -260,8 +260,10 @@ myDoughnut = new Chart(ctx,
            legend: {
            responsive:true,
            display: true,
+          
            "labels": {
-            "fontSize": 8,
+            "fontSize": 9,
+            
           }
      
     },
@@ -315,7 +317,7 @@ myDoughnut = new Chart(ctx,
            responsive:true,
       display: true,
         "labels": {
-            "fontSize": 8,
+            "fontSize": 9,
           }
      
     },

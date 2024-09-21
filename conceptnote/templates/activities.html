@@ -20,11 +20,12 @@
                   hx-trigger="keyup changed, search"
                   hx-target="#icn_list">
                   <span class="input-group-btn">
-                      <button type="button" class="btn btn-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       New
                       </button>
                       <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
-                          <a class="dropdown-item" href="{% url 'activity_add' %}">Activity CN</a>
+                          <a class="dropdown-item" href="{% url 'activity_add' %}">Add New Activity</a>
+                            <div class="dropdown-divider"></div>
                           <a class="dropdown-item" href="{% url 'icns' %}">Intervention List</a>
                           
                          </div>
@@ -82,9 +83,9 @@
                     <th style="width: 18%">Team Members</th>
                
                     <th style="width:12%">Date<small> (Start/End)</small></th>
-                   <th style="width:10%">Status <small>(ACN)</small></th>
+                   <th style="width:12%">Status <small>(ACN)</small></th>
                       <th style="width:12%">Status <small>(Report)</small></th>
-                     <th >Action</th>
+                     <th ></th>
                      </tr>
                      
                 </thead>
@@ -143,7 +144,7 @@
                     
                       <td>
                       
-                                        <div class="btn-group">
+                                                 <div class="btn-group">
                     <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       Action
                     </button>
@@ -151,9 +152,11 @@
                       <a class="dropdown-item" href="{% url 'activity_detail' activity.id %}">View</a>
                      
                       <div class="dropdown-divider"></div>
-                      <a class="dropdown-item {% if request.user != activity.user or activity.activityimpact_set.all.count > 0 %}disabled{% endif %}" href="{% url 'activity_delete' activity.id %}">Delete</a>
+                      <a class="dropdown-item {% if request.user != activity.user or activity.activityimpact_set.all.count > 0 %}disabled{% endif %}" hx-get="{% url 'activity_delete' activity.id %}"  hx-target="#icn_list" hx-confirm="Are you sure you wish to delete ?">Delete</a>
                     </div>
                   </div>
+                     
+                    
                     
                           <!-- end project list -->
                     </td>

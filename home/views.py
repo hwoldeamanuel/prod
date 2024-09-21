@@ -46,7 +46,7 @@ def home(request):
   total_activity = Activity.objects.count
   total_cn=0
   program_users = Program.objects.annotate(num_user=Count("users_role")).order_by('-num_user')[:12]
-  program_cn = Program.objects.annotate(num_cn=Count("icn__activity",distinct=True) + Count("icn",distinct=True)).filter(num_cn__gte=1).order_by('-num_cn')
+  program_cn = Program.objects.annotate(num_cn=Count("icn__activity",distinct=True) + Count("icn",distinct=True)).filter().order_by('-num_cn')[:12]
   
   for program in program_cn:
      total_cn = program.num_cn + total_cn

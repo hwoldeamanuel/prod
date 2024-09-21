@@ -15,7 +15,7 @@
    <div class="title_right">
           <form hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'>
             {% csrf_token %}
-            <div class="col-md-5 col-sm-5   form-group pull-right top_search">
+            <div class="col-md-6 col-sm-6   form-group pull-right top_search">
 
                <div class="input-group">
                   <input name="search" type="text" class="form-control" placeholder="Search for..." 
@@ -23,14 +23,13 @@
                   hx-trigger="keyup changed, search"
                   hx-target="#program_list">
                   <span class="input-group-btn">
-                      <button type="button" class="btn btn-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      Go!
+                      <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> New
                       </button>
                       <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
-                          <a class="dropdown-item" href="{% url 'add_program' %}">Add New</a>
+                          <a class="dropdown-item" href="{% url 'add_program' %}">Add New Program</a>
                           <div class="dropdown-divider"></div>
-                          <a class="dropdown-item" href="{% url 'icns' %}">Interventions CN</a>
-                          <a class="dropdown-item" href="{% url 'portfolio' %}">Portfolio</a>
+                          <a class="dropdown-item" href="{% url 'icns' %}">Intervention Concept N.</a>
+                            <a class="dropdown-item" href="{% url 'activities' %}">Activity Concept N.</a>
                           
                             
                          </div>

@@ -1,14 +1,6 @@
 
 {% extends 'base.html' %}
-{% block content_page_cs %}
-{% load static %}
 
-    <link href="{% static 'vendors/datatables.net-bs/css/dataTables.bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css' %}" rel="stylesheet">
-{% endblock %}
 {% block content %}
 <!-- page content -->
         <div class="right_col" role="main">
@@ -21,7 +13,7 @@
               <div class="title_right">
           <form hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'>
             {% csrf_token %}
-            <div class="col-md-5 col-sm-5   form-group pull-right top_search">
+            <div class="col-md-6 col-sm-6   form-group pull-right top_search">
 
                <div class="input-group">
                   <input name="search" type="text" class="form-control" placeholder="Search for..." 
@@ -29,7 +21,7 @@
                   hx-trigger="keyup changed, search"
                   hx-target="#admin_list">
                   <span class="input-group-btn">
-                      <button type="button" class="btn btn-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       New!
                       </button>
                       <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
@@ -71,7 +63,7 @@
                     <th>Zone Name</th>
                     <th>Woreda ID</th>
                     <th>Woreda Name</th>
-                    <th >Action</th>
+                    <th style="width: 20%">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -96,6 +88,7 @@
                 {% endfor %}
                 </tbody>
                 </table>
+           
 {% if woreda.has_other_pages %}
   <ul class="pagination">
     {% if woreda.has_previous %}
@@ -105,7 +98,7 @@
     {% endif %}
     {% for i in woreda.paginator.page_range %}
       {% if woreda.number == i %}
-        <li class="active"><span>{{ i }} | <span class="sr-only">(current)</span></span></li>
+        <li class="paginate_button active active"><span>{{ i }} | <span class="sr-only">(current)</span></span></li>
       {% else %}
         <li><a href="?page={{ i }}">{{ i }} | </a></li>
       {% endif %}
@@ -113,11 +106,10 @@
     {% if woreda.has_next %}
       <li><a href="?page={{ woreda.next_page_number }}"> &raquo;</a></li>
     {% else %}
-      <li class="disabled"><span>&raquo;</span></li>
+      <li class="paginate_button previous disabled"><span>&raquo;</span></li>
     {% endif %}
   </ul>
 {% endif %}
-
 
                   </div><div class="modal fade bs-example-modal-lg" id="modal" class="modal fade">
                        <div id="dialog" class="modal-dialog modal-lg" hx-target="this"></div>
@@ -132,22 +124,6 @@
 {% endblock%}
 
 {% block content_page_js %}
-{% load static %}
 
- <script src="{% static 'vendors/datatables.net/js/jquery.dataTables.min.js' %}"></script>
-    <script src="{% static 'vendors/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
-    <script src="{% static 'vendors/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
-    <script src="{% static 'vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js' %}"></script>
-    <script src="{% static 'vendors/datatables.net-buttons/js/buttons.flash.min.js' %}"></script>
-    <script src="{% static 'vendors/datatables.net-buttons/js/buttons.html5.min.js' %}"></script>
-    <script src="{% static 'vendors/datatables.net-buttons/js/buttons.print.min.js' %}"></script>
-    <script src="{% static 'vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js' %}"></script>
-    <script src="{% static 'vendors/datatables.net-keytable/js/dataTables.keyTable.min.js' %}"></script>
-    <script src="{% static 'vendors/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
-    <script src="{% static 'vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js' %}"></script>
-    <script src="{% static 'vendors/datatables.net-scroller/js/dataTables.scroller.min.jsv' %}"></script>
-    <script src="{% static 'vendors/jszip/dist/jszip.min.js' %}"></script>
-    <script src="{% static 'vendors/pdfmake/build/pdfmake.min.jsv' %}"></script>
-    <script src="{% static 'vendors/pdfmake/build/vfs_fonts.js' %}"></script>
     
 {% endblock %}

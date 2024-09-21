@@ -16,17 +16,17 @@
             <div class="col-md-6 col-sm-6   form-group pull-right top_search">
 
                <div class="input-group">
-                  <input name="search" type="text" class="form-control" placeholder="Search for..." 
+                  <input name="search" type="text" class="form-control" placeholder="Search for ..." 
                   hx-get="/conceptnote/icn_filter/"
                   hx-trigger="keyup changed, search"
                   hx-target="#icn_list">
                   <span class="input-group-btn">
-                     <div class="btn-group">
+                   
                     <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     New
                     </button>
                     <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
-                      <a class="dropdown-item" href="{% url 'icn_new' %}">Intervention</a>
+                      <a class="dropdown-item" href="{% url 'icn_new' %}">Add New Intervention</a>
                       <div class="dropdown-divider"></div>
                       <a class="dropdown-item" href="{% url 'activities'%}">Activity List</a>
                      
@@ -38,7 +38,7 @@
                    
                      
                   </span>
-              </div>   
+             
             </div>        
           </form>
          
@@ -80,10 +80,10 @@
                     <th style="width: 30%">Intervention ID/Title</th>
                     <th style="width: 18%">Team Members</th>
                
-                    <th style="width:12%">Date<small> (Start/End)</small></th>
+                    <th style="width:13%">Date<small> (Start/End)</small></th>
                    <th style="width:11%">Status <small>(ICN)</small></th>
                       <th style="width:10%">Status <small>(Report)</small></th>
-                     <th >Action</th>
+                     <th ></th>
                      </tr>
                      
                 </thead>
@@ -148,7 +148,7 @@
                       <a class="dropdown-item" href="{% url 'icn_detail' icn.id %}">View</a>
                      
                       <div class="dropdown-divider"></div>
-                      <a class="dropdown-item {% if request.user != icn.user or icn.impact_set.all.count > 0 %}disabled{% endif %}" href="{% url 'icn_delete' icn.id %}">Delete</a>
+                      <a class="dropdown-item {% if request.user != icn.user or icn.impact_set.all.count > 0 %}disabled{% endif %}" hx-get="{% url 'icn_delete' icn.id %}"  hx-target="#icn_list" hx-confirm="Are you sure you wish to delete ?">Delete</a>
                     </div>
                   </div>
                      

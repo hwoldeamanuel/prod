@@ -12,24 +12,26 @@
                <div class="title_right">
           <form hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'>
             {% csrf_token %}
-            <div class="col-md-5 col-sm-5   form-group pull-right top_search">
+            <div class="col-md-6 col-sm-6   form-group pull-right top_search">
 
                <div class="input-group">
-                  <input name="search" type="text" class="form-control" placeholder="Search for..." 
+                  <input name="search" type="text" class="form-control" placeholder="Search for ..." 
                   hx-get="/setting/users_filter/"
                   hx-trigger="keyup changed, search"
                   hx-target="#users_list">
+                
                   <span class="input-group-btn">
-                      <button type="button" class="btn btn-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      Go!
+                      <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      New
                       </button>
                       <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
-                          <a class="dropdown-item" hx-get="{% url 'register' %}" hx-target="#dialog">Add New</a>
-                          <a class="dropdown-item" href="#">Another action</a>
-                          <a class="dropdown-item" href="#">Something else here</a>
-                          <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Separated link</a>
-                         </div>
+                          <a class="dropdown-item" hx-get="{% url 'register' %}" hx-target="#dialog">Add New User</a>
+                           <div class="dropdown-divider"></div>
+                            
+                        
+                          <a class="dropdown-item" href="{% url 'icns' %}">Intervention Concept N.</a>
+                          <a class="dropdown-item" href="{% url 'activities' %}">Activity Concept N.</a>
+                          </div>
                       </div>
                   </span>
               </div>   

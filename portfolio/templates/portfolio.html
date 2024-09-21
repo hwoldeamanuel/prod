@@ -132,7 +132,7 @@ var myChart = new Chart(ctx, {
         datasets: [{
           label: "Intervention",
           data: [{% for cn in all_request %} {{ cn.icn_count }}, {% endfor %}],
-           backgroundColor: "rgba(38, 185, 154, 1)",
+           backgroundColor: "rgba(79, 153, 185, 1)",
                 
             
             borderColor: "rgba(38, 185, 154, 1)",
@@ -143,7 +143,7 @@ var myChart = new Chart(ctx, {
         {
           label: "Activity",
           data: [{% for cn in all_request %} {{ cn.activity_count }}, {% endfor %}],
-           backgroundColor:  "rgba(35, 57, 93, 1)",
+           backgroundColor:  "rgba(73, 106, 159, 1)",
                 
                        borderColor: "rgba(35, 57, 93, 1)",
                 

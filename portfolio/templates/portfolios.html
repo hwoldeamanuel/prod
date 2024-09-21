@@ -16,7 +16,7 @@
              <div class="title_right">
           <form hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'>
             {% csrf_token %}
-            <div class="col-md-6 col-sm-4   form-group pull-right top_search">
+            <div class="col-md-6 col-sm-6   form-group pull-right top_search">
 
                <div class="input-group">
                   <input name="search" type="text" class="form-control" placeholder="Search for..." 
@@ -25,16 +25,16 @@
                   hx-target="#portfolio_list">
               
                   <span class="input-group-btn">
-                      <button type="button" class="btn btn-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      New!
+                      <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      New
                       </button>
                       <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
-                          <a class="dropdown-item" hx-get="{% url 'add_portfolio' %}" hx-target="#dialog">New Portfolio</a>
+                          <a class="dropdown-item" hx-get="{% url 'add_portfolio' %}" hx-target="#dialog">Add New Portfolio</a>
                            <div class="dropdown-divider"></div>
-                           <a class="dropdown-item" href="{% url 'programs' %}">Program</a>
+                           <a class="dropdown-item" href="{% url 'programs' %}">Program List</a>
                          
-                            <a class="dropdown-item" href="{% url 'icns' %}">Intervention CN</a>
-                           
+                            <a class="dropdown-item" href="{% url 'icns' %}">Intervention Concept N.</a>
+                            <a class="dropdown-item" href="{% url 'activities' %}">Activity Concept N.</a>
                          </div>
                       </div>
                   </span>

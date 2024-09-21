@@ -64,7 +64,7 @@
                       
                     <p class="title">Duration</p>
                   <div class="progress progress_sm">
-                        <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="{{ program.get_date_diff }}"></div>
+                        <div class="progress-bar bg-blue" role="progressbar" data-transitiongoal="{{ program.get_date_diff }}"></div>
                       </div>
                 
                     </div>
@@ -198,7 +198,7 @@
                       </div>
                      
                         <button class="btn btn-primary btn-sm" hx-get="/program/user_add/{{program.id}}/" hx-target="#dialog" class="btn btn-primary">
-                          Add User Roles
+                          Add Roles
                         </button>
                       
                     </div>
@@ -268,7 +268,7 @@ var myChart = new Chart(ctx, {
         datasets: [{
           label: "Intervention",
           data: [{% for cn in all_request %} {{ cn.icn_count }}, {% endfor %}],
-           backgroundColor: "rgba(38, 185, 154, 1)",
+           backgroundColor: "rgba(79, 153, 185, 1)",
                 
             
             borderColor: "rgba(38, 185, 154, 1)",
@@ -279,9 +279,9 @@ var myChart = new Chart(ctx, {
         {
           label: "Activity",
           data: [{% for cn in all_request %} {{ cn.activity_count }}, {% endfor %}],
-           backgroundColor:  "rgba(35, 57, 93, 1)",
+           backgroundColor:  "rgba(73, 106, 159, 1)",
                 
-                       borderColor: "rgba(35, 57, 93, 1)",
+                       borderColor: "rgba(73, 106, 159, 1)",
                 
             
             borderWidth: 1
