@@ -176,12 +176,12 @@
                               <tbody>
                                 <tr>
                                   <th style="width:50%">Mercy Corps:</th>
-                                  <td> {{ icn.mc_budget|floatformat:2|intcomma }}{{icn.get_mc_currency_display }}</td>
+                                  <td> {{ icn.mc_budget|floatformat:"2g" }}{{icn.get_mc_currency_display }}</td>
                                  
                                 </tr>
                                 <tr>
                                   <th>Cost Share contributions</th>
-                                  <td>{% if icn.cost_sharing_budget %} {{ icn.cost_sharing_budget }}{{icn.get_cs_currency_display }}{% else %}0.00USD{% endif %}</td>
+                                  <td>{% if icn.cost_sharing_budget %} {{ icn.cost_sharing_budget|floatformat:"2g" }}{{icn.get_cs_currency_display }}{% else %}0.00USD{% endif %}</td>
                                 </tr>
                                
                                 <tr>

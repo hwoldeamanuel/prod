@@ -70,7 +70,7 @@ def icnreport_add(request, id):
             return redirect('icnreport_detail',instance.icn_id) 
         
         form = IcnReportForm(request.POST,request.FILES, user=request.user, icn=icn)   
-        context = {'form':form}
+        context = {'form':form, 'icn':icn}
         return render(request, 'report/icnreport_step_profile_new.html', context)
     
     elif request.method == "GET":
@@ -818,13 +818,13 @@ def activityreport_edit(request, id):
             instance = form.save()
             return redirect('activityreport_detail',instance.pk) 
         
-        form = ActivityReportForm(request.POST,  instance=activityreport, user=request.user, acn=activity) 
+        form = ActivityReportForm(request.POST,  instance=activityreport, user=request.user, activity=activity) 
         context = {'form':form, 'activity':activity, 'activityreport':activityreport}
         return render(request, 'report/activityreport_step_profile_add.html', context)
             
     elif request.method == "GET" and activityreport.status == False:    
 
-        form = ActivityReportForm(instance=activityreport,  user=request.user, acn=activity) 
+        form = ActivityReportForm(instance=activityreport,  user=request.user, activity=activity) 
         context = {'form':form, 'activity':activity, 'activityreport':activityreport}
         return render(request, 'report/activityreport_step_profile_add.html', context)
     else:

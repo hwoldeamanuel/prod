@@ -64,9 +64,9 @@
                               <p>Environmnetal Impact: {% if icn.eniromental_impact == '3' %}<strong>High</strong>{% elif icn.eniromental_impact == '2' %}<strong>Medium</strong>{% elif icn.eniromental_impact == '1' %}<strong>Low</strong>{% endif %}</p>
                               <p>Environmnetal Impact Doc <i class="fa fa-paperclip"></i>:<strong>{% if icn.environmental_assessment_att %}<a href="{% url 'download_env_att' icn.id %}"> download </a> {% else %}NA{% endif%} </strong></p>
 
-                              <p>Total Mercy Corps budget:<strong> {{ icn.mc_budget|floatformat:2|intcomma }}</strong>{{icn.get_mc_currency_display }}</p>
-                              <p>Cost-share budget:<strong> {{ icn.cost_sharing_budget|floatformat:2|intcomma }}</strong>{{icn.get_cs_currency_display }}</p>
-                              
+                              <p>Mercy Corps budget:<strong> {{ icn.mc_budget|floatformat:"2g" }}</strong>{{icn.get_mc_currency_display }}</p>
+                              <p>Cost-share budget:<strong> {{ icn.cost_sharing_budget|floatformat:"2g"}}</strong>{{icn.get_cs_currency_display }}</p>
+                              <p>Total budget:<strong> {{ icn.mc_budget|add:icn.cost_sharing_budget|floatformat:"2g"}}</strong>{{icn.get_mc_currency_display }}</p>
  </div>
                          
                          

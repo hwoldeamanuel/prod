@@ -9,20 +9,20 @@
 
               <!-- start project list -->
 
-                        <table class="table table-striped">
+                         <table class="table table-striped">
                      
                   
                 <thead>
-                        <tr>
+                              <tr>
                     <th style="width:">#</th>
                      
-                    <th style="width: 10%">Program</th>
-                    <th style="width: 30%">Intervention ID/Title</th>
+                    
+                    <th style="width: 38%">Intervention ID/Title</th>
                     <th style="width: 18%">Team Members</th>
                
-                    <th style="width:13%">Date<small> (Start/End)</small></th>
-                   <th style="width:11%">Status <small>(ICN)</small></th>
-                      <th style="width:10%">Status <small>(Report)</small></th>
+                    <th style="width:12%">Date<small> (Start/End)</small></th>
+                   <th style="width:12%">Status <small>(ICN)</small></th>
+                      <th style="width:12%">Status <small>(Report)</small></th>
                      <th ></th>
                      </tr>
                      
@@ -32,8 +32,7 @@
                     {% for icn in icns %}
                   <tr>
                     <td>{{ forloop.counter }}</td>
-<td> {{ icn.program }}</br>
-<small>{{ icn.program.portfolio }}</small></td>
+
                     <td>{{icn.icn_number}}</br>
                       <small>{{ icn.title }}</small>
                      
@@ -42,18 +41,18 @@
                       <ul class="list-inline">
                         
                             <li>
-                          <img src="{% static 'images/user.png' %}" class="avatar" title="{{ icn.user }}">
+                          <img src="{% static 'images/user.png' %}" class="avatar" title="{{ icn.user.profile.full_name }} (Initiator)">
                         </li>
                       
                         <li>
-                          <img src="{% static 'images/user.png' %}" class="avatar" title="{{ icn.technical_lead.user }}">
+                          <img src="{% static 'images/user.png' %}" class="avatar" title="{{ icn.technical_lead.user.profile.full_name }} (Technical Lead)">
                         </li>
                            <li>
-                         <img src="{% static 'images/user.png' %}" class="avatar" title="{{ icn.finance_lead.user }}">
+                         <img src="{% static 'images/user.png' %}" class="avatar" title="{{ icn.finance_lead.user.profile.full_name }} (Finance Lead)">
                         </li>
                           <li>
                           
-                           <img src="{% static 'images/user.png' %}" class="avatar" title="{{ icn.program_lead.user }}">
+                           <img src="{% static 'images/user.png' %}" class="avatar" title="{{ icn.program_lead.user.profile.full_name }} (Program Lead)">
                         </li>
                         
                       </ul>
@@ -70,18 +69,17 @@
                       <span class="badge {% if icn.status == True %}badge bg-green {% else %} badge bg-red {% endif %}">{{ icn.get_status_display}}</span>
                       {% endif %}
                    </td>
-                   <td>
+                  <td>
                      {% if not icn.icnreport or icn.approval_status != '100% Approved' %}
-                      <span class="badge badge bg-default">{{icn.final_report_due_date}}</span>
+                      <span class="badge badge {% if icn.final_report_due_date|timesince > '1 min' %} bg-red {% else %} bg-default{% endif %}">{{icn.final_report_due_date}} </span>
                    {% elif icn.icnreport.status == True %}
                       <span class="badge {% if 'Rejected' in icn.icnreport.approval_status %} bg-red {% elif 'Approved' in icn.icnreport.approval_status %} bg-green {% else %} bg-warning {% endif %}">{% if icn.icnreport.approval_status %} {{ icn.icnreport.approval_status}} {% else %} Pending {% endif %}</span>
                      {% elif icn.icnreport.status == False %}
                     <span class="badge {% if icn.icnreport and icn.icnreport.status == True %}badge bg-green {% else %} badge bg-warning {% endif %}">{{ icn.icnreport.get_status_display}}</span>
                      {% endif %}
                     </td>
-                    
                     <td>
-                             <div class="btn-group">
+                    <div class="btn-group">
                     <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       Action
                     </button>

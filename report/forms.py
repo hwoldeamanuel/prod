@@ -554,6 +554,8 @@ class ActivityReportForm(forms.ModelForm):
          actual_start_date = self.cleaned_data.get('actual_start_date')
          actual_end_date = self.cleaned_data.get('actual_end_date')
          actual_reporting_date = self.cleaned_data.get('actual_report_due_date')
+         mc_currency = self.cleaned_data.get('mc_currency')
+         cs_currency = self.cleaned_data.get('cs_currency')
 
          if (technical_lead==program_lead or technical_lead==finance_lead):
               self._errors['technical_lead'] = self.error_class(['Lead should take up only one role'])
@@ -567,6 +569,9 @@ class ActivityReportForm(forms.ModelForm):
                self._errors['actual_end_date'] = self.error_class(['End date should always be after start date'])
          elif (actual_reporting_date != None and actual_end_date != None and actual_reporting_date < actual_end_date):
              self._errors['actual_reporting_date'] = self.error_class(['Reporting Date should always be after end date'])
+         elif (mc_currency != None and cs_currency != None and mc_currency != cs_currency):
+             self._errors['mc_currency'] = self.error_class(['Different currncy used'])
+         
          return cleaned_data
 
 class ActivityReportAreaFormE(forms.ModelForm):

@@ -79,7 +79,7 @@
                     <th style="width:">#</th>
                      
                   
-                    <th style="width: 40%">Activity ID/Title</th>
+                    <th style="width: 38%">Activity ID/Title</th>
                     <th style="width: 18%">Team Members</th>
                
                     <th style="width:12%">Date<small> (Start/End)</small></th>
@@ -94,8 +94,7 @@
                     {% for activity in activities %}
                   <tr>
                     <td>{{ forloop.counter }}</td>
-
-                    <td>{{activity.acn_number}}</br>
+                 <td>{{activity.acn_number}}</br>
                       <small>{{ activity.title }}</small>
                      
                     </td>
@@ -103,18 +102,18 @@
                       <ul class="list-inline">
                         
                             <li>
-                          <img src="{% static 'images/user.png' %}" class="avatar" title="{{ activity.user }}">
+                          <img src="{% static 'images/user.png' %}" class="avatar" title="{{ activity.user.profile.full_name}} (Initiator) ">
                         </li>
                       
                         <li>
-                          <img src="{% static 'images/user.png' %}" class="avatar" title="{{ activity.technical_lead.user }}">
+                          <img src="{% static 'images/user.png' %}" class="avatar" title="{{ activity.technical_lead.user.profile.full_name }} (Technical Lead)">
                         </li>
                            <li>
-                         <img src="{% static 'images/user.png' %}" class="avatar" title="{{ activity.finance_lead.user }}">
+                         <img src="{% static 'images/user.png' %}" class="avatar" title="{{ activity.finance_lead.user.profile.full_name }} (Finance Lead)">
                         </li>
                           <li>
                           
-                           <img src="{% static 'images/user.png' %}" class="avatar" title="{{ activity.program_lead.user }}">
+                           <img src="{% static 'images/user.png' %}" class="avatar" title="{{ activity.program_lead.user.profile.full_name }} (Program Lead)">
                         </li>
                         
                       </ul>
@@ -133,7 +132,7 @@
                    </td>
                   <td>
                      {% if not activity.activityreport or activity.approval_status != '100% Approved' %}
-                      <span class="badge badge bg-default">{{activity.final_report_due_date}}</span>
+                      <span class="badge badge {% if activity.final_report_due_date|timesince > '1 min' %}  bg-red {% else %} bg-default{% endif %}">{{activity.final_report_due_date}}</span>
                    {% elif activity.activityreport.status == True %}
                       <span class="badge {% if 'Rejected' in activity.activityreport.approval_status %} bg-red {% elif 'Approved' in activity.activityreport.approval_status %} bg-green {% else %} bg-warning {% endif %}">{% if activity.activityreport.approval_status %} {{ activity.activityreport.approval_status}} {% else %} Pending {% endif %}</span>
                      {% elif activity.activityreport.status == False %}

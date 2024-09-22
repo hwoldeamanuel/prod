@@ -60,8 +60,8 @@
                       {{activityreport.activity.proposed_end_date}}</p>
                         <p class="">Actual End Date<strong>
                       {{activityreport.actual_end_date}}</strong></p>
-                        <p>Proposed Report Date: <strong>  {{ activityreport.activity.final_report_due_date}}</strong></p>
-                              <p>Actual Report Date: <strong>  {{ activityreport.actual_report_date}}</strong></p>
+                        <p>Proposed Report Date:  {{ activityreport.activity.final_report_due_date}}</p>
+                              <p>Actual Report Date: <strong>  {{ activityreport.actual_reporting_date}}</strong></p>
                           </div>
   <div class="col-md-4 col-sm-4 project_detail">
   <p>Proposed Implementation Woredas:
@@ -74,11 +74,11 @@
                       <strong>{{woreda}},</strong>
                       {% endfor %}</p>
                              
- <p>Proposed Mercy Corps budget:<strong> {{ activityreport.activity.mc_budget|floatformat:2|intcomma }}</strong>{{activityreport.activity.get_mc_currency_display }}</p>
-                              <p>Actual Mercy Corps budget:<strong> {{ activityreport.actual_mc_budget|floatformat:2|intcomma }}</strong>{{activityreport.get_mc_currency_display }}</p>
-                              <p>Proposed Cost-share budget:<strong> {{ activityreport.activity.cost_sharing_budget|floatformat:2|intcomma }}</strong>{{activityreport.get_cs_currency_display }}</p>
+ <p>Proposed Mercy Corps budget:<strong> {{ activityreport.activity.mc_budget|floatformat:"2g"}}</strong>{{activityreport.activity.get_mc_currency_display }}</p>
+                              <p>Actual Mercy Corps budget:<strong> {{ activityreport.actual_mc_budget|floatformat:"2g" }}</strong>{{activityreport.get_mc_currency_display }}</p>
+                              <p>Proposed Cost-share budget:<strong> {{ activityreport.activity.cost_sharing_budget|floatformat:"2g"}}</strong>{{activityreport.get_cs_currency_display }}</p>
           
-                              <p>Actual Cost-share budget:<strong> {{ activityreport.actual_cost_sharing_budget|floatformat:2|intcomma }}</strong>{{activityreport.get_cs_currency_display }}</p>
+                              <p>Actual Cost-share budget:<strong> {{ activityreport.actual_cost_sharing_budget|floatformat:"2g" }}</strong>{{activityreport.get_cs_currency_display }}</p>
                               </br>
  </div>
                          

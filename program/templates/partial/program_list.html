@@ -26,7 +26,7 @@
                       <ul class="list-inline">
                         {% for user in program.users_role.all %}
                         <li>
-                          <img src="{% static 'images/user.png' %}" class="avatar" title="{{ user.email}}">
+                          <img src="{% static 'images/user.png' %}" class="avatar" title="{{ user.profile.full_name}}">
                         </li>
                          
                         {% endfor %}
