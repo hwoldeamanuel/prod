@@ -358,15 +358,19 @@ def edit_woreda(request, id):
             )
     else:
         form = WoredaFormE(instance=woreda)
+        return render(request, 'partial/woreda_form.html', {
+        'form': form,
+        'woreda': woreda,
+    })
+    form = WoredaFormE(instance=woreda)
     return render(request, 'partial/woreda_form.html', {
         'form': form,
         'woreda': woreda,
     })
 
-
   
 def edit_zone(request, id):
-    zone = get_object_or_404(Zone, id=id)
+    zone = get_object_or_404(Zone, id=id) 
     if request.method == "POST":
         form = ZoneFormE(request.POST, instance=zone)
         if form.is_valid():
@@ -382,6 +386,12 @@ def edit_zone(request, id):
             )
     else:
         form = ZoneFormE(instance=zone)
+        return render(request, 'partial/Zone_form.html', {
+        'form': form,
+        'zone': zone,
+    })
+    
+    form = ZoneFormE(instance=zone)
     return render(request, 'partial/Zone_form.html', {
         'form': form,
         'zone': zone,
@@ -464,7 +474,7 @@ def add_zone(request):
                 }
             )
     else:
-        form = ZoneForm(request.POST)
+        form = ZoneForm()
         return render(request, 'partial/zone_form_new.html', {
             'form': form,
         })
