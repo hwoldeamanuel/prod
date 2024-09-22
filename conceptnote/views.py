@@ -246,7 +246,7 @@ def iregion(request, id):
     
     return render(request, 'iarea_form.html', context)
 
- 
+@login_required(login_url='login') 
 def icn_new(request): 
     form = IcnForm(user=request.user)
     if request.method == "POST":
@@ -260,7 +260,7 @@ def icn_new(request):
     context = {'form':form}
     return render(request, 'intervention_add.html', context)
 
- 
+@login_required(login_url='login') 
 def iarea_edit_form(request, pk):
     iarea = get_object_or_404(IcnImplementationArea, pk=pk)
     icn = iarea.icn
@@ -291,6 +291,7 @@ def iarea_edit_form(request, pk):
 
 
 
+@login_required(login_url='login') 
 def idelete_area(request, pk):
     area = get_object_or_404(IcnImplementationArea, pk=pk)
     icn = area.icn_id
@@ -304,6 +305,7 @@ def idelete_area(request, pk):
             })
         })
 
+@login_required(login_url='login') 
 def icn_delete(request, pk):
     icn = get_object_or_404(Icn, pk=pk)
    
@@ -320,6 +322,7 @@ def icn_delete(request, pk):
     context = {'icns': icns, }
     return render(request, 'partial/icn_list.html', context)
 
+@login_required(login_url='login') 
 def activity_delete(request, pk):
     activity = get_object_or_404(Activity, pk=pk)
    
@@ -337,7 +340,7 @@ def activity_delete(request, pk):
        
   
 
-
+@login_required(login_url='login') 
 def icn_submit_form(request, id, sid): 
     icn = get_object_or_404(Icn, pk=id)
     
@@ -440,7 +443,7 @@ def icn_submit_form(request, id, sid):
     return render(request, 'icn_submit_form copy.html', context)
 
 
-
+@login_required(login_url='login') 
 def icn_submit_detail(request, pk):
     
     context ={}
@@ -456,7 +459,7 @@ def icn_submit_detail(request, pk):
     return render(request, 'icnsubmit_detail.html', context)
 
 
- 
+@login_required(login_url='login') 
 def icn_approvalt(request, id, did):
      
     icnsubmitApproval_t = get_object_or_404(IcnSubmitApproval_T, submit_id_id=id)
@@ -955,7 +958,7 @@ def icn_approvalp_form_partial(request, id):
     context = {'form':form, 'icn':icn}
     return render(request, 'partial/partial_doc_form.html', context)
 
- 
+@login_required(login_url='login') 
 def activities(request):
     user = request.user
     program = Program.objects.filter(users_role=user)
@@ -983,7 +986,7 @@ def activity_detail(request, pk):
 
     return render(request, 'activity_step_profile_detail.html', context)
 
- 
+@login_required(login_url='login') 
 def activity_add(request): 
     if request.method == "POST":
         form = ActivityForm(request.POST, user=request.user)

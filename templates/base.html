@@ -43,11 +43,12 @@
       <div class="main_container">
         <div class="col-md-3 left_col menu_fixed">
           <div class="left_col scroll-view">
-            <div class="navbar nav_title" style="border: 0;">
+            <div class="navbar nav_title text-center" style="border:1px ;">
               
               <a href="{% url 'home' %}" class="site_title">
-                          <img class="img-responsive avatar-view img-circle " src="{% static 'images/shortlog.png' %}" alt="Avatar" title="Change the avatar" style="width: 35px; height:35px;">
-                        <span> CNMS</span></a>
+                          <img class="img-responsive avatar-view img-circle" src="{% static 'images/shortlog.png' %}" alt="Avatar" title="Change the avatar" style="width: 30px; height:30px;">
+                        <span class="justify-content-center font-weight-bold" >CNMS</span></a>
+                        
             </div>
 
             <div class="clearfix"></div>
@@ -98,15 +99,14 @@
                       <li class="{% if 'profile' in request.path %}current-page{%endif %}"><a href="{% url 'user' %}">Profile</a></li>
                     
                     </ul>
-                  </li>
-                   
-                 
-                
+                  </li>                
                 </ul>
-             
+             </div>
+             <div class="menu_section">
+                <h3>Admin</h3>
             
                 <ul class="nav side-menu">
-                  <li "{% if 'setting' in request.path %}active{%endif %}"><a><i class="fa fa-bug"></i> System Admin <span class="fa fa-chevron-down"></span></a>
+                  <li "{% if 'setting' in request.path %}active{%endif %}"><a><i class="fa fa-bug"></i> System Settings <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu" style="{% if 'setting' in request.path %}display: block;{% endif %}">
                       <li class="{% if 'account' in request.path %}current-page{% elif request.user.is_superuser == False %}nav-link disabled{%endif%}"><a href="{% url 'user_setting' %}" >Account Settings</a></li>
                              <li class="{% if 'groups' in request.path %}current-page{% elif request.user.is_superuser == False %}nav-link disabled{%endif%}"><a href="{% url 'group_setting' %}">Users Group Settings</a></li>
