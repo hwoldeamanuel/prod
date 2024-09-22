@@ -43,11 +43,11 @@
       <div class="main_container">
         <div class="col-md-3 left_col menu_fixed">
           <div class="left_col scroll-view">
-            <div class="navbar nav_title text-center" style="border:1px ;">
+            <div class="navbar nav_title text-center " style="padding-right: 30px;" >
               
-              <a href="{% url 'home' %}" class="site_title">
-                          <img class="img-responsive avatar-view img-circle" src="{% static 'images/shortlog.png' %}" alt="Avatar" title="Change the avatar" style="width: 30px; height:30px;">
-                        <span class="justify-content-center font-weight-bold" >CNMS</span></a>
+              <a href="{% url 'home' %}" class="site_title font-weight-bold" >
+                          <img class="img-responsive  img-circle" src="{% static 'images/shortlog.png' %}" alt="Avatar" title="Change the avatar" style="width: 25px; height:25px; margin-bottom: 6px;">
+                        <span >CNMS</span></a>
                         
             </div>
 
@@ -56,11 +56,11 @@
             <!-- menu profile quick info -->
             <div class="profile clearfix">
               <div class="profile_pic">
-                <img src="{% static 'images/user.png' %}" alt="..." class="img-circle profile_img">
+                <img src="{% static 'images/user.png' %}" alt="..." class="img-circle profile_img ">
               </div>
               <div class="profile_info">
                 <span>Welcome,</span>
-                <h2>{{ request.user}}</h2>
+                <h2>{{ request.user.profile.first_name}}</h2>
              
               </div>
             </div>

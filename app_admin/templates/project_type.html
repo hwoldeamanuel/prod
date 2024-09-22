@@ -10,13 +10,13 @@
           <div class="">
             <div class="page-title">
               <div class="title_left">
-                <h3>Portfolio Type/Category</h3>
+                <h3>App Settings</h3>
               </div>
 
              <div class="title_right">
           <form hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'>
             {% csrf_token %}
-            <div class="col-md-5 col-sm-5   form-group pull-right top_search">
+            <div class="col-md-6 col-sm-6   form-group pull-right top_search">
 
                <div class="input-group">
                   <input name="search" type="text" class="form-control" placeholder="Search for..." 
@@ -24,15 +24,16 @@
                   hx-trigger="keyup changed, search"
                   hx-target="#type_list">
                   <span class="input-group-btn">
-                      <button type="button" class="btn btn-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      Go!
+                      <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      New!
                       </button>
                       <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
                           <a class="dropdown-item" hx-get="{% url 'add_type' %}" hx-target="#dialog">Add Type</a>
-                          <a class="dropdown-item" hx-get="{% url 'add_category' %}" hx-target="#dialog">Add Category</a>
-                          <a class="dropdown-item" href="#">Something else here</a>
+                        
                           <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Separated link</a>
+                            <a class="dropdown-item" hx-get="{% url 'add_category' %}" hx-target="#dialog">Add Category</a>
+                          
+                           
                          </div>
                       </div>
                   </span>
@@ -48,7 +49,7 @@
               <div class="col-md-12 col-sm-12  ">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2>Plain Page</h2>
+                    <h2>Portfolio Type and Category</h2>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                       </li>
