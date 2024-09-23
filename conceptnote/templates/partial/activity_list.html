@@ -81,18 +81,20 @@
                     
                       <td>
                       
-                                                 <div class="btn-group">
-                    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      Action
-                    </button>
-                    <div class="dropdown-menu">
-                      <a class="dropdown-item" href="{% url 'activity_detail' activity.id %}">View</a>
+                                               
+                     
+                    <div class="btn-group">
+  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Action
+  </button>
+  <div class="dropdown-menu dropdown-menu-right">
+    <a class="dropdown-item" href="{% url 'activity_detail' activity.id %}">View</a>
                      
                       <div class="dropdown-divider"></div>
                       <a class="dropdown-item {% if request.user != activity.user or activity.activityimpact_set.all.count > 0 %}disabled{% endif %}" hx-get="{% url 'activity_delete' activity.id %}"  hx-target="#icn_list" hx-confirm="Are you sure you wish to delete ?">Delete</a>
-                    </div>
-                  </div>
-                     
+  </div>
+</div>
+                    
                     
                     
                           <!-- end project list -->
