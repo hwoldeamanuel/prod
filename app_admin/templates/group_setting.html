@@ -22,15 +22,16 @@
                   hx-trigger="keyup changed, search"
                   hx-target="#groups_list">
                   <span class="input-group-btn">
-                      <button type="button" class="btn btn-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       New
                       </button>
                       <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
-                          <a class="dropdown-item" hx-get="{% url 'add_group' %}" hx-target="#dialog">Add New</a>
-                          <a class="dropdown-item" href="#">Another action</a>
-                          <a class="dropdown-item" href="#">Something else here</a>
-                          <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Separated link</a>
+                          <a class="dropdown-item" hx-get="{% url 'add_group' %}" hx-target="#dialog">Add User Group</a>
+                         <div class="dropdown-divider"></div>
+                            
+                        
+                          <a class="dropdown-item" href="{% url 'icns' %}">Intervention Concept N.</a>
+                          <a class="dropdown-item" href="{% url 'activities' %}">Activity Concept N.</a>
                          </div>
                       </div>
                   </span>

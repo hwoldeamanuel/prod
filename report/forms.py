@@ -46,7 +46,7 @@ class IcnReportForm(forms.ModelForm):
             self.fields['finance_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user).first()
             self.fields['actual_report_date'].initial= timezone.now()
         myfield = [
-            
+            'icn',
             'description',
             'actual_start_date', 
             'actual_end_date',
@@ -123,7 +123,7 @@ class IcnReportForm(forms.ModelForm):
         self.fields['description'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-contro-sm', 'rows':'3', 'required':'required'  }    )
        
         self.fields['iworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
-        self.fields['iworeda'].queryset = ImplementationArea.objects.all()
+        self.fields['iworeda'].queryset = ImplementationArea.objects.filter(program__in=program)
          
     class Meta:
         model = IcnReport
@@ -163,7 +163,8 @@ class IcnReportForm(forms.ModelForm):
          program_lead = self.cleaned_data.get('program_lead')
          finance_lead = self.cleaned_data.get('finance_lead')
          technical_lead = self.cleaned_data.get('technical_lead')
-         
+         mc_currency = self.cleaned_data.get('mc_currency')
+         cs_currency = self.cleaned_data.get('cs_currency')
          actual_start_date = self.cleaned_data.get('actual_start_date')
          actual_end_date = self.cleaned_data.get('actual_end_date')
          actual_reporting_date = self.cleaned_data.get('actual_reporting_date')
@@ -180,6 +181,8 @@ class IcnReportForm(forms.ModelForm):
                self._errors['actual_end_date'] = self.error_class(['End date should always be after start date'])
          elif (actual_reporting_date != None and actual_end_date != None and actual_reporting_date < actual_end_date):
              self._errors['actual_reporting_date'] = self.error_class(['Reporting Date should always be after end date'])
+         elif (mc_currency != None and cs_currency != None and mc_currency != cs_currency):
+             self._errors['mc_currency'] = self.error_class(['different currency for mc & cs'])
          return cleaned_data
 
 
@@ -510,7 +513,7 @@ class ActivityReportForm(forms.ModelForm):
        
        
         self.fields['aworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
-        self.fields['aworeda'].queryset = ImplementationArea.objects.all()
+        self.fields['aworeda'].queryset = ImplementationArea.objects.filter(program__in=program)
          
     class Meta:
         model = ActivityReport

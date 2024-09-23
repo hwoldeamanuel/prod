@@ -36,9 +36,8 @@
                        
                           <p>ID:<strong> {{ icn.icn_number }}</strong> </p>
                           
-                          
-                        </div>
-                       <p></br></p>
+                             </br>                        </div>
+                    
  
                           
 
@@ -49,6 +48,7 @@
                       {% for colead in icn.ilead_co_agency.all %}
                       <strong>{{colead}},</strong>
                       {% endfor %}</p>
+                      </br>
                              <p class="">Proposed Start Date<strong>
                       {{icn.proposed_start_date}}</strong></p>
                       <p class="">Proposed End Date<strong>
@@ -61,16 +61,18 @@
                       {% for woreda in icn.iworeda.all %}
                       <strong>{{woreda}},</strong>
                       {% endfor %}</p>
-                              <p>Environmnetal Impact: {% if icn.eniromental_impact == '3' %}<strong>High</strong>{% elif icn.eniromental_impact == '2' %}<strong>Medium</strong>{% elif icn.eniromental_impact == '1' %}<strong>Low</strong>{% endif %}</p>
-                              <p>Environmnetal Impact Doc <i class="fa fa-paperclip"></i>:<strong>{% if icn.environmental_assessment_att %}<a href="{% url 'download_env_att' icn.id %}"> download </a> {% else %}NA{% endif%} </strong></p>
+                              <p>Environmnetal Impact: {% if icn.eniromental_impact == '3' %}<strong>High</strong>{% elif icn.eniromental_impact == '2' %}<strong>Medium</strong>{% elif icn.eniromental_impact == '1' %}<strong>Low</strong>{% endif %}
+                            &nbsp;  Report Attachment <i class="fa fa-paperclip"></i>:<strong>{% if icn.environmental_assessment_att %}<a href="{% url 'download_env_att' icn.id %}"> download </a> {% else %}NA{% endif%} </strong></p>
+                        
 
+  
                               <p>Mercy Corps budget:<strong> {{ icn.mc_budget|floatformat:"2g" }}</strong>{{icn.get_mc_currency_display }}</p>
                               <p>Cost-share budget:<strong> {{ icn.cost_sharing_budget|floatformat:"2g"}}</strong>{{icn.get_cs_currency_display }}</p>
                               <p>Total budget:<strong> {{ icn.mc_budget|add:icn.cost_sharing_budget|floatformat:"2g"}}</strong>{{icn.get_mc_currency_display }}</p>
  </div>
                          
                          
-                   <ul class="list-unstyled project_detail">
+                 <div class="col-md-4 col-sm-4 project_detail">
                             <p>Initited By:<strong> {{ icn.user.profile.full_name }}</strong>
                             </p>
                              <p>Technical Lead:<strong> {{ icn.technical_lead.user.profile.full_name }}</strong>
@@ -86,7 +88,7 @@
                             <p >Approval Status: <strong>{{ icn.approval_status }}</strong>
                             </p>
                          {% endif %}
-                         </ul>
+                         </div>
                                                 <div class="col-md-12 col-sm-12 project_detail">
    
                             <p><strong>Description: </strong> {{ icn.description }}</p>

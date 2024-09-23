@@ -103,9 +103,9 @@ class IcnForm(forms.ModelForm):
         self.fields['ilead_co_agency'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
         self.fields['ilead_co_agency'].queryset = Portfolio.objects.all()
         self.fields['iworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
-        self.fields['iworeda'].queryset = ImplementationArea.objects.all()
+        self.fields['iworeda'].queryset = ImplementationArea.objects.filter(program__in=program)
         self.fields['iworeda'].required = True 
-      
+        
     class Meta:
         model = Icn
         fields=['title',
@@ -501,11 +501,11 @@ class ActivityForm(forms.ModelForm):
                 }
             )
         self.fields['description'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-contro-sm', 'rows':'3', 'required':'required'  }    )
-       
+        
         self.fields['alead_co_agency'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
         self.fields['alead_co_agency'].queryset = Portfolio.objects.all()
         self.fields['aworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
-        self.fields['aworeda'].queryset = ImplementationArea.objects.all()
+        self.fields['aworeda'].queryset = ImplementationArea.objects.filter(program__in=program)
         self.fields['aworeda'].required = True 
         self.fields['mc_budget'].required = True 
         self.fields['cost_sharing_budget'].required = True 
