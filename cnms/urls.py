@@ -29,6 +29,7 @@ urlpatterns = [
     path('conceptnote/', include('conceptnote.urls')),
     path('report/', include('report.urls')),
     path("select2/", include("django_select2.urls")),
+    path("api/", include("api.urls")),
     
 
 ]
