@@ -83,28 +83,30 @@ class WoredaForm(forms.ModelForm):
     
 class WoredaFormE(forms.ModelForm): 
       
-      class Meta:
+    class Meta:
         model = Woreda
         fields=['name']
 
 class ZoneFormE(forms.ModelForm): 
-      
-      class Meta:
-        model = Zone
-        fields=['name','region']
+    
+    class Meta:
+          model = Zone
+          fields=['name','region']
         
 class RegionForm(forms.ModelForm): 
-      class Meta:
-        model = Region
-        fields="__all__"
+      
+    class Meta:
+          model = Region
+          fields="__all__"
 
 class RegionFormE(forms.ModelForm): 
-      class Meta:
+    
+    class Meta:
         model = Region
         fields=['name','country']
 
 class ZoneForm(forms.ModelForm):
-      class Meta:
+    class Meta:
         model = Zone
         fields="__all__"         
       
