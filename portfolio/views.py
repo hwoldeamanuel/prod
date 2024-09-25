@@ -170,7 +170,7 @@ def portfolio_detail(request, pk):
 def pregion(request, id):
     portfolio = get_object_or_404(Portfolio, pk=id)
     if request.method == "POST":
-        form = FieldOfficeForm(request.POST or none)
+        form = FieldOfficeForm(request.POST or None)
         if form.is_valid():
             instance = form.save(commit=False)
             instance.portfolio = Portfolio.objects.get(pk=id)
@@ -214,6 +214,7 @@ def portfolio_profile(request, pk):
     return render(request, 'partial/portfolio_profile.html', context)
 
 @login_required(login_url='login')
+@permission_required("portfolio.can_change_fieldoffice", raise_exception=True)
 def fieldoffice_edit(request, pk):
     fieldoffice = get_object_or_404(FieldOffice, pk=pk)
     if request.method == "POST":
@@ -235,6 +236,8 @@ def fieldoffice_edit(request, pk):
     
     return render(request, 'partial/portfolio_area_form.html', context)
 
+@login_required(login_url='login')
+@permission_required("portfolio.can_delete_fieldoffice", raise_exception=True)
 def remove_fieldoffice(request, pk):
     fieldoffice = get_object_or_404(FieldOffice, pk=pk)
     fieldoffice.delete()
@@ -248,6 +251,7 @@ def remove_fieldoffice(request, pk):
         })
 
 
+@login_required(login_url='login')
 def portfolio_conceptnotes(request, id):
     
     portfolio = Portfolio.objects.filter(id=id)

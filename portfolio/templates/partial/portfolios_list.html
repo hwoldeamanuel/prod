@@ -1,9 +1,9 @@
 <table class="table table-striped projects">
                 <thead>
-                  <tr>
+                  <tr class="text-center">
                     <th style="width: 1%">#</th>
                     
-                    <th style="width: 20%">Title</th>
+                    <th style="width: 20%" class="text-left">Portfolio</th>
                     <th style="width: 15%">Type</th>
                     <th style="width: 15%">Category</th>
                     <th style="width: 12%">Start Date</th>
@@ -28,10 +28,10 @@
                     
                       
                   
-                    <td>
+                    <td class="text-right">
                       
 
-                      <a href="{% url 'portfolio_detail' portfolio.pk %}" class="btn btn-sm btn-info btn-xs"><i class="fa fa-eye"></i> View</a>
+                      <a href="{% url 'portfolio_detail' portfolio.pk %}" class="btn btn-sm btn-primary"><i class="fa fa-eye"></i> View</a>
 
                     </td>
                   </tr>

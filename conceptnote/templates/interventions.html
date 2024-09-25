@@ -22,7 +22,7 @@
                   hx-target="#icn_list">
                   <span class="input-group-btn">
                    
-                    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="false" aria-expanded="false">
                     New
                     </button>
                     <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
@@ -138,10 +138,10 @@
                     <span class="badge {% if icn.icnreport and icn.icnreport.status == True %}badge bg-green {% else %} badge bg-warning {% endif %}">{{ icn.icnreport.get_status_display}}</span>
                      {% endif %}
                     </td>
-                    <td>
+                    <td >
                       
                     <div class="btn-group">
-  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     Action
   </button>
   <div class="dropdown-menu dropdown-menu-right">

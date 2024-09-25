@@ -1,8 +1,8 @@
 from rest_framework import generics
 
 from app_admin.models import Country, Region, Zone, Woreda
-from .serializers import  CountrySerializer, RegionSerializer, ZoneSerializer, WoredaSerializer
-
+from .serializers import *
+from conceptnote.models import *
 
 class RegionList(generics.ListCreateAPIView):
     serializer_class = RegionSerializer
@@ -56,6 +56,27 @@ class WoredaList(generics.ListCreateAPIView):
         return queryset
 
 
+
 class WoredaDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Woreda.objects.all()
     serializer_class = WoredaSerializer
+
+class IcnList(generics.ListCreateAPIView):
+    serializer_class = IcnSerializer
+
+    def get_queryset(self):
+        queryset = Icn.objects.all()
+        program = self.request.query_params.get('program')
+        if program is not None:
+            queryset = queryset.filter(program=program)
+        return queryset
+    
+class ActivityList(generics.ListCreateAPIView):
+    serializer_class = ActivitySerializer
+
+    def get_queryset(self):
+        queryset = Activity.objects.all()
+        icn = self.request.query_params.get('icn')
+        if icn is not None:
+            queryset = queryset.filter(icn=icn)
+        return queryset

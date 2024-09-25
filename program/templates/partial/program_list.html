@@ -1,15 +1,15 @@
 {% load static %}
-<table class="table table-striped projects">
+ <table class="table table-striped projects">
                 <thead>
-                  <tr>
+                  <tr class="text-center">
                     <th style="width: 1%">#</th>
                     <th style="width: 15%">Program</th>
                     <th style="width: 25%">Title</th>
-                    <th style="width: 18%">Team Members</th>
+                    <th style="width: 24%" >Team Members</th>
                     
-                    <th style="width: 12%">Dates</th>
-                    <th style="width: 15%">Progress</th>
-                    <th>Action</th>
+                    <th style="width: 24%">Duration</th>
+                   
+                    <th style="width: 12%"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -33,19 +33,19 @@
                     </ul>
                     </td>
                     <td>
-                   <small>{{ program.start_date }} </small>
-                        <br />
-                        <small>{{ program.end_date }}</small>
-                    </td>
-                    <td class="project_progress">
+                        {{ program.start_date }} 
+                       -
+                        {{ program.end_date }}
+                     </br> <small>{{ program.get_date_diff }}</small>
                       <div class="progress progress_sm">
                         <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="{{ program.get_date_diff }}"></div>
+                    
                       </div>
-                      <small>{{ program.get_date_diff }}</small>
+                      
                     </td>
                     
                     <td>
-                      <a href="{% url 'program_detail' program.id %}" class="btn btn-sm btn-info"><i class="fa fa-eye"></i> View </a>
+                      <a href="{% url 'program_detail' program.id %}" class="btn btn-sm btn-primary"><i class="fa fa-eye"></i> View </a>
                       
                      
                     </td>

@@ -18,6 +18,7 @@ urlpatterns = [
     path('admin_filter/', views.admin_filter, name='admin_filter'),
     path('edit_woreda/<int:id>/', views.edit_woreda, name='edit_woreda'),
     path('edit_zone/<int:id>/', views.edit_zone, name='edit_zone'),
+    path('edit_region/<int:id>/', views.edit_region, name='edit_region'),
     path('add_woreda/', views.add_woreda, name='add_woreda'),
     path('add_region/', views.add_region, name='add_region'),
     path('add_zone/', views.add_zone, name='add_zone'),

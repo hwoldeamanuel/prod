@@ -98,6 +98,11 @@ class RegionForm(forms.ModelForm):
         model = Region
         fields="__all__"
 
+class RegionFormE(forms.ModelForm): 
+      class Meta:
+        model = Region
+        fields=['name','country']
+
 class ZoneForm(forms.ModelForm):
       class Meta:
         model = Zone

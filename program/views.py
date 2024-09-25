@@ -5,13 +5,13 @@ import json
 from django.db.models import Count
 from django.shortcuts import render, redirect
 from django.http import QueryDict
-# Create your views here.
+
 from django.contrib.auth.decorators import login_required
 from portfolio.models import Portfolio
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from .forms import ProgramForm, AddProgramAreaForm, IndicatorForm, UserRoleForm, UserRoleFormE, UserForm
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+
 from .models import Program, ImplementationArea, Indicator, UserRoles
 from django.contrib.auth.models import User
 from conceptnote.models import Icn, Activity
@@ -22,9 +22,9 @@ from itertools import chain
 from report.models import IcnReport, ActivityReport
 from django.contrib.auth.decorators import permission_required
 
-@login_required(login_url='login')
 
-def program(request):
+@login_required(login_url='login')
+def program_list(request):
     user = request.user
     if user.is_superuser:
         programs = Program.objects.all().order_by('-id')
@@ -39,16 +39,10 @@ def program(request):
     context = {'programs': programs}
     return render(request, 'programs.html', context)
 
-@login_required(login_url='login')
-
-def program_profile(request, id):
-    program = Program.objects.get(pk=id)
-    context = {'program': program}
-    return render(request, 'partial/program_profile.html', context)
 
 @login_required(login_url='login')
 @permission_required("program.can_add_program", raise_exception=True)
-def create_view(request): 
+def program_add(request): 
     # dictionary for initial data with  
     # field names as keys 
     form = ProgramForm()
@@ -98,9 +92,17 @@ def program_detail(request, pk):
     context = {'program':program, 'all_request':all_request, 'total_report':total_report,  'total_icn':total_icn, 'total_acn':total_acn, 'conceptnotes': conceptnotes  }
     return render(request, 'program.html', context)
 
+
+@login_required(login_url='login')
+def program_profile(request, id):
+    program = Program.objects.get(pk=id)
+    context = {'program': program}
+    return render(request, 'partial/program_profile.html', context)
+
+
 @login_required(login_url='login')
 @permission_required("program.can_change_program", raise_exception=True)
-def edit_view(request, id): 
+def program_edit(request, id): 
     # dictionary for initial data with  
     # field names as keys 
     program = Program.objects.get(pk=id)
@@ -122,7 +124,7 @@ def edit_view(request, id):
 
 @login_required(login_url='login')
 @permission_required("program.can_change_program", raise_exception=True)
-def edit_program_profile(request, id):
+def program_profile_edit(request, id):
     program = Program.objects.get(pk=id)
     if request.method == "POST":
         form = ProgramForm(request.POST, request.FILES, instance=program)
@@ -149,8 +151,8 @@ def edit_program_profile(request, id):
             'program': program,
         })
 
-         
-def search_results_view(request):
+@login_required(login_url='login')       
+def program_list_filter(request):
     query = request.GET.get('search', '')
    
 
@@ -170,31 +172,11 @@ def search_results_view(request):
 
    
  
-
-def area_update(request, pk):
-    area = get_object_or_404(ImplementationArea, pk=pk)
-    program = area.program_id
-    regions = Region.objects.all()
-    context = {'area': area, 'regions':regions }
-    if request.method == "PUT":
-        data = QueryDict(request.body).dict()
-        form = AddProgramAreaForm(data, instance=area)
-        if form.is_valid():
-            form.save()      
-            areas =ImplementationArea.objects.filter(program_id=program).order_by('region_id','zone_id','woreda_id')
-            context = {'areas': areas, 'regions':regions }
-            return render(request, 'area_list.html', context)
-
-        context['form'] = form
-        return render(request, 'area_form_edit.html', context)
-
-
 @login_required(login_url='login')
 @permission_required("program.can_add_implementationarea", raise_exception=True)
 def region(request, id):
-    program = get_object_or_404(Program, pk=id)
     if request.method == "POST":
-        form = AddProgramAreaForm(request.POST or none)
+        form = AddProgramAreaForm(request.POST or None)
         if form.is_valid():
             instance = form.save(commit=False)
             instance.program = Program.objects.get(pk=id)
@@ -288,13 +270,7 @@ def edit_user_role(request, uid):
 
 
 
-def delete_program(request, pk):
-    program = get_object_or_404(Program, pk=pk)
-   
-    program.delete()
-    programs =programs.objects.all()
-    return render(request, 'programs.html', {'programs': programs})
-    
+@login_required(login_url='login')
 def indicator_list(request, id):
     return render(request, 'partial/indicator_list.html', {
         'indicators': Indicator.objects.filter(program_id=id),
@@ -363,6 +339,8 @@ def remove_indicator(request, pk):
             })
         })
 
+
+@login_required(login_url='login')
 def user_list(request, id):
     program = get_object_or_404(Program, pk=id)
     program_users = UserRoles.objects.filter(program=program)
@@ -396,6 +374,7 @@ def add_user(request, id):
         
     })
 
+@login_required(login_url='login')
 def area_list(request, id):
     return render(request, 'partial/area_list.html', {
         'areas': ImplementationArea.objects.filter(program_id=id),
@@ -449,13 +428,8 @@ def remove_user_role(request, pk):
 
 
 
-def delete_program(request, pk):
-    program = Program.objects.get(pk=pk)
-    program.delete()
-    programs = Program.objects.all().order_by('-id')
-    
-    return redirect('programs_list')
-
+@login_required(login_url='login')
+@permission_required("program.can_delete_implementationarea", raise_exception=True)
 def delete_area(request, pk):
     area = get_object_or_404(ImplementationArea, pk=pk)
     area.delete()
@@ -468,6 +442,9 @@ def delete_area(request, pk):
             })
         })
 
+
+@login_required(login_url='login')
+@permission_required("portfolio.can_add_portfoilio", raise_exception=True)
 def newportfolio(request):
     portfolio = Portfolio.objects.all()
     form = ProgramForm(portfolio=portfolio)

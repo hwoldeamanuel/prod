@@ -1,5 +1,5 @@
 
-          <style>
+        <style>
     th {
       text-align: center;
 
@@ -11,11 +11,13 @@
                     <th>#</th>
                     <th>Region ID</th>
                     <th>Region Name</th>
+                                          <th style="width: 10%">Edit</th>
                     <th>Zone ID</th>
                     <th>Zone Name</th>
+                     <th style="width: 10%">Edit</th>
                     <th>Woreda ID</th>
                     <th>Woreda Name</th>
-                    <th style="width: 20%">Action</th>
+                    <th style="width: 10%">Edit</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -23,20 +25,25 @@
                 <tr> <td> {{ forloop.counter}}</td>
                     <td>{{woredas.zone.region.id }}</td>
                     <td>{{woredas.zone.region.name }}</td>
+                    <td><button class="btn btn-sm btn-info" hx-get="{% url 'edit_region' woredas.zone.region.id %}" hx-target="#dialog"><i class="fa fa-edit"></i> </button></td>
                     <td>{{woredas.zone.id }}</td>
                     <td>{{woredas.zone.name }}</td>
+                    <td><button class="btn btn-sm btn-info" hx-get="{% url 'edit_zone' woredas.zone.id %}" hx-target="#dialog"><i class="fa fa-edit"></i> </button></td>
                     <td> {{ woredas.id}} </td>
                     <td> {{ woredas.name}}   </td>
                     
                    <td class="text-center">
-                   <a hx-get="{% url 'edit_woreda' woredas.id %}" hx-target="#dialog"><i class="fa fa-edit"></i> Woreda <span class="text-muted"></span></a>
-                      &nbsp; &nbsp;<a hx-get="{% url 'edit_zone' woredas.zone.id %}" hx-target="#dialog"><i class="fa fa-edit"></i> Zone <span class="text-muted"></span></a>
+                    <button class="btn btn-sm btn-info" hx-get="{% url 'edit_woreda' woredas.id %}" hx-target="#dialog"><i class="fa fa-edit"></i></button>
+                   
+                  
+                    
                   </td>
                     
                 </tr>
                 {% endfor %}
                 </tbody>
                 </table>
+           
 {% if woreda.has_other_pages %}
   <ul class="pagination">
     {% if woreda.has_previous %}
@@ -46,7 +53,7 @@
     {% endif %}
     {% for i in woreda.paginator.page_range %}
       {% if woreda.number == i %}
-        <li class="active"><span>{{ i }} | <span class="sr-only">(current)</span></span></li>
+        <li class="paginate_button active active"><span>{{ i }} | <span class="sr-only">(current)</span></span></li>
       {% else %}
         <li><a href="?page={{ i }}">{{ i }} | </a></li>
       {% endif %}
@@ -54,8 +61,7 @@
     {% if woreda.has_next %}
       <li><a href="?page={{ woreda.next_page_number }}"> &raquo;</a></li>
     {% else %}
-      <li class="disabled"><span>&raquo;</span></li>
+      <li class="paginate_button previous disabled"><span>&raquo;</span></li>
     {% endif %}
   </ul>
 {% endif %}
-

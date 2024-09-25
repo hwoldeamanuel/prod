@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CountryList, CountryDetail, RegionDetail, RegionList, ZoneList, ZoneDetail, WoredaList, WoredaDetail
+from .views import *
 
 urlpatterns = [
     path('region/', RegionList.as_view()),
@@ -10,4 +10,8 @@ urlpatterns = [
     path('zone/<int:pk>/', ZoneDetail.as_view()),
     path('woreda/', WoredaList.as_view()),
     path('woreda/<int:pk>/', WoredaDetail.as_view()),
+    path('icn/', IcnList.as_view()),
+    path('activity/', ActivityList.as_view()),
+
+
 ]

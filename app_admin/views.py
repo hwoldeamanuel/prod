@@ -14,7 +14,7 @@ from .forms import UserForm, WoredaForm,ZoneForm, TypeForm, CategoryForm, Woreda
 from django.shortcuts import render
 from django.contrib.auth.views import LoginView
 from django.views.generic import FormView
-from .forms import CustomUserChangeForm, CustomUserCreationForm, UserRoleFormE, UserProgramRoleForm, ZoneFormE
+from .forms import CustomUserChangeForm, CustomUserCreationForm, RegionFormE,UserRoleFormE, UserProgramRoleForm, ZoneFormE
 from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.views import PasswordResetView
@@ -397,6 +397,33 @@ def edit_zone(request, id):
         'zone': zone,
     })
 
+def edit_region(request, id):
+    region = get_object_or_404(Region, id=id) 
+    if request.method == "POST":
+        form = RegionFormE(request.POST, instance=region)
+        if form.is_valid():
+            form.save()
+            return HttpResponse(
+                status=204,
+                headers={
+                    'HX-Trigger': json.dumps({
+                        "AdminListChanged": None,
+                        "showMessage": f"{region.name} updated."
+                    })
+                }
+            )
+    else:
+        form = RegionFormE(instance=region)
+        return render(request, 'partial/region_form.html', {
+        'form': form,
+        'region': region,
+    })
+    
+    form = RegionFormE(instance=region)
+    return render(request, 'partial/region_form.html', {
+        'form': form,
+        'region': region,
+    })
 
   
 def add_woreda(request):

@@ -56,20 +56,7 @@ class UserRoles(models.Model):
     def __str__(self):
         return str(self.user)
     
-"""
-class ImplementationArea(models.Model):
-    program =  models.ForeignKey(
-        Program, on_delete=models.CASCADE, null=True, blank=True)
-    region = models.ForeignKey(
-        Region, on_delete=models.CASCADE, null=True, blank=True)
-    zone = models.ForeignKey(
-        Zone, on_delete=models.CASCADE, null=True, blank=True)
-    woreda = models.ForeignKey(
-        Woreda, on_delete=models.CASCADE, null=True, blank=True)
-
-    def __str__(self):
-        return str(self.id)
-"""   
+ 
 class Indicator(models.Model):
     Output = 1
     Outcome = 2
