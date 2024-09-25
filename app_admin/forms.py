@@ -91,7 +91,7 @@ class ZoneFormE(forms.ModelForm):
       
       class Meta:
         model = Zone
-        fields=['name']
+        fields=['name','region']
         
 class RegionForm(forms.ModelForm): 
       class Meta:
