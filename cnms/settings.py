@@ -118,22 +118,22 @@ WSGI_APPLICATION = 'cnms.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-import dj_database_url
+
+
+conn_str = env('AZURE_POSTGRESQL_CONNECTIONSTRING')
+conn_str_params = {pair.split('=')[0]: pair.split('=')[1] for pair in conn_str.split(' ')}
 
 DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'paqcnms',
-            'USER': 'paq_admin',
-            'PASSWORD': 'Letmin@2024',
-            'HOST': 'paq-server.postgres.database.azure.com',
-            'PORT': '5432',
-            'sslmode':'require',
-            
-        }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': conn_str_params['dbname'],
+        'HOST': conn_str_params['host'],
+        'USER': conn_str_params['user'],
+        'PASSWORD': conn_str_params['password'],
+        'PORT': '5432',
+        'sslmode':'require',
     }
-
-
+}
 #database_url = os.environ.get("DATABASE_URL")
 #DATABASES = {
  #   "default" : dj_database_url.parse(database_url)
