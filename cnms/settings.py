@@ -124,14 +124,14 @@ DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': 'paqcnms',
-            'USER': 'postgres',
-            'PASSWORD': 'Letmein@2023_1',
-            'HOST': 'localhost',
+            'USER': 'paq_admin',
+            'PASSWORD': 'Letmin@2024',
+            'HOST': 'paq-server.postgres.database.azure.com',
             'PORT': '5432',
+            'sslmode':'require',
             
         }
     }
-
 
 
 #database_url = os.environ.get("DATABASE_URL")
