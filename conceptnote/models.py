@@ -40,8 +40,8 @@ class Icn(models.Model):
     USD = 1
     ETB = 2
     CURRENCY_CHOICES =   (
-        (USD, 'USD'),
-        (ETB, 'ETB'),
+        (USD, '$'),
+        (ETB, 'Br'),
      
         )
 
@@ -374,8 +374,8 @@ class Activity(models.Model):
     USD = 1
     ETB = 2
     CURRENCY_CHOICES =   (
-        (USD, 'USD'),
-        (ETB, 'ETB'),
+        (USD, '$'),
+        (ETB, 'Br'),
      
         )
 

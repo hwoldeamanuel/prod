@@ -78,36 +78,42 @@
                     <div class="col-md-9 col-sm-9" >
 
                       <div class="profile_title" >
-                        <div class="col-md-7">
+                        <div class="col-md-6">
                           <h2>User Activity Report</h2>
                         </div>
                         
+                         <div class="col-md-6">
+                            <div class="control-group pull-right">
                          
-                      <div class="control-group pull-right">
-                          <div class="controls">
-                            <form hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'>
+                                <form hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'>
                                {% csrf_token %}
-
+                               <fieldset>
+                            <div class="control-group ">
+                              <div class="controls">
                                 <div class="input-prepend input-group">
-                                              <span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
-                                                    
-                    
-                                              <input type="text" style="width: 200px background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc" name="reservation" id="reportrange" class="form-control-sm pull-right" value="{{last_month_filter|date:'m/d/Y' }} - {% now "m/d/Y" %}"  
-                                        hx-trigger="change" hx-get="/user_activity"
+                                  <span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+                                  <input type="text" style="width: 200px" name="reservation" id="reportrange" class="form-control" 
+                                  class="form-control" 
+                                    hx-trigger="change"   hx-get="{% url 'user_activity' %}"
                                         onchange="htmx.trigger(this, 'change')"
-                                      hx-target="#pmyChart"><b class="caret"></b>
+                                      hx-target="#pmyChart">
                                 </div>
-                             
+                              </div>
+                            </div>
+                          </fieldset>
                         
                         
                      
-                              </div>
-                            </form>
-                          </div>
+                           
+                              </form>
+                           </div>
                           
-                      </div>
+                          </div>
+                        </div>
+                      
+                      
                     
-                     <div id="pmyChart" style="width: 100%" hx-trigger="UserprofileChanged from:body" hx-get="{% url 'user_activity' %}" hx-target="this">
+                     <div id="pmyChart" style="width: 100%" >
                      <canvas id="myChart" width="400" height="160"></canvas>
 
 
@@ -167,7 +173,7 @@
 {% endblock %}
 {% block content_page_js %}
 <script>
-var MONTHS = [{% for activity in all_request reversed %} "{{ activity.datetime__date|date:'M-d'}}", {% endfor %}];
+var MONTHS = [{% for activity in all_request %} "{{ activity.datetime__date|date:'M-d'}}", {% endfor %}];
 var randomScalingFactor = function() {
       return Math.round(Math.random() * 100 * (Math.random() > 0.5 ? -1 : 1));
     };
@@ -184,15 +190,9 @@ var myChart = new Chart(ctx, {
     
     
      data: {
-        labels: [{% for activity in all_request reversed %} "{{ activity.datetime__date|date:'M-d'}}", {% endfor %}],
-        datasets: [{
-          label: "CRUD Event",
-          data: [{% for activity in all_request %} {{ activity.id_count }}, {% endfor %}],
-          backgroundColor:'rgba(38, 185, 154, .6)',
-          borderColor:'rgba(38, 185, 154, 1)',
-          borderWidth: 1
-        }, {
-          label: "LogIn Event",
+        labels: [{% for activity in all_request  %} "{{ activity.datetime__date|date:'M-d'}}", {% endfor %}],
+        datasets: [ {
+          label: "User Activity",
           data: [{% for activity in all_request %} {{ activity.count_login }}, {% endfor %}],
           backgroundColor: 'rgba(155, 185, 230, .8)',
           borderColor:'rgba(38, 185, 154, 1)',

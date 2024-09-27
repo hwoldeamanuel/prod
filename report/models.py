@@ -37,8 +37,8 @@ class IcnReport(models.Model):
     USD = 1
     ETB = 2
     CURRENCY_CHOICES =   (
-        (USD, 'USD'),
-        (ETB, 'ETB'),
+        (USD, '$'),
+        (ETB, 'Br'),
      
         )
 
@@ -248,8 +248,8 @@ class ActivityReport(models.Model):
     USD = 1
     ETB = 2
     CURRENCY_CHOICES =   (
-        (USD, 'USD'),
-        (ETB, 'ETB'),
+        (USD, '$'),
+        (ETB, 'Br'),
      
         )
 

@@ -19,10 +19,15 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path,include
 
+handler404 = 'home.views.error_404' 
+# Custom 500 error view
+handler500 = 'home.views.error_500' 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('user.urls')),
+    path('', include('home.urls')),
     path('home/', include('home.urls')),
+    path('user/', include('user.urls')),
     path('program/', include('program.urls')),
     path('setting/', include('app_admin.urls')),
     path('portfolio/', include('portfolio.urls')),

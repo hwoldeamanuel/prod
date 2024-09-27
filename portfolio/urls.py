@@ -7,12 +7,12 @@ from . import views
 urlpatterns = [
    
    
-    path('', views.portfolios, name='portfolio'),
-    path('portfolio/', views.portfolios, name='portfolios'),
-
-    path('portfolios/', views.portfolios, name='portfolios'),
-    path('portfolio/<int:pk>/', views.portfolio_detail, name='portfolio_detail'),
-    path('program/edit/<int:id>/', views.edit_portfolio, name='edit_portfolio'),
+    path('', views.mercycorps, name='mercycorps'),
+    path('partner/', views.portfolios, name='partner'),
+    path('mercycorps/', views.mercycorps, name='mercycorps'),
+  
+    path('partner/<int:pk>/', views.portfolio_detail, name='portfolio_detail'),
+    path('partner/edit/<int:id>/', views.edit_portfolio, name='edit_portfolio'),
   
 
     path('pregion/<int:id>/', views.pregion, name='pregion'),

@@ -34,12 +34,33 @@ def convertmonth(created):
 
 @login_required(login_url='login')
 def portfolios(request):
-    portfolios = Portfolio.objects.all().order_by('id')
+    portfolios = Portfolio.objects.filter().exclude(id=1).order_by('id')
     context = {'portfolios': portfolios}
     return render(request, 'portfolios.html', context)
 
 
+@login_required(login_url='login')
+def mercycorps(request):
+    portfolio = Portfolio.objects.filter(id=1)
+    qs1 = Icn.objects.filter(Q(ilead_agency__in=portfolio) | Q(ilead_co_agency__in=portfolio)).annotate(m=TruncMonth('created')).values("m").annotate(icn_count=Count('id', distinct=True))
+    qs2 = Activity.objects.filter(Q(alead_agency__in=portfolio) | Q(alead_co_agency__in=portfolio)).annotate(m=TruncMonth('created')).values("m").annotate(activity_count=Count('id', distinct=True))
+ 
 
+
+
+    collector = defaultdict(dict)
+
+    for collectible in chain(qs1, qs2):
+        collector[collectible['m']].update(collectible.items())
+
+    all_request = list(collector.values())
+    portfolio = Portfolio.objects.get(id=1)
+    total_icn  =  Icn.objects.filter(Q(ilead_agency=portfolio.id) | Q(ilead_co_agency=portfolio.id)).count
+    total_acn  =  Activity.objects.filter(Q(alead_agency=portfolio.id) | Q(alead_co_agency=portfolio.id)).count
+    
+    total_program = Icn.objects.filter(Q(ilead_agency=portfolio.id) | Q(ilead_co_agency=portfolio.id)).values('program__title').distinct().count()
+    context = {'portfolio': portfolio, 'all_request':all_request,'total_icn':total_icn, 'total_acn':total_acn, 'total_program':total_program}
+    return render(request, 'partial/portfolio_mercycorps.html', context)
 
 
 
@@ -47,7 +68,7 @@ def portfolios(request):
 
 @login_required(login_url='login')
 def portfolios_list(request):
-    portfolios = Portfolio.objects.all().order_by('id')
+    portfolios = Portfolio.objects.filter().exclude(id=1).order_by('id')
     context = {'portfolios': portfolios}
     return render(request, 'partial/portfolios_list.html', context)
 
@@ -127,15 +148,15 @@ def portfolio_filter(request):
     
     
     if query:
-        qs1 = Portfolio.objects.filter(title__icontains=query)
-        qs2 = Portfolio.objects.distinct().filter(type__name__icontains=query)
-        qs3 = Portfolio.objects.distinct().filter(category__name__icontains=query)
+        qs1 = Portfolio.objects.filter(title__icontains=query).exclude(id=1)
+        qs2 = Portfolio.objects.distinct().filter(type__name__icontains=query).exclude(id=1)
+        qs3 = Portfolio.objects.distinct().filter(category__name__icontains=query).exclude(id=1)
         
         portfolios = qs1.union(qs2, qs3).order_by('id')
        
         
     else:
-        portfolios = Portfolio.objects.all()
+        portfolios = Portfolio.objects.filter().exclude(id=1)
 
     context = {'portfolios': portfolios}
     return render(request, 'partial/portfolios_list.html', context)

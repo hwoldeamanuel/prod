@@ -1,0 +1,272 @@
+
+{% extends 'base.html'%}
+{% block content %}
+{% load static %}
+  <!-- page content -->
+        <!-- page content -->
+        <div class="right_col" role="main">
+          <div class="">
+            <div class="page-title">
+              <div class="title_left">
+                <h3>Portfolio</h3>
+              </div>
+
+              
+            </div>
+            
+            <div class="clearfix"></div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>Profile</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="#">Settings 1</a>
+                            <a class="dropdown-item" href="#">Settings 2</a>
+                          </div>
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
+
+                  <div class="x_content">
+  <div class="col-md-3 col-sm-3  ">
+                   <div  hx-trigger="PortfolioListChanged from:body " hx-get="{% url 'portfolio_profile' portfolio.id %}" hx-target="this">
+                         <section class="panel">
+
+                        <div class="x_title">
+                          <h2> {{portfolio.title}}</h2>
+                          <div class="clearfix"></div>
+
+                        
+                        </div>
+                        <div class="panel-body">
+                          
+                          <!-- Current avatar -->
+                          {% if portfolio.logo %}
+                          <div id="crop-avatar">
+                          <img class="img-responsive avatar-view" src="{{portfolio.logo.url}}" alt="Avatar" title="Change the avatar" style="width: auto; height: 50px;">
+                        </div>
+                        {% else %}
+                          <h3 class="green"><i class="fa fa-university"></i> {{portfolio.title}}</h3>
+                        {% endif %}
+                         
+                        
+
+                          <div class="project_detail">
+                            <p class="title">Type</p>
+                            <p>{{portfolio.type}}</p>
+                            
+                           <p class="title">Category</p>
+                            <p>{{portfolio.category}}</p>
+                          
+                          <p class="title">Start Date</p>
+                            <p>{{portfolio.start_date}}</p>
+                          <p class="title">Address</p>
+                            <a href="{{ portfolio.address_url }}" target="_blank">{{ portfolio.address_url }}</a>
+                          </div>
+                          <br />
+                         </div>
+ <p>{{portfolio.description}}</p>
+                          <div class="text-left mtop20">
+                         
+                            <a class="btn btn-success" hx-get="{% url 'edit_portfolio' portfolio.id %}" hx-target = "#dialog"><i class="fa fa-edit m-right-xs"></i>Edit Profile</a>
+                      <br />
+                     
+                            
+                          </div>
+                        </div>
+
+                      </section>
+
+                    
+                    </div>
+                    <div class="col-md-9 col-sm-9  ">
+
+                      <ul class="stats-overview">
+                      <li>
+                          <span class="name"> Program </span>
+                          <span class="value text-success"> {{total_program}} </span>
+                        </li>
+                        <li>
+                          <span class="name"> Intervention Concept Note </span>
+                          <span class="value text-success"> {{total_icn}} </span>
+                        </li>
+                        <li>
+                          <span class="name">  Activity Concept Note </span>
+                          <span class="value text-success"> {{total_acn}} </span>
+                        </li>
+                        
+                      </ul>
+                      <br />
+
+                   
+  <div id="container" style="width: 100%;"  >
+      <canvas id="canvas" height="240" width="679" style="width: 503px; height: 251px;"></canvas>
+    </div>
+
+                      <div>
+
+                      
+                         </br>
+
+
+                        <!-- end of user messages -->
+                       <div class="" role="tabpanel" data-example-id="togglable-tabs">
+                        <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+                          <li role="presentation" class="active"><a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true" class="" aria-selected="false">Recent Concept Notes</a>
+                          </li>
+                         
+                        </ul>
+                        <div id="myTabContent" class="tab-content">
+                          <div role="tabpanel" class="tab-pane fade active show" id="tab_content1" aria-labelledby="home-tab">
+                  <div id="conceptnotes" hx-trigger="load,  from:body " hx-get="{% url 'portfolio_conceptnotes' portfolio.id %}" hx-target="this">
+                            <!-- start user projects -->
+                    </div> 
+                            <!-- start recent activity -->
+                            
+                            <!-- end recent activity -->
+
+                          </div>
+                          
+                          
+                        </div>
+                      </div>
+                        <!-- end of user messages -->
+
+
+                      </div>
+
+
+                    </div>
+
+                    <!-- start project-detail sidebar -->
+                  
+                    <!-- end project-detail sidebar -->
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div><div class="modal fade bs-example-modal-lg" id="modal" class="modal fade">
+                       <div id="dialog" class="modal-dialog modal-lg" hx-target="this"></div>
+                    </div>
+        </div>
+        </div>
+        <!-- /page content -->
+
+{% endblock%}
+{% block content_page_js %}
+   <script>
+
+
+var ctx = document.getElementById("canvas").getContext("2d");
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    
+    
+     data: {
+        labels: [{% for cn in all_request %} "{{ cn.m|date:'M-Y' }}", {% endfor %}],
+        datasets: [{
+          label: "Intervention",
+          data: [{% for cn in all_request %} {{ cn.icn_count }}, {% endfor %}],
+           backgroundColor: "rgba(79, 153, 185, 1)",
+                
+            
+            borderColor: "rgba(38, 185, 154, 1)",
+                
+            
+            borderWidth: 1
+        },
+        {
+          label: "Activity",
+          data: [{% for cn in all_request %} {{ cn.activity_count }}, {% endfor %}],
+           backgroundColor:  "rgba(73, 106, 159, 1)",
+                
+                       borderColor: "rgba(35, 57, 93, 1)",
+                
+            
+            borderWidth: 1
+        }, 
+        ]
+      },
+    options: {
+             
+         
+                    title:{
+                        display:false,
+                        text:'Chart.js Bar Chart - Skip Points'
+                    },
+                    tooltips: {
+                        mode: 'label',
+                    },
+                    hover: {
+                        mode: 'label'
+                    },
+            scales: {
+               
+            yAxes: [{
+            scaleLabel: {
+                            display: false,
+                            labelString: '# conceptnote'
+                        },
+                ticks: {
+                    beginAtZero:true
+                }
+            }],
+     
+                xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: false,
+                            labelString: 'Month'
+                        }
+                    }],
+            }
+    },
+  
+
+});
+
+  window.onload = function() {
+   var ctx = document.getElementById("canvas").getContext("2d");
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    
+    
+     data:data,
+          options: {
+              // Elements options apply to all of the options unless overridden in a dataset
+              // In this case, we are setting the border of each bar to be 2px wide and green
+              elements: {
+                  rectangle: {
+                      borderWidth: 2,
+                      borderColor: 'rgb(0, 255, 0)',
+                      borderSkipped: 'bottom'
+                  }
+              },
+              responsive: true,
+              legend: {
+                  position: 'top',
+              },
+              title: {
+                  display: false,
+                  text: 'Chart.js Bar Chart'
+              }
+          }
+      });
+     };
+</script>
+  {% endblock %}
+
+
+                  
+               

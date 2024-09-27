@@ -92,3 +92,10 @@ def program_activity(request):
     context = {'program_users':program_users }
     return render(request, 'home/program_activity.html', context)
 
+def error_404(request, exception):
+   
+    return render(request, '404.html', status=404)
+ 
+def error_500(request):
+    return render(request, '505.html', status=500)
+

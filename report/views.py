@@ -146,21 +146,42 @@ def icnreport_detail(request, id):
     
 @login_required(login_url='login') 
 def icnreport_step_impact(request, id):
-    icn = Icn.objects.get(id=id)
-    icnreport = IcnReport.objects.filter(icn_id=id)
-    impacts = Impact.objects.filter(icn_id=id)
-    context = {'icn':icn, 'icnreport':icnreport, 'impacts': impacts}
+    if Icn.objects.filter(id=id).exists():
+        icn = Icn.objects.get(id=id)
 
-    return render(request, 'report/icnreport_step_impact.html', context)
+        if icn.approval_status != '100% Approved':
+            return redirect('icn_step_approval',id=icn.id) 
+        
+        elif IcnReport.objects.filter(icn_id=id).exists():
+            icnreport = IcnReport.objects.filter(icn_id=id)
+            impacts = Impact.objects.filter(icn_id=id)
+            context = {'icn':icn, 'icnreport':icnreport, 'impacts': impacts}
+
+            return render(request, 'report/icnreport_step_impact.html', context)
+        else:
+            
+            return redirect('icnreport_add',id=icn.id)
+    else:
+        return redirect('icn_new') 
+        
     
 @login_required(login_url='login') 
 def activityreport_step_impact(request, id):
-    activity = Activity.objects.get(id=id)
-    activityreport = ActivityReport.objects.filter(activity_id=id)
-    impacts = ActivityImpact.objects.filter(activity_id=id)
-    context = {'activity':activity, 'activityreport':activityreport, 'impacts': impacts}
+    if Activity.objects.filter(id=id).exists():
+        activity = Activity.objects.get(id=id)
+    
+        if  ActivityReport.objects.filter(activity_id=id).exists():
+            activityreport = ActivityReport.objects.filter(activity_id=id)
+            if ActivityImpact.objects.filter(activity_id=id).exists():
+                impacts = ActivityImpact.objects.filter(activity_id=id)
+                context = {'activity':activity, 'activityreport':activityreport, 'impacts': impacts}
 
-    return render(request, 'report/activityreport_step_impact.html', context)
+                return render(request, 'report/activityreport_step_impact.html', context)
+        else:
+            return redirect('activityreport_add',id=activity.id)
+        
+    return redirect('activity_add')
+            
         
 
 
