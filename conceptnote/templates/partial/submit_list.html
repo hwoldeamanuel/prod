@@ -1,5 +1,5 @@
 
-<table class="data table table-striped no-margin">
+<table class="data table table-striped no-margin" >
     <thead>
       <tr>
         <th>#</th>
@@ -9,6 +9,7 @@
         <th>Concept Note Ver#</th>
         <th>Status</th>
         <th>Action</th>
+        <th style="width:14%"></th>
       
       </tr>
     </thead>
@@ -17,7 +18,7 @@
         <td>1</td>
         <td>
           <a>Initiator</a>
-          <br />
+          </br>
           <small>{{ icn.user.profile.full_name }}</small>
         </td>
         {% if not icnsubmit %}
@@ -38,6 +39,7 @@
                   </div>
            
            </td>
+           <td></td>
         {% else %}
         <td>{{icnsubmit.submission_date|date:"M d,Y"}}</br><small>{{icnsubmit.submission_date|time}}</small></td>
         <td>{{icnsubmit.document }}</td>
@@ -76,7 +78,7 @@
        
         {% endif %}
 
-
+  <td></td>
 
 
     
@@ -107,11 +109,13 @@
                       <a class="dropdown-item" hx-get={% url 'icn_approvalt' icnsubmit.id 4 %} hx-target="#SubmitList">Reject Request</a>
                     </div>
                   </div></td>
+                    <td></td>
         {% else %}
         <td></td>
         <td></td>
         <td></td>
        <td></td>
+         <td></td>
         {% endif%}
 
 
@@ -146,12 +150,12 @@
                        <a class="dropdown-item" hx-get={% url 'icn_approvalf' icnsubmit.id 4 %} hx-target="#SubmitList">Reject Request</a>
                     </div>
                   </div>
-     </td>
+     </td>  <td></td>
     {% else %}
     <td></td>
     <td></td>
      <td></td>
-   <td></td>
+   <td></td>  <td></td>
     {% endif%}
 
 
@@ -184,31 +188,25 @@
                      <a class="dropdown-item" hx-get={% url 'icn_approvalp' icnsubmit.id 4 %} hx-target="#SubmitList">Reject Request</a>
                     </div>
                   </div>
+     </td>  <td>
+      <div class="btn-group">
+														<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-sm dropdown-toggle btn-{% if 'Rejected' in icn.approval_status %}danger{% elif 'Approved' in icn.approval_status %}success{% else %}warning{% endif %}">{% if icn.approval_status %} {{ icn.approval_status}} {% else %} Pending Approval{% endif %}</span>
+														</button>
+													
+												 <div class="dropdown-menu">
+                      <a class="dropdown-item {% if icn.approval_status != '100% Approved' %}disabled{% endif %}" href="{% url 'icn_approval_invoice' icn.id %}">Approval Invoice</a>
+                    
+                    </div>
+                 
+
      </td>
     {% else %}
     <td></td>
     <td></td>
     <td></td>
- <td></td>
-    {% endif%}
-
-
-
-</tr>
-<tr>
-<td></td>
-<td>
-    
-     
-    </td>
-    <td></td>
-    <td>
-    
-    </td>
-   
-    <td>
-    <div class="btn-group">
-														<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-sm dropdown-toggle btn-{% if 'Rejected' in icn.approval_status %} bg-red {% elif 'Approved' in icn.approval_status %} bg-green {% else %} bg-warning {% endif %}">{% if icn.approval_status %} {{ icn.approval_status}} {% else %} Pending Approval{% endif %}<span class="caret"></span>
+ <td></td>  <td>
+  <div class="btn-group">
+														<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-sm dropdown-toggle btn-{% if 'Rejected' in icn.approval_status %}danger{% elif 'Approved' in icn.approval_status %}success{% else %}warning{% endif %}">{% if icn.approval_status %} {{ icn.approval_status}} {% else %} Pending Approval{% endif %}
 														</button>
 													
 												 <div class="dropdown-menu">
@@ -216,11 +214,13 @@
                     
                     </div>
                   </div>
+                 
 
-                    </td>
-                     <td>
-                    
-                     </td>
+ </td>
+    {% endif%}
+
+
+
 </tr>
     </tbody>
   </table>

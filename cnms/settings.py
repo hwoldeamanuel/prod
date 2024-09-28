@@ -34,7 +34,7 @@ environ.Env.read_env()
 
 SECRET_KEY = "django-insecure-&3ep*035k@21#4lh)ex_l&=797@9u6af_3!*%$mx_8^p8=(d*^')"
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS =  ['127.0.0.1', 'localhost']
 
@@ -131,7 +131,7 @@ DATABASES = {
         'USER': conn_str_params['user'],
         'PASSWORD': conn_str_params['password'],
         'PORT': '5432',
-        'sslmode':'require',
+        'sslmode': 'require',
     }
 }
 #database_url = os.environ.get("DATABASE_URL")
@@ -233,8 +233,8 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = "CNMS App"
-EMAIL_HOST_USER = "habtamuwh@gmail.com"
-EMAIL_HOST_PASSWORD = "rnqc nqhx ijse kebm"
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/

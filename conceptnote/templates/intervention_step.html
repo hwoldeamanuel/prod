@@ -152,26 +152,27 @@ span.nmbr {
 {% load static %}
 
  <!-- page content -->
-			<div class="right_col" role="main">
-				<div class="">
-					<div class="clearfix"></div>
-					<div class="row tabbable" >
-						  
-							
+	<div class="right_col" role="main">
+		<div class="">
+			  
+       <div class=" col-md-12 col-sm-12 ">
+			    <div class="row tabbable" >
             <ul class="nav nav-tabs wizard">
               <li  class="{% if 'profile' in request.path and 'conceptnote' in request.path %}active{% elif icn %}completed{% endif %}"><a href="/conceptnote/intervention/{{icn.id}}/profile/"><span class="nmbr">1</span>Profile <small>Intervention</small></a></li>
               <li class="{% if 'impact' in request.path and 'conceptnote' in request.path %}active{% elif icn.impact_set.count > 0 %}completed{% elif not icn %}nav-link disabled{% endif %}"><a href="/conceptnote/intervention/{{icn.id}}/impact/" ><span class="nmbr">2</span>Target</a></li>
-             <li class="{% if 'conceptnote' in request.path and 'approval' in request.path %}active{% elif not icn or icn.impact_set.count == 0 %}nav-link disabled{% elif icn.approval_status == '100% Approved' %}completed{%endif %}"><a href="/conceptnote/intervention/{{icn.id}}/approval/"><span class="nmbr">3</span>Approval</a></li>
-             <li class="{% if 'report' in request.path and 'profile' in request.path %}active{% elif icn.approval_status != '100% Approved' %}nav-link disabled{% elif icnreport or icn.icnreport %}completed{% endif %}"><a href="/report/intervention/{{icn.id}}/profile/"><span class="nmbr">4</span>Profile <small>Report</small></a></li>
+              <li class="{% if 'conceptnote' in request.path and 'approval' in request.path %}active{% elif not icn or icn.impact_set.count == 0 %}nav-link disabled{% elif icn.approval_status == '100% Approved' %}completed{%endif %}"><a href="/conceptnote/intervention/{{icn.id}}/approval/"><span class="nmbr">3</span>Approval</a></li>
+              <li class="{% if 'report' in request.path and 'profile' in request.path %}active{% elif icn.approval_status != '100% Approved' %}nav-link disabled{% elif icnreport or icn.icnreport %}completed{% endif %}"><a href="/report/intervention/{{icn.id}}/profile/"><span class="nmbr">4</span>Profile <small>Report</small></a></li>
               <li class="{% if  'report' in request.path and 'impact' in request.path  %}active{% elif icn.icnreport.icnreportimpact_set.count > 0 %}completed{% elif not icn.icnreport %}nav-link disabled{% endif %}"><a href="/report/intervention/{{icn.id}}/impact/" ><span class="nmbr">5</span>Performance</a></li>
-                <li class="{% if 'report' in request.path and 'approval' in request.path %}active{% elif not icn.icnreport  or icn.impact_set.count != icn.icnreport.icnreportimpact_set.count %}nav-link disabled{% elif icn.icnreport.approval_status == '100% Approved' %}completed{%endif %}"><a href="/report/intervention/{{icn.id}}/approval/"><span class="nmbr">6</span>Approval</small></a></li>
+              <li class="{% if 'report' in request.path and 'approval' in request.path %}active{% elif not icn.icnreport  or icn.impact_set.count != icn.icnreport.icnreportimpact_set.count %}nav-link disabled{% elif icn.icnreport.approval_status == '100% Approved' %}completed{%endif %}"><a href="/report/intervention/{{icn.id}}/approval/"><span class="nmbr">6</span>Approval</small></a></li>
 
             </ul>
+          </div>
         </div>
-					</div>
+		
 					{% block content_intervention_step %}
 					{% endblock %}
-			</div>
+    </div>
+ </div>
 			<!-- /page content -->
 
 {% endblock %}

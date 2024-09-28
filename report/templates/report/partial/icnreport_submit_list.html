@@ -9,6 +9,7 @@
         <th>ICN Report Ver#</th>
         <th>Status</th>
         <th>Action</th>
+        <th style="width:18%"></th>
       
       </tr>
     </thead>
@@ -29,6 +30,7 @@
            <td>
             <button type="button" class="{% if request.user.id != icnreport.user.id %}disabled {% endif %}btn btn-sm btn-primary" aria-hidden="true"  hx-get="{% url 'icnreport_submit_form' icn.id 2 %}" hx-target="#SubmitList" >Submit Request</button>
            </td>
+          
         {% else %}
         <td>{{icnreportsubmit.submission_date|date:"M d,Y"}}</br><small>{{icnreportsubmit.submission_date|time}}</small></td>
         <td>{{icnreportsubmit.document }}</td>
@@ -69,7 +71,7 @@
 
 
 
-
+ <td></td>
     
 </tr>
             <tr>
@@ -107,7 +109,7 @@
 
 
 
-
+ <td></td>
     
 </tr>
 
@@ -146,7 +148,7 @@
     {% endif%}
 
 
-
+ <td></td>
 </tr>
 <tr>
     <td>3</td>
@@ -183,29 +185,16 @@
  <td></td>
     {% endif%}
 
-
-
-</tr>
-<tr>
-<td></td>
 <td>
     
-     
-    </td>
-    <td></td>
-    <td>
-    
-    </td>
-   
-    <td>
-    
-														<button type="button" class="btn btn-sm btn-{% if 'Rejected' in icnreport.approval_status %} bg-red {% elif 'Approved' in icnreport.approval_status %} bg-green {% else %} bg-warning {% endif %}">{% if icnreport.approval_status %} {{ icnreport.approval_status}} {% else %} Pending Approval{% endif %}<span class="caret"></span>
+														<button type="button" class="btn btn-sm btn-{% if 'Rejected' in icnreport.approval_status %}danger{% elif 'Approved' in icnreport.approval_status %}success{% else %}warning{% endif %}">{% if icnreport.approval_status %} {{ icnreport.approval_status}} {% else %} Pending Approval{% endif %}
 														</button>
 													
 												
 
                     </td>
-                     <td></td>
+
 </tr>
+
     </tbody>
   </table>
