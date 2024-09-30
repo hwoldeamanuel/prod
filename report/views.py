@@ -340,17 +340,18 @@ def icnreport_approvalt(request, id, did):
         form = IcnReportApprovalTForm(data, instance=icnreportsubmitApproval_t, did=did)
         if form.is_valid():
             instance =form.save()
-            IcnReport.objects.filter(pk=id).update(status=True)
+           
             icnreportsubmit = get_object_or_404(IcnReportSubmit, pk=id)
             icnreport =  get_object_or_404(IcnReport, id=icnreportsubmit.icnreport_id)
-            update_approval_status(icnreportsubmit.id)
+            myid = int(icnreportsubmit.id)
+            update_approval_status(myid)
             subject = 'Report Approval Status Changed'
             context = {
                         "program": icnreport.icn.program,
                         "title": icnreport.icn.title,
                         "id": icnreport.id,
                         "cn_id": icnreport.icn.icn_number,
-                        "initiator": icnreport.technical_lead.user,
+                        "initiator": icnreportsubmitApproval_t.user.user.username,
                         "user_role": "Techncial Lead",
                        
                        
@@ -658,7 +659,7 @@ def current_submit_approval_list(request, id):
     return render(request, 'report/partial/icnreport_submit_list.html', context)
 
 
-@login_required(login_url='login') 
+
 def update_approval_status(id):
     icnreportsubmit = get_object_or_404(IcnReportSubmit, pk=id)
     icnsubmitapproval_t = get_object_or_404(IcnReportSubmitApproval_T, submit_id_id=id)
