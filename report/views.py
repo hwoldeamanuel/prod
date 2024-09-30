@@ -39,6 +39,8 @@ from app_admin.models import Approvalf_Status, Approvalt_Status, Submission_Stat
 # Create your views here.
 
 
+
+@login_required(login_url='login') 
 def icnreports(request):
     if IcnReport.objects.exists():
         reports = IcnReport.objects.all().order_by('-id')
@@ -50,6 +52,8 @@ def icnreports(request):
     
     return render(request, 'report/reports.html', context)
 
+
+@login_required(login_url='login') 
 def icnreport_add(request, id): 
     icn = Icn.objects.get(pk=id)
    
@@ -93,7 +97,8 @@ def icnreport_add(request, id):
 
 
 
- 
+
+@login_required(login_url='login')  
 def icnreport_edit(request, id): 
     icn = Icn.objects.get(id=id)
     icnreport = IcnReport.objects.get(icn_id=icn.id)
@@ -122,7 +127,8 @@ def icnreport_edit(request, id):
                 
 
 
- 
+
+@login_required(login_url='login') 
 def icnreport_detail(request, id):
 
     icn = Icn.objects.get(id=id)
@@ -189,6 +195,7 @@ def activityreport_step_impact(request, id):
 
 
 
+@login_required(login_url='login') 
 def icnreport_submit_form(request, id, sid): 
     icn = Icn.objects.get(id=id)
     icnreport = IcnReport.objects.get(icn_id=icn.id)
@@ -296,6 +303,7 @@ def icnreport_submit_form(request, id, sid):
     context = {'form':form, 'icnreport':icnreport}
     return render(request, 'report/icnreport_submit_form copy.html', context)
 
+@login_required(login_url='login') 
 def icnreport_submit_detail(request, pk):
     
     context ={}
@@ -310,7 +318,8 @@ def icnreport_submit_detail(request, pk):
 
     return render(request, 'report/icnreportsubmit_detail.html', context)
 
- 
+
+@login_required(login_url='login') 
 def icnreport_approvalt(request, id, did):
      
     icnreportsubmitApproval_t = get_object_or_404(IcnReportSubmitApproval_T, submit_id_id=id)
@@ -370,6 +379,7 @@ def icnreport_approvalt(request, id, did):
         return render(request, 'report/icnreport_approval_tform.html', {'form':form, 'did':did})
   
 
+@login_required(login_url='login') 
 def icnreport_approvalp(request, id, did):
     
     icnreportsubmitApproval_p = get_object_or_404(IcnReportSubmitApproval_P, submit_id_id=id)
@@ -429,7 +439,8 @@ def icnreport_approvalp(request, id, did):
         return render(request, 'report/icnreport_approval_pform.html', {'form':form, 'did':did})
 
 
- 
+
+@login_required(login_url='login') 
 def icnreport_approvalf(request, id, did):
     icnreportsubmitApproval_f = get_object_or_404(IcnReportSubmitApproval_F, submit_id_id=id)
     icnreportsubmit = get_object_or_404(IcnReportSubmit, pk=id)
@@ -487,6 +498,7 @@ def icnreport_approvalf(request, id, did):
         
         return render(request, 'report/icnreport_approval_fform.html', {'form':form, 'did':did})
 
+@login_required(login_url='login') 
 def icnreport_submit_approval(request, id):
     icn = Icn.objects.get(id=id)
     
@@ -502,7 +514,8 @@ def icnreport_submit_approval(request, id):
 
     return render(request, 'report/icnreport_step_approval.html', context)
 
- 
+
+@login_required(login_url='login') 
 def icnreport_submit_list(request, id):
     context ={}
  
@@ -518,7 +531,8 @@ def icnreport_submit_list(request, id):
     return render(request, 'report/partial/submit_list.html', context)
 
 
- 
+
+@login_required(login_url='login')  
 def icnreport_submit_document(request, id):
     context ={}
     icnreport = get_object_or_404(IcnReport, pk=id)
@@ -568,7 +582,8 @@ def icnreport_submit_document(request, id):
             
        
    
-       
+
+@login_required(login_url='login')        
 def document_list(request, id):
     icn = Icn.objects.get(id=id)
     icnreport = IcnReport.objects.get(icn_id=icn.id)
@@ -581,6 +596,7 @@ def document_list(request, id):
        
 
 
+@login_required(login_url='login') 
 def download(request, id):
     document = get_object_or_404(IcnReportDocument, id=id)
     response = HttpResponse(document.document, content_type='application/docx')
@@ -588,6 +604,7 @@ def download(request, id):
     return response
 
 
+@login_required(login_url='login') 
 def icnreport_filter(request):
     query = request.GET.get('search', '')
     print(query)
@@ -615,6 +632,7 @@ def icnreport_filter(request):
 
 
 
+@login_required(login_url='login') 
 def submit_approval_list(request, id):
     icn = Icn.objects.get(id=id)
     icnreport = get_object_or_404(IcnReport,icn_id=icn.id)
@@ -623,6 +641,7 @@ def submit_approval_list(request, id):
     context = {'icnreport_submit_list': icnreport_submit_list }
     return render(request, 'report/partial/icnreport_submit_approval_list.html', context )
 
+@login_required(login_url='login') 
 def current_submit_approval_list(request, id):
     icn = Icn.objects.get(id=id)
     if IcnReport.objects.filter(icn_id=icn.id).exists():
@@ -638,6 +657,8 @@ def current_submit_approval_list(request, id):
     
     return render(request, 'report/partial/icnreport_submit_list.html', context)
 
+
+@login_required(login_url='login') 
 def update_approval_status(id):
     icnreportsubmit = get_object_or_404(IcnReportSubmit, pk=id)
     icnsubmitapproval_t = get_object_or_404(IcnReportSubmitApproval_T, submit_id_id=id)
@@ -666,7 +687,8 @@ def update_approval_status(id):
         
     
 
-    
+
+@login_required(login_url='login')    
 def add_icnreport_impact(request, id):
     impact = Impact.objects.get(pk=id)
     icn = Icn.objects.get(id=impact.icn_id)
@@ -702,12 +724,16 @@ def add_icnreport_impact(request, id):
         'impact': impact,
     })
 
+
+@login_required(login_url='login') 
 def icnreport_impact_list(request, id):
     impacts = Impact.objects.filter(icn_id=id)
     context = {'impacts':impacts}
     return render(request, 'report/partial/impact_list.html', context)
 
 
+
+@login_required(login_url='login') 
 def edit_impact(request, pk):
     impact = get_object_or_404(IcnReportImpact, pk=pk)
     icnreport = get_object_or_404(IcnReport, pk=impact.icnreport_id)
@@ -733,6 +759,8 @@ def edit_impact(request, pk):
         'impact': impact,
     })
 
+
+@login_required(login_url='login') 
 def icnreport_remove_impact(request, pk):
     impact = get_object_or_404(Impact, pk=pk)
     impact.delete()
@@ -748,6 +776,7 @@ def icnreport_remove_impact(request, pk):
 
 
 
+@login_required(login_url='login') 
 def icnreport_submit_form_partial(request, id): 
     icnreport = get_object_or_404(IcnReport, pk=id)
     form = IcnReportSubmitForm(user=request.user,icnreport=icnreport)
@@ -755,7 +784,8 @@ def icnreport_submit_form_partial(request, id):
     context = {'form':form, 'icnreport':icnreport}
     return render(request, 'report/partial/icnreport_partial_doc_form.html', context)
 
- 
+
+@login_required(login_url='login')  
 def activitiesreport(request):
     if ActivityReport.objects.exists():
         reports = ActivityReport.objects.all().order_by('-id')
@@ -768,7 +798,8 @@ def activitiesreport(request):
     
     return render(request, 'report/activitiesreport.html', context)
 
- 
+
+@login_required(login_url='login') 
 def activityreport_detail(request, id):
     activity = Activity.objects.get(id=id)
 

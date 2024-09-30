@@ -8,6 +8,7 @@ class Program(models.Model):
     title = models.CharField(max_length=100)
     working_title = models.CharField(max_length=255, null=True, blank=True)
     users_role =  models.ManyToManyField(User, through='UserRoles' ,blank=True)
+    
     fund_code = models.CharField(max_length=200, unique=True)
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
@@ -41,7 +42,10 @@ class ImplementationArea(models.Model):
         Zone, on_delete=models.CASCADE, null=True, blank=True)
     woreda = models.ForeignKey(
         Woreda, on_delete=models.CASCADE, null=True, blank=True)
-
+    
+    class Meta:
+        unique_together = ('program', 'woreda')
+        
     def __str__(self):
         return str(self.woreda)
     

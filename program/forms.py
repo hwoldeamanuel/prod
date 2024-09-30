@@ -89,7 +89,13 @@ class EditProgramForm(forms.ModelForm):
 
 class AddProgramAreaForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        program = kwargs.pop('program', None)
+        super(AddProgramAreaForm, self).__init__(*args, **kwargs)
+        
+        if program:
+            program = program.pk
+            self.fields['program'].queryset = Program.objects.filter(id=program)
+            self.fields['program'].initial = Program.objects.filter(id=program).first()
         
         self.fields['region'].queryset = Region.objects.all()
        
@@ -115,8 +121,15 @@ class AddProgramAreaForm(forms.ModelForm):
         elif self.instance.pk:
             self.fields['woreda'].queryset = self.instance.zone.woreda_set.order_by('name')
         
+        self.fields['program'].disabled = True
+        
+        
+
+
+
         myfield = ['region',
-            'zone','woreda',         
+            'zone','woreda',    
+            'program',     
 
             ]
         for field in myfield:
@@ -128,9 +141,82 @@ class AddProgramAreaForm(forms.ModelForm):
             fields=['region',
             'zone',
             'woreda',
+            'program',
             ]
-            exclude=  ['program']
+    def clean(self):
+        cleaned_data = super().clean()
+        program = self.cleaned_data.get('program')
+        woreda = self.cleaned_data.get('woreda')
 
+        if ImplementationArea.objects.filter(program=program, woreda=woreda).exists():
+            self._errors['woreda'] = self.error_class(['Already Exist'])
+        return cleaned_data       
+
+class EditProgramAreaForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        program = kwargs.pop('program', None)
+        super(EditProgramAreaForm, self).__init__(*args, **kwargs)
+        
+        if program:
+            program = program.pk
+            self.fields['program'].queryset = Program.objects.filter(id=program)
+            self.fields['program'].initial = Program.objects.filter(id=program).first()
+        
+        self.fields['region'].queryset = Region.objects.all()
+       
+
+        self.fields['zone'].queryset = Zone.objects.none()
+        self.fields['woreda'].queryset = Woreda.objects.none()
+        if 'region' in self.data:
+            try:
+                region = int(self.data.get('region'))
+                self.fields['zone'].queryset = Zone.objects.filter(region_id=region).order_by('name')
+            except (ValueError, TypeError):
+                pass  # invalid input from the client; ignore and fallback to empty City queryset
+        elif self.instance.pk:
+            self.fields['zone'].queryset = self.instance.region.zone_set.order_by('name')
+
+        self.fields['woreda'].queryset = Woreda.objects.none()
+        if 'zone' in self.data:
+            try:
+                zone = int(self.data.get('zone'))
+                self.fields['woreda'].queryset = Woreda.objects.filter(zone_id=zone).order_by('name')
+            except (ValueError, TypeError):
+                pass  # invalid input from the client; ignore and fallback to empty City queryset
+        elif self.instance.pk:
+            self.fields['woreda'].queryset = self.instance.zone.woreda_set.order_by('name')
+        
+        self.fields['program'].disabled = True
+        
+        
+
+
+
+        myfield = ['region',
+            'zone','woreda',    
+            'program',     
+
+            ]
+        for field in myfield:
+            self.fields[field].required = True 
+
+    
+    class Meta:
+            model = ImplementationArea
+            fields=['region',
+            'zone',
+            'woreda',
+            'program',
+            ]
+    def clean(self):
+        cleaned_data = super().clean()
+        program = self.cleaned_data.get('program')
+        woreda = self.cleaned_data.get('woreda')
+
+        if ImplementationArea.objects.filter(program=program, woreda=woreda).count() > 1:
+            self._errors['woreda'] = self.error_class(['Already Exist'])
+        return cleaned_data  
+    
 class NewAreaForm(forms.ModelForm):
      
      class Meta:

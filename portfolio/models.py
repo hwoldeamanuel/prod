@@ -14,6 +14,7 @@ class Portfolio(models.Model):
     logo = models.ImageField(upload_to ='documents/', null=True, blank=True) 
     description = models.TextField(null=True, blank=True)
     address_url = models.URLField(max_length = 200, null=True, blank=True) 
+    
     def __str__(self):
         return self.title
 
@@ -31,3 +32,4 @@ class FieldOffice(models.Model):
 
     def __str__(self):
         return self.name
+

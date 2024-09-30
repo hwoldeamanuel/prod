@@ -384,19 +384,20 @@ def edit_zone(request, id):
                     })
                 }
             )
-    else:
+        form = ZoneFormE(instance=zone)
+        return render(request, 'partial/Zone_form.html', {
+        'form': form,
+        'zone': zone,
+        })
+
+    elif request.method == "GET":
         form = ZoneFormE(instance=zone)
         return render(request, 'partial/Zone_form.html', {
         'form': form,
         'zone': zone,
     })
     
-    form = ZoneFormE(instance=zone)
-    return render(request, 'partial/Zone_form.html', {
-        'form': form,
-        'zone': zone,
-    })
-
+ 
 def edit_region(request, id):
     region = get_object_or_404(Region, id=id) 
     if request.method == "POST":

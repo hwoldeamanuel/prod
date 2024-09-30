@@ -82,7 +82,8 @@ class WoredaForm(forms.ModelForm):
         
     
 class WoredaFormE(forms.ModelForm): 
-      
+    
+    
     class Meta:
         model = Woreda
         fields=['name']
@@ -90,14 +91,14 @@ class WoredaFormE(forms.ModelForm):
 class ZoneFormE(forms.ModelForm): 
     
     class Meta:
-          model = Zone
-          fields=['name','region']
+        model = Zone
+        fields=['name','region']
         
 class RegionForm(forms.ModelForm): 
-      
+    
     class Meta:
-          model = Region
-          fields="__all__"
+        model = Region
+        fields="__all__"
 
 class RegionFormE(forms.ModelForm): 
     
@@ -106,6 +107,8 @@ class RegionFormE(forms.ModelForm):
         fields=['name','country']
 
 class ZoneForm(forms.ModelForm):
+    
+    
     class Meta:
         model = Zone
         fields="__all__"         
@@ -127,7 +130,6 @@ class CategoryForm(forms.ModelForm):
 
 class UserGroupForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-       
         super().__init__(*args, **kwargs)
     
 
@@ -182,7 +184,7 @@ class UserProgramRoleForm(forms.ModelForm):
         
         if user:
             
-            self.fields['program'].queryset = Program.objects.exclude(users_role__in=user)
+            self.fields['program'].queryset = Program.objects.all().exclude(users_role__in=user)
             Program.objects.exclude(users_role__in=user)
         else:
            

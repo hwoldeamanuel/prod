@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from portfolio.models import Portfolio
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from .forms import ProgramForm, AddProgramAreaForm, IndicatorForm, UserRoleForm, UserRoleFormE, UserForm
+from .forms import ProgramForm, AddProgramAreaForm,EditProgramAreaForm, IndicatorForm, UserRoleForm, UserRoleFormE, UserForm
 
 from .models import Program, ImplementationArea, Indicator, UserRoles
 from django.contrib.auth.models import User
@@ -175,12 +175,11 @@ def program_list_filter(request):
 @login_required(login_url='login')
 @permission_required("program.can_add_implementationarea", raise_exception=True)
 def region(request, id):
+    program = get_object_or_404(Program, id=id)
     if request.method == "POST":
-        form = AddProgramAreaForm(request.POST or None)
+        form = AddProgramAreaForm(request.POST, program=program)
         if form.is_valid():
-            instance = form.save(commit=False)
-            instance.program = Program.objects.get(pk=id)
-            instance.save()
+            instance = form.save()
             return HttpResponse(
                 status=204,
                 headers={
@@ -189,8 +188,13 @@ def region(request, id):
                         "showMessage": f"{instance.woreda} added."
                     })
                 })
+        form = AddProgramAreaForm(request.POST, program=program)
+             
+        context = {'form': form}
+        return render(request, 'partial/area_form.html', context)
+            
     
-    form = AddProgramAreaForm()
+    form = AddProgramAreaForm(program=program)
     context = {'form': form}
     
     return render(request, 'partial/area_form.html', context)
@@ -212,14 +216,14 @@ def area_edit_form(request, pk):
     area = get_object_or_404(ImplementationArea, pk=pk)    
     if request.method == "GET":
         iarea = get_object_or_404(ImplementationArea, pk=int(pk))
-        form = AddProgramAreaForm(instance=iarea)
+        form = EditProgramAreaForm(instance=iarea)
         context = {'area': area, 'form': form }
         return render(request, 'partial/area_form_edit.html', context)
 
     elif request.method == "PUT":
         area = get_object_or_404(ImplementationArea, pk=int(pk))
         data = QueryDict(request.body).dict()
-        form = AddProgramAreaForm(data, instance=area)
+        form = EditProgramAreaForm(data, instance=area)
         if form.is_valid():
             instance=form.save()
             return HttpResponse(
@@ -231,6 +235,11 @@ def area_edit_form(request, pk):
                     })
                 }
             )
+        
+        
+        form = EditProgramAreaForm(data, instance=area)
+        context = {'area': area, 'form': form }
+        return render(request, 'partial/area_form_edit.html', context)
      
        
 
