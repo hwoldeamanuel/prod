@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http.response import HttpResponse, HttpResponsePermanentRedirect
 from django.shortcuts import get_object_or_404
 import json
+from django.db.models import F
 from django.db.models import Count
 from django.shortcuts import render, redirect
 from django.http import QueryDict
@@ -75,8 +76,8 @@ def program_detail(request, pk):
 
     all_request = list(collector.values())
    
-    qsi = Icn.objects.filter(program_id = pk).only("title", "id","user","program_lead","technical_lead","finance_lead","status","approval_status","created").order_by("-created")
-    qsa = Activity.objects.filter(icn__program_id = pk).only("title", "id", "user","program_lead","technical_lead","finance_lead","status","approval_status","created").order_by("-created")
+    qsi = Icn.objects.filter(program_id = pk).only("title", "id","user","program_lead","technical_lead","finance_lead","status","approval_status","created","final_report_due_date","icnreport__approval_status").annotate(report = F('icnreport__approval_status'))
+    qsa = Activity.objects.filter(icn__program_id = pk).only("title", "id", "user","program_lead","technical_lead","finance_lead","status","approval_status","created","final_report_due_date", "activityreport__approval_status").annotate(report = F('activityreport__approval_status'))
       
        
     conceptnotes = sorted(list(chain(qsi, qsa)), key=lambda instance: instance.created, reverse=True)

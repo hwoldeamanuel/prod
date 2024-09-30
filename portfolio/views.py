@@ -18,6 +18,7 @@ from easyaudit.models import LoginEvent, RequestEvent, CRUDEvent
 from collections import defaultdict
 from collections import defaultdict
 from itertools import chain
+from django.db.models import F
 from conceptnote.models import Icn, Activity
 from django.db import models
 from django.db.models import Func
@@ -276,8 +277,8 @@ def remove_fieldoffice(request, pk):
 def portfolio_conceptnotes(request, id):
     
     portfolio = Portfolio.objects.filter(id=id)
-    qsi = Icn.objects.filter(Q(ilead_agency__in=portfolio) | Q(ilead_co_agency__in=portfolio)).only("title", "id","user","program_lead","technical_lead","finance_lead","status","approval_status","created").order_by("-created")
-    qsa = Activity.objects.filter(Q(alead_agency__in=portfolio) | Q(alead_co_agency__in=portfolio)).only("title", "id", "user","program_lead","technical_lead","finance_lead","status","approval_status","created").order_by("-created")
+    qsi = Icn.objects.filter(Q(ilead_agency__in=portfolio) | Q(ilead_co_agency__in=portfolio)).only("title", "id","user","program_lead","technical_lead","finance_lead","status","approval_status","created","final_report_due_date","icnreport__approval_status").annotate(report = F('icnreport__approval_status'))
+    qsa = Activity.objects.filter(Q(alead_agency__in=portfolio) | Q(alead_co_agency__in=portfolio)).only("title", "id", "user","program_lead","technical_lead","finance_lead","status","approval_status","created","final_report_due_date", "activityreport__approval_status").annotate(report = F('activityreport__approval_status'))
       
        
     conceptnotes = sorted(list(chain(qsi, qsa)), key=lambda instance: instance.created, reverse=True)

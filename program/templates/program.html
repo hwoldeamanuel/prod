@@ -145,8 +145,8 @@
         <th>Type</th>
   <th>Title</th>
         
-        <th >Submission</th>
-        <th>Approval</th>
+        <th >Concept Note</th>
+        <th>CN Report</th>
       
        
       </tr>
@@ -160,10 +160,14 @@
        <td>{{ cn.get_name }}</td>
        <td>{% if cn.get_name == "Intervention" %} <a href="{% url 'icn_detail' cn.id %}">{{ cn.title }}{% elif cn.get_name == "Activity" %}<a href="{% url 'activity_detail' cn.id %}">{{cn.title}} {% endif %} </a></td>
       <td>
-                      <span class="badge {% if cn.status == True %}badge bg-green {% else %} badge bg-red {% endif %}">{{ cn.get_status_display}}</span>
+                     <span class="badge {% if 'Rejected' in cn.approval_status %} bg-red {% elif 'Approved' in cn.approval_status %} bg-green {% else %} bg-warning {% endif %}">{% if cn.approval_status %} {{ cn.approval_status}} {% else %} Pending Submission {% endif %}</span>
                    </td>
        <td>
-                      <span class="badge {% if 'Rejected' in cn.approval_status %} bg-red {% elif 'Approved' in cn.approval_status %} bg-green {% else %} bg-warning {% endif %}">{% if cn.approval_status %} {{ cn.approval_status}} {% else %} Pending {% endif %}</span>
+       {% if cn.report  %}
+                      <span class="badge {% if 'Rejected' in cn.report %} bg-red {% elif 'Approved' in cn.report %} bg-green {% else %} bg-warning {% endif %}">{% if cn.report %} {{ cn.report}} {% else %} Pending Submission {% endif %}</span>
+                    {% else %}
+                    <span class="badge badge {% if cn.final_report_due_date|timesince > '1 min' %} bg-red {% else %} bg-default{% endif %}">{{cn.final_report_due_date}} </span>
+                     {% endif %}
                     </td>
        </tr>
      {% endfor %}
