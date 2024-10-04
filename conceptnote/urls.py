@@ -19,8 +19,8 @@ urlpatterns = [
     path('activity/<int:id>/impact/', views.activity_step_impact, name='activity_step_impact'),
     path('intervention/<int:id>/intervention_step/', views.intervention_step, name='intervention_step'),
     path('icn/add', views.icn_add, name='icn_add'),
-     path('activity/<int:id>/approval/', views.activity_step_approval, name='activity_step_approval'),
-
+    path('icn_detail_modal/<int:id>/', views.icn_detail_modal, name='icn_detail_modal'),
+    path('activity/<int:id>/approval/', views.activity_step_approval, name='activity_step_approval'),
     path('intervention/<int:pk>/profile/', views.icn_detail, name='icn_detail'),
     path('intervention/<int:pk>/approval/', views.icn_submit_approval, name='icn_submit_approval'),
     path('activity/<int:pk>/approval/', views.activity_submit_approval, name='activity_submit_approval'),
@@ -29,6 +29,7 @@ urlpatterns = [
     path('delete_icn/<int:pk>/', views.icn_delete, name='icn_delete'),
     path('delete_activity/<int:pk>/', views.activity_delete, name='activity_delete'),
     path('intervention/program_lead/', views.program_lead, name='program_lead'),
+    path('icn_info/', views.icn_info, name='icn_info'),
     
     path('download_env_att/<int:id>/', views.download_env_att, name='download_env_att'),
     path('icn_submit_form_partial/<int:id>/', views.icn_submit_form_partial, name='icn_submit_form_partial'),

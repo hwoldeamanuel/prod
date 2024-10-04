@@ -546,29 +546,29 @@ class ActivityForm(forms.ModelForm):
         
     def clean(self):
          cleaned_data = super().clean()
-         icn = self.cleaned_data.get('icn')
-         icn = Icn.objects.get(title=icn)
-         alead_agency = self.cleaned_data.get('alead_agency')
-         mc_currency = self.cleaned_data.get('mc_currency')
-         cs_currency = self.cleaned_data.get('cs_currency')
-         if self.cleaned_data.get('mc_budget') != None:
-              
-            mc_budget = self.cleaned_data.get('mc_budget')
-         else:
-             mc_budget = 0
+         if self.cleaned_data.get('icn'):
+              icn = self.cleaned_data.get('icn')
+              icn = Icn.objects.get(title=icn)
+              alead_agency = self.cleaned_data.get('alead_agency')
+              mc_currency = self.cleaned_data.get('mc_currency')
+              cs_currency = self.cleaned_data.get('cs_currency')
+              if self.cleaned_data.get('mc_budget') != None:
+                   mc_budget = self.cleaned_data.get('mc_budget')
+              else:
+                  mc_budget = 0
 
-         if  self.cleaned_data.get('cost_sharing_budget') != None:
-              cs_budget = self.cleaned_data.get('cost_sharing_budget')
-         else:
-              cs_budget = 0
-         
-         if mc_currency == 2:
-              mc_budget = mc_budget/120
-         
-         if cs_currency == 2:
-              cs_budget = cs_budget/120
-         tactbud = mc_budget + cs_budget
-         rembud = icn.get_remaining_budget()
+              if  self.cleaned_data.get('cost_sharing_budget') != None:
+                  cs_budget = self.cleaned_data.get('cost_sharing_budget')
+              else:
+                  cs_budget = 0
+            
+              if mc_currency == 2:
+                  mc_budget = mc_budget/120
+            
+              if cs_currency == 2:
+                  cs_budget = cs_budget/120
+              tactbud = mc_budget + cs_budget
+              rembud = icn.get_remaining_budget()
          alead_co_agency = self.cleaned_data.get('alead_co_agency')
          
          program_lead = self.cleaned_data.get('program_lead')

@@ -37,9 +37,11 @@
                                <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.icn.id_for_label }}">Intervention title: <span class="required"></span>
                                 </label>
                                   <div class="col-md-8 col-sm-8">
-                                    {%  render_field form.icn class+="form-control form-control-sm"  %}
+                                    {%  render_field form.icn class+="form-control form-control-sm"  autocomplete="off"  hx-get="/conceptnote/icn_info/" hx-target="#icn_info" hx-swap="innerHTML"  %}
                                   </div>
-                                
+                                  <div id="icn_info">
+                              
+                                </div>
                               </div>
                          <div class="form-group row">
                                 <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.title.id_for_label }}">Activity Title: <span class="required"></span>
@@ -103,7 +105,7 @@
                                    {% render_field form.mc_budget class="form-control form-control-sm required" %}
                                  <div class="invalid-feedback">{{ form.mc_budget.errors|first }}</div>
                             </div>
-                             <div class="col-md-1 col-sm-1">
+                             <div class="col-md-1 col-sm-12  form-group">
                                    {% render_field form.mc_currency class="form-control form-control-sm" %}
                                  <div class="invalid-feedback">{{ form.mc_currency.errors|first }}</div>
                             </div>
@@ -169,6 +171,9 @@
     {{ form.media.js }}
                   </div>
                 </div>
+                   <div class="modal fade bs-example-modal-lg" id="modal" class="modal fade">
+                                                  <div id="dialog" class="modal-dialog modal-lg" hx-target="this"></div>
+                                              </div>  
               </div>
             </div>
           </div>

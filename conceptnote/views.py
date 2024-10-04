@@ -1746,4 +1746,23 @@ def intervention_step(request, id):
     
     context = {'icn':icn}
     return render(request, 'intervention_step.html', context)
+
+def icn_detail_modal(request, id):
+    icn = Icn.objects.get(id=id)
+    context = {'icn':icn}
+    return render(request, 'partial/icn_detail_modal.html', context)
+
+def icn_info(request):
+    
+    
+    query = request.GET.get('icn', '')
+    if query:
+        
+        icn = Icn.objects.get(id=query)
+        print(icn.id)
+        return render(request, 'partial/intervention_info.html', {'icn':icn})
+    
+    return render(request, 'partial/intervention_info.html')
+
+
     
