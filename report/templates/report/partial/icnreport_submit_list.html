@@ -28,7 +28,16 @@
            <button type="button" class="btn btn-danger btn-sm btn-xs" >Pending Submission</button>
           </td>
            <td>
-            <button type="button" class="{% if request.user.id != icnreport.user.id %}disabled {% endif %}btn btn-sm btn-primary" aria-hidden="true"  hx-get="{% url 'icnreport_submit_form' icn.id 2 %}" hx-target="#SubmitList" >Submit Request</button>
+          
+            <div class="btn-group">
+                    <button type="button" class="{% if request.user.id != icnreport.user.id %}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Action
+                    </button>
+                    <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
+                      <a class="dropdown-item" hx-get="{% url 'icnreport_submit_form' icn.id 2 %}" hx-target="#SubmitList" >Submit Request</a>
+                     
+                    </div>
+                  </div>
            </td>
           
         {% else %}

@@ -28,7 +28,17 @@
            <button type="button" class="btn btn-danger btn-sm btn-xs" >Pending Submission</button>
           </td>
            <td>
-            <button type="button" class="{% if request.user.id != activityreport.user.id %}disabled {% endif %}btn btn-sm btn-primary" aria-hidden="true"  hx-get="{% url 'activityreport_submit_form' activity.id 2 %}" hx-target="#SubmitList" >Submit Request</button>
+          
+             <div class="btn-group">
+                    <button type="button"  class="{% if request.user.id != activityreport.user.id %}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Action
+                    </button>
+                    <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
+                      <a class="dropdown-item" hx-get="{% url 'activityreport_submit_form' activity.id 2 %}" hx-target="#SubmitList"  >Submit Request</a>
+                     
+                    </div>
+                  </div>
+           </td>
            </td>
         {% else %}
         <td>{{activityreportsubmit.submission_date|date:"M d,Y"}}</br><small>{{activityreportsubmit.submission_date|time}}</small></td>
@@ -187,7 +197,7 @@
 
 <td>
     
-														<button type="button" class="btn btn-sm {% if 'Rejected' in activityreport.approval_status %}btn-danger{% elif 'Approved' in activityreport.approval_status %}btn-success{% else %}btn-warning{% endif %}">{% if activityreport.approval_status %} {{ activityreport.approval_status}} {% else %}Pnding Approval{% endif %}
+														<button type="button" class="btn btn-sm {% if 'Rejected' in activityreport.approval_status %}btn-danger{% elif 'Approved' in activityreport.approval_status %}btn-success{% else %}btn-warning{% endif %}">{% if activityreport.approval_status %}<small>{{ activityreport.approval_status}}</small> {% else %}Pnding Submission{% endif %}
 														</button>
 													
 												

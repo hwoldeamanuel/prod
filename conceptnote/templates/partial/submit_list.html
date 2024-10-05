@@ -206,7 +206,7 @@
     <td></td>
  <td></td>  <td>
   <div class="btn-group">
-														<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-sm dropdown-toggle btn-{% if 'Rejected' in icn.approval_status %}danger{% elif 'Approved' in icn.approval_status %}success{% else %}warning{% endif %}">{% if icn.approval_status %} {{ icn.approval_status}} {% else %} Pending Approval{% endif %}
+														<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-sm dropdown-toggle btn-{% if 'Rejected' in icn.approval_status %}danger{% elif 'Approved' in icn.approval_status %}success{% else %}warning{% endif %}">{% if icn.approval_status %} {{ icn.approval_status}} {% else %}Pending Submission{% endif %}
 														</button>
 													
 												 <div class="dropdown-menu">
