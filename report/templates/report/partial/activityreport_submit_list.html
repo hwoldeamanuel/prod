@@ -25,7 +25,7 @@
         <td></td>
          <td></td>
           <td>
-           <button type="button" class="btn btn-danger btn-sm btn-xs" >Pending Submission</button>
+           <button type="button" class="btn btn-danger btn-sm btn-xs" ><small>Pending Submission</small></button>
           </td>
            <td>
           
@@ -197,7 +197,7 @@
 
 <td>
     
-														<button type="button" class="btn btn-sm {% if 'Rejected' in activityreport.approval_status %}btn-danger{% elif 'Approved' in activityreport.approval_status %}btn-success{% else %}btn-warning{% endif %}">{% if activityreport.approval_status %}<small>{{ activityreport.approval_status}}</small> {% else %}Pnding Submission{% endif %}
+														<button type="button" class="btn btn-sm {% if 'Rejected' in activityreport.approval_status %}btn-danger{% elif 'Approved' in activityreport.approval_status %}btn-success{% else %}btn-warning{% endif %}"><small>{% if activityreport.approval_status %}{{ activityreport.approval_status}}{% else %}Pnding Submission{% endif %}</small> 
 														</button>
 													
 												

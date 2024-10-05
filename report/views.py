@@ -943,8 +943,8 @@ def add_activityreport_impact(request, id):
 
    
 def activityreport_impact_list(request, id):
-    
-    impacts=ActivityReportImpact.objects.filter(activityreport_id=id)
+    #impacts = Impact.objects.filter(icn_id=id)
+    impacts=ActivityImpact.objects.filter(activity_id=id)
     context = {'impacts':impacts }
     return render(request, 'report/partial/activityreport_impact_list.html', context)
 
@@ -1061,7 +1061,7 @@ def activityreport_submit_form(request, id, sid):
     
 
     if request.method == "POST":
-        form = ActivityReportSubmitForm(request.POST, request.FILES)
+        form = ActivityReportSubmitForm(request.POST, request.FILES, sid=sid)
         if form.is_valid():
             instance = form.save(commit=False)
             instance.activityreport = activityreport
@@ -1115,7 +1115,7 @@ def activityreport_submit_form(request, id, sid):
             elif activityreportsubmit.submission_status_id == 1:
                 ActivityReport.objects.filter(activity_id=activity.id).update(status=False)
                 ActivityReport.objects.filter(activity_id=activity.id).update(approval_status="Pending Submission'")
-                subject = 'pproval Request temporarily withdrawn - Pending Re-submission'
+                subject = 'Approval Request temporarily withdrawn - Pending Re-submission'
                 context = {
                         "program": activity.icn.program,
                         "title": activity.title,
@@ -1147,9 +1147,9 @@ def activityreport_submit_form(request, id, sid):
                         "showMessage": f"{instance.id} added."
                     })
                 })
-
+        
       
-    context = {'form':form, 'activityreport':activityreport, 'sid':sid}
+    context = {'form':form, 'activityreport':activityreport }
     return render(request, 'report/activityreport_submit_form.html', context)
 
 

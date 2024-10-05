@@ -26,7 +26,7 @@
 								</div>
 								<div class="x_content">
 									{% load humanize %}
-       <div id="ImpactList" hx-trigger="ImpactListChanged from:body" {% if icn %}hx-get="{% url 'activityeport_impact_list' activity.id %}" hx-target="this" {%endif%} >
+       <div id="ImpactList" hx-trigger="ImpactListChanged from:body" hx-get="{% url 'activityreport_impact_list' activity.id %}" hx-target="this"  >
            <table class="data table table-sm table-striped no-margin" style="width:100%">
         <thead>
             <tr>

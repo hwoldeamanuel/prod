@@ -260,6 +260,7 @@ class IcnReportSubmitForm(forms.ModelForm):
          sid = kwargs.pop('sid', None)
          super(IcnReportSubmitForm, self).__init__(*args, **kwargs)
 
+         self.fields['document'].required = True    
          self.fields['submission_status'].choices = [
             (submission_status.id, submission_status.name) for submission_status in Submission_Status.objects.filter(id=sid)
         ]   
@@ -277,6 +278,7 @@ class IcnReportSubmitForm(forms.ModelForm):
 
          self.fields['submission_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
          self.fields['submission_note'].required = True 
+         self.fields['document'].required = True 
          self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
         
      class Meta:
@@ -655,20 +657,26 @@ class ActivityReportSubmitForm(forms.ModelForm):
          sid = kwargs.pop('sid', None)
          super(ActivityReportSubmitForm, self).__init__(*args, **kwargs)
 
+         
+         self.fields['document'].required = True 
+         
          self.fields['document'].choices = [
              (document.pk, document) for document in ActivityReportDocument.objects.filter(user=user, activityreport=activityreport)
          ]
 
          self.fields['submission_status'].choices = [
             (submission_status.id, submission_status.name) for submission_status in Submission_Status.objects.filter(id=sid)
-        ]   
+        ] 
+         
+         
       # invalid input from the client; ignore and fallback to empty City queryset
         
   
     
-
-         self.fields['submission_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
          self.fields['submission_note'].required = True 
+       
+         self.fields['submission_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
+         
              
       # invalid input from the client; ignore and fallback to empty City queryset
         
