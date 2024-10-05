@@ -6,9 +6,11 @@
         <th>Team Lead</th>
         <th>Date</th>
        
-        <th>Activity Concept Note Ver#</th>
+        <th>Activity CN Ver#</th>
         <th>Status</th>
         <th>Action</th>
+        <th style="width:17%"></th>
+      
       
       </tr>
     </thead>
@@ -68,7 +70,7 @@
         {% endif %}
 
 
-
+<td></td>
 
     
 </tr>
@@ -106,8 +108,7 @@
         {% endif%}
 
 
-
-
+<td></td>
     
 </tr>
 
@@ -146,7 +147,7 @@
     {% endif%}
 
 
-
+<td></td>
 </tr>
 <tr>
     <td>3</td>
@@ -184,23 +185,10 @@
     {% endif%}
 
 
-
-</tr>
-<tr>
-<td></td>
 <td>
     
-     
-    </td>
-    <td></td>
-    <td>
-    
-    </td>
-   
-    <td>
-    
 													 <div class="btn-group">
-														<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-sm dropdown-toggle btn-{% if 'Rejected' in activity.approval_status %} bg-red {% elif 'Approved' in activity.approval_status %} bg-green {% else %} bg-warning {% endif %}">{% if activity.approval_status %} {{ activity.approval_status}} {% else %} Pending Approval{% endif %}<span class="caret"></span>
+														<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-sm dropdown-toggle btn-{% if 'Rejected' in activity.approval_status %} bg-red {% elif 'Approved' in activity.approval_status %} bg-green {% else %} bg-warning {% endif %}">{% if activity.approval_status %} {{ activity.approval_status}} {% else %} Pending Approval{% endif %}
 														</button>
 													
 												 <div class="dropdown-menu">
@@ -213,9 +201,7 @@
 
                     </td>
                      <td>
-                     
-
-                     </td>
 </tr>
+
     </tbody>
   </table>

@@ -3,8 +3,8 @@
         <thead>
             <tr>
               <th>#</th>
-           <th >Title</th>
-             
+            <th style="width: 25%">Title</th>
+              <th style="width: 35%">Description</th>
             <th >Pilot(T)</th>
              <th >Scaleup(T)</th>
              <th >Pilot(A)</th>
@@ -23,6 +23,9 @@
                 <td class="vertical-align-mid">
                                     
                                   {{ impact.title }}</td>
+                                   <td class="vertical-align-mid">
+                                    
+                                  {{ impact.description }}</td>
                
                 <td class="vertical-align-mid">{{ impact.impact_pilot|intcomma }}</td>
                 <td class="vertical-align-mid">{{ impact.impact_scaleup|intcomma }}</td>

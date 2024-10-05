@@ -545,65 +545,68 @@ class ActivityForm(forms.ModelForm):
         exclude=  ['status', 'approval_status',  'user',]
         
     def clean(self):
-         cleaned_data = super().clean()
-         if self.cleaned_data.get('icn'):
-              icn = self.cleaned_data.get('icn')
-              icn = Icn.objects.get(title=icn)
-              alead_agency = self.cleaned_data.get('alead_agency')
-              mc_currency = self.cleaned_data.get('mc_currency')
-              cs_currency = self.cleaned_data.get('cs_currency')
-              if self.cleaned_data.get('mc_budget') != None:
-                   mc_budget = self.cleaned_data.get('mc_budget')
-              else:
-                  mc_budget = 0
+        cleaned_data = super().clean()
+        if self.cleaned_data.get('icn'):
+            icn = self.cleaned_data.get('icn')
+            icn = Icn.objects.get(title=icn)
+        
+        alead_agency = self.cleaned_data.get('alead_agency')
+        mc_currency = self.cleaned_data.get('mc_currency')
+        cs_currency = self.cleaned_data.get('cs_currency')
+        if self.cleaned_data.get('mc_budget') != None:
+            mc_budget = self.cleaned_data.get('mc_budget')
+        else:
+            mc_budget = 0
 
-              if  self.cleaned_data.get('cost_sharing_budget') != None:
-                  cs_budget = self.cleaned_data.get('cost_sharing_budget')
-              else:
-                  cs_budget = 0
+        if self.cleaned_data.get('cost_sharing_budget') != None:
+            cs_budget = self.cleaned_data.get('cost_sharing_budget')
+        else:
+            cs_budget = 0
             
-              if mc_currency == 2:
-                  mc_budget = mc_budget/120
+        if mc_currency == 2:
+            mc_budget = mc_budget/120
+    
+        if cs_currency == 2:
+            cs_budget = cs_budget/120
             
-              if cs_currency == 2:
-                  cs_budget = cs_budget/120
-              tactbud = mc_budget + cs_budget
-              rembud = icn.get_remaining_budget()
-         alead_co_agency = self.cleaned_data.get('alead_co_agency')
+        tactbud = mc_budget + cs_budget
+        rembud = icn.get_remaining_budget()
          
-         program_lead = self.cleaned_data.get('program_lead')
-         finance_lead = self.cleaned_data.get('finance_lead')
-         technical_lead = self.cleaned_data.get('technical_lead')
+        alead_co_agency = self.cleaned_data.get('alead_co_agency')
          
-         proposed_start_date = self.cleaned_data.get('proposed_start_date')
-         proposed_end_date = self.cleaned_data.get('proposed_end_date')
-         final_report_due_date = self.cleaned_data.get('final_report_due_date')
+        program_lead = self.cleaned_data.get('program_lead')
+        finance_lead = self.cleaned_data.get('finance_lead')
+        technical_lead = self.cleaned_data.get('technical_lead')
+         
+        proposed_start_date = self.cleaned_data.get('proposed_start_date')
+        proposed_end_date = self.cleaned_data.get('proposed_end_date')
+        final_report_due_date = self.cleaned_data.get('final_report_due_date')
 
-         if (technical_lead==program_lead or technical_lead==finance_lead):
+        if (technical_lead==program_lead or technical_lead==finance_lead):
               self._errors['technical_lead'] = self.error_class(['Lead should take up only one role'])
-         elif (program_lead==technical_lead or program_lead==finance_lead):
+        elif (program_lead==technical_lead or program_lead==finance_lead):
               self._errors['program_lead'] = self.error_class(['Lead should take up only one role'])
          
-         elif (finance_lead==technical_lead or finance_lead==program_lead):
+        elif (finance_lead==technical_lead or finance_lead==program_lead):
               self._errors['finance_lead'] = self.error_class(['Lead should take up only one role'])
         
-         elif ( proposed_end_date != None and proposed_start_date != None and proposed_end_date < proposed_start_date):
+        elif ( proposed_end_date != None and proposed_start_date != None and proposed_end_date < proposed_start_date):
                self._errors['proposed_end_date'] = self.error_class(['End date should always be after start date'])
-         elif (final_report_due_date != None and proposed_end_date != None and final_report_due_date < proposed_end_date):
+        elif (final_report_due_date != None and proposed_end_date != None and final_report_due_date < proposed_end_date):
              self._errors['final_report_due_date'] = self.error_class(['Reporting Date should always be after end date'])
-         elif ((proposed_start_date != None and proposed_start_date > icn.proposed_end_date) or (proposed_start_date != None and proposed_start_date < icn.proposed_start_date)):
+        elif ((proposed_start_date != None and proposed_start_date > icn.proposed_end_date) or (proposed_start_date != None and proposed_start_date < icn.proposed_start_date)):
              self._errors['proposed_start_date'] = self.error_class(['Activity Date should align with its parent intervention period'])
-         elif ((proposed_end_date != None and proposed_end_date > icn.proposed_end_date) or (proposed_end_date != None and proposed_end_date < icn.proposed_start_date)):
+        elif ((proposed_end_date != None and proposed_end_date > icn.proposed_end_date) or (proposed_end_date != None and proposed_end_date < icn.proposed_start_date)):
              self._errors['proposed_end_date'] = self.error_class(['Activity Date should align with its parent intervention period'])
-         elif ((final_report_due_date != None and final_report_due_date > icn.final_report_due_date) or (final_report_due_date != None and final_report_due_date < icn.proposed_start_date)):
+        elif ((final_report_due_date != None and final_report_due_date > icn.final_report_due_date) or (final_report_due_date != None and final_report_due_date < icn.proposed_start_date)):
              self._errors['final_report_due_date'] = self.error_class(['Activity Date should align with its parent intervention period'])
-         elif (alead_agency != None and alead_co_agency != None and alead_co_agency.contains(alead_agency)):
+        elif (alead_agency != None and alead_co_agency != None and alead_co_agency.contains(alead_agency)):
              self._errors['alead_agency'] = self.error_class(['Lead Agency & Co-Lead Agency should be different'])
-         elif ((mc_currency != None and cs_currency != None) and mc_currency != cs_currency  ):
+        elif ((mc_currency != None and cs_currency != None) and mc_currency != cs_currency  ):
               self._errors['mc_currency'] = self.error_class(['Different currency for MC & cost sharing budget'])
-         elif ((mc_budget != None and cs_budget != None) and tactbud > rembud  ):
+        elif ((mc_budget != None and cs_budget != None) and tactbud > rembud  ):
               self._errors['mc_budget'] = self.error_class(['Please check Intervention & Activity Budget '])
-         return cleaned_data
+        return cleaned_data
 
 class ActivityAreaFormE(forms.ModelForm):
     def __init__(self, *args, **kwargs):

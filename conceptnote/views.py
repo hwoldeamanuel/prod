@@ -1027,13 +1027,12 @@ def activity_edit(request, id):
         context = {'form':form}
         return render(request, 'activity_step_profile_edit.html', context)
             
-    elif request.method == "GET" and activity.status == False:    
-
+    
+    if activity.user == request.user and activity.status == False:
         form = ActivityForm(instance=activity,  user=request.user) 
         context = {'form':form}
         return render(request, 'activity_step_profile_edit.html', context)
-    else:
-        return HttpResponseRedirect(request.path_info)
+    return HttpResponseRedirect(request.path_info)
     
  
 def aregion(request, id):

@@ -314,14 +314,7 @@ class ActivityReportDocument(models.Model):
         return "%s %s %s" % ("Version", self.ver, self.user.email.split('@')[0])
 
 class ActivityReportSubmit(models.Model):
-    Draft = 1
-    Submit = 2
-    
-    SSTATUS = (
-        (Draft, 'Draft'),
-        (Submit, 'Request Submitted'),
-     
-        )
+  
     id = models.AutoField(primary_key=True)
     activityreport =  models.ForeignKey(
         ActivityReport, on_delete=models.CASCADE, null=True, blank=True)
@@ -345,18 +338,7 @@ class ActivityReportSubmit(models.Model):
         return str(self.id)
 
 class ActivityReportSubmitApproval_T(models.Model):
-    Pending_Review = 1
-    Require_Doc_Update = 2
-    Approved = 3
-    Rejected = 4
-    STATUS = (
-        (Pending_Review, 'Pending Review'),
-        (Require_Doc_Update, 'Require Doc Update'),
-        (Approved, 'Request Approved'),
-        (Rejected, 'Request Rejected'),
-        )
-
-    
+   
     user = models.ForeignKey(UserRoles, on_delete=models.CASCADE)
     submit_id = models.OneToOneField(ActivityReportSubmit, on_delete=models.CASCADE)
     approval_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)

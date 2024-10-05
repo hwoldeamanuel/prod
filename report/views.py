@@ -77,16 +77,15 @@ def icnreport_add(request, id):
         context = {'form':form, 'icn':icn}
         return render(request, 'report/icnreport_step_profile_new.html', context)
     
-    elif request.method == "GET":
-        icn = Icn.objects.get(id = icn.id)
-        program = Program.objects.filter(id=icn.program_id)
-        current_user = request.user
-        program_users = UserRoles.objects.filter(program__in=program, is_pcn_initiator=True)
-        if User.objects.filter(id=current_user.id,userroles__in=program_users).exists():
-            form = IcnReportForm(user=request.user, icn=icn)   
-            context = {'form':form, 'icn':icn}
-            return render(request, 'report/icnreport_step_profile_new.html', context)
+   
     
+    program = Program.objects.filter(id=icn.program_id)
+    current_user = request.user
+    program_users = UserRoles.objects.filter(program__in=program, is_pcn_initiator=True)
+    if User.objects.filter(id=current_user.id,userroles__in=program_users).exists():
+        form = IcnReportForm(user=request.user, icn=icn)   
+        context = {'form':form, 'icn':icn}
+        return render(request, 'report/icnreport_step_profile_new.html', context)
     return redirect('icn_step_approval',icn.id) 
     
 
@@ -107,23 +106,37 @@ def icnreport_edit(request, id):
     
     if request.method == "POST":
        
-        form = IcnReportForm(request.POST,request.FILES, instance=icnreport, user=request.user)
+        form = IcnReportForm(request.POST,request.FILES, instance=icnreport, icn=icn,user=request.user)
         if form.is_valid():
-            instance = form.save()
+            instance = form.save(commit=False)
+            instance.user = request.user
+                       
+            selected_woredas = request.POST.getlist("iworeda")
+            selected_co_agency = request.POST.getlist("ilead_co_agency")
+            items_woreda = ImplementationArea.objects.filter(id__in=selected_woredas)
+            items_co_agency = Portfolio.objects.filter(id__in=selected_co_agency)
+            instance.save()
+            instance.iworeda.add(*items_woreda)
+            instance.ilead_co_agency.add(*items_co_agency)
+                     
+            return redirect('icnreport_detail',instance.icn_id)
             
-            return redirect('icnreport_detail',instance.icn_id) 
+            
+            
         
         form = IcnReportForm(request.POST, request.FILES, instance=icnreport, user=request.user, icn=icn) 
         context = {'form':form, 'icn':icn, 'icnreport':icnreport}
         return render(request, 'report/icnreport_step_profile_new.html', context)
             
-    elif request.method == "GET" and icnreport.status == False:    
-
-        form = IcnReportForm(instance=icnreport,  user=request.user, icn=icn) 
-        context = {'form':form, 'icn':icn, 'icnreport':icnreport}
+    icn = Icn.objects.get(pk=id)
+    program = Program.objects.filter(id=icn.program_id)
+    current_user = request.user
+    program_users = UserRoles.objects.filter(program__in=program, is_pcn_initiator=True)
+    if User.objects.filter(id=current_user.id,userroles__in=program_users).exists():
+        form = IcnReportForm(instance=icnreport, user=current_user, icn=icn)   
+        context = {'form':form, 'icn':icn, 'user':current_user}
         return render(request, 'report/icnreport_step_profile_new.html', context)
-    else:
-        return HttpResponseRedirect(request.path_info)
+    return redirect('icn_step_approval',icn.id) 
                 
 
 
@@ -265,8 +278,8 @@ def icnreport_submit_form(request, id, sid):
                     })
                 })
             elif icnreportsubmit.submission_status_id == 1:
-                IcnReport.objects.filter(pk=id).update(status=False)
-                IcnReport.objects.filter(pk=id).update(approval_status="Pending Submission")
+                IcnReport.objects.filter(icn_id=icn.id).update(status=False)
+                IcnReport.objects.filter(icn_id=icn.id).update(approval_status="Pending Submission")
                 subject = 'Approval Request temporarily withdrawn - Pending Re-submission'
                 context = {
                         "program": icn.program,
@@ -823,7 +836,7 @@ def activityreport_detail(request, id):
 
  
 def activityreport_add(request, id): 
-    activity = Activity.objects.get(pk=id)
+    activity = Activity.objects.get(id=id)
     activitympacts =  ActivityImpact.objects.filter(activity_id=id)
     if request.method == "POST":
         form = ActivityReportForm(request.POST,request.FILES, user=request.user, activity=activity)
@@ -838,50 +851,58 @@ def activityreport_add(request, id):
             instance.save()
             instance.aworeda.add(*items_woreda)
             instance.alead_co_agency.add(*items_co_agency)
-            return redirect('activityreport_detail',instance.pk) 
+            return redirect('activityreport_detail',id) 
               
         form = ActivityReportForm(request.POST,request.FILES, user=request.user, activity=activity)   
         context = {'form':form, 'activity':activity}
         return render(request, 'report/activityreport_step_profile_add.html', context)
     
 
-    if request.method == "GET":
-        activity = Activity.objects.get(id = id)
-        program = Program.objects.filter(id=activity.icn.program_id)
-        current_user = request.user
-        program_users = UserRoles.objects.filter(program__in=program, is_pcn_initiator=True)
    
-        if User.objects.filter(id=current_user.id,userroles__in=program_users).exists():
+    activity = Activity.objects.get(id = id)
+    program = Program.objects.filter(id=activity.icn.program_id)
+    current_user = request.user
+    program_users = UserRoles.objects.filter(program__in=program, is_pcn_initiator=True)
+
+    if User.objects.filter(id=current_user.id,userroles__in=program_users).exists():
         
-            form = ActivityReportForm(user=request.user, activity=activity)   
-            context = {'form':form, 'activity':activity}
-            return render(request, 'report/activityreport_step_profile_add.html', context)
+        form = ActivityReportForm(user=current_user, activity=activity)   
+        context = {'form':form, 'activity':activity, 'user':current_user}
+        return render(request, 'report/activityreport_step_profile_add.html', context)
     
     return redirect('activity_step_approval',activity.id) 
 
  
 def activityreport_edit(request, id): 
-    activityreport = ActivityReport.objects.get(pk=id)
-    activity = Activity.objects.get(pk=id)
+    activity = Activity.objects.get(id=id)
+    activityreport =  ActivityReport.objects.get(activity_id=id)
     
     if request.method == "POST":
        
         form = ActivityReportForm(request.POST, instance=activityreport, user=request.user)
         if form.is_valid():
             instance = form.save()
-            return redirect('activityreport_detail',instance.pk) 
+            selected_woredas = request.POST.getlist("aworeda")
+            selected_co_agency = request.POST.getlist("alead_co_agency")
+            items_woreda = ImplementationArea.objects.filter(id__in=selected_woredas)
+            items_co_agency = Portfolio.objects.filter(id__in=selected_co_agency)
+            instance.save()
+            instance.aworeda.add(*items_woreda)
+            instance.alead_co_agency.add(*items_co_agency)
+            return redirect('activityreport_detail',id) 
+            
         
         form = ActivityReportForm(request.POST,  instance=activityreport, user=request.user, activity=activity) 
         context = {'form':form, 'activity':activity, 'activityreport':activityreport}
         return render(request, 'report/activityreport_step_profile_add.html', context)
             
-    elif request.method == "GET" and activityreport.status == False:    
-
-        form = ActivityReportForm(instance=activityreport,  user=request.user, activity=activity) 
-        context = {'form':form, 'activity':activity, 'activityreport':activityreport}
+    current_user = request.user
+    if current_user == activityreport.user and activityreport.status ==False:
+        form = ActivityReportForm(instance=activityreport, user=current_user, activity=activity)   
+        context = {'form':form, 'activity':activity, 'user':current_user}
         return render(request, 'report/activityreport_step_profile_add.html', context)
-    else:
-        return HttpResponseRedirect(request.path_info)
+    
+    return redirect('activityreport_detail',id) 
     
  
 
@@ -1019,21 +1040,23 @@ def current_activityreport_submit_approval_list(request, id):
 
 
 def activityreport_submit_form(request, id, sid): 
-    activityreport = get_object_or_404(ActivityReport, pk=id)
-    activity = get_object_or_404(Activity, id = activitiesreport.activity_id)
+    activity = Activity.objects.get(id=id)
+    activityreport = ActivityReport.objects.get(activity_id=activity.id)
     
-    if sid== 1:
+   
+    
+    if sid== 1 and  ActivityReportSubmit.objects.filter(activityreport_id=activityreport.id).exists():
+        activityreportsubmit = ActivityReportSubmit.objects.filter(activityreport_id=activityreport.id).latest('id')
         form = ActivityReportSubmitForm(sid=sid, activityreport=activityreport, user=request.user)
         form.fields['document'].choices = [
                 (document.pk, document) for document in ActivityReportDocument.objects.filter(id=activityreportsubmit.document.id)
                 ]
-    
-    elif sid == 2:
-        form = ActivityReportSubmitForm(sid=sid, activityreport=activityreport, user=request.user)
+    elif (sid== 1 and ActivityReportSubmit.objects.filter(activityreport_id=activityreport.id).exists()==False) or (sid == 2):
+        form = ActivityReportSubmitForm(user=request.user, activityreport=activityreport, sid=sid)
         form.fields['document'].choices = [
                 (document.pk, document) for document in ActivityReportDocument.objects.none()
                 ]
-   
+        
     
     
 
@@ -1051,8 +1074,8 @@ def activityreport_submit_form(request, id, sid):
             activityreportsubmit = get_object_or_404(ActivityReportSubmit, pk=instance.pk)
             #Document.objects.create(user = icnreport.user, document = instance.document,  icnreport=instance.icnreport, description = document_i)
             if activityreportsubmit.submission_status_id == 2:
-                ActivityReport.objects.filter(pk=id).update(status=True)
-                ActivityReport.objects.filter(pk=id).update(approval_status="Pending Approval")
+                ActivityReport.objects.filter(activity_id=activity.id).update(status=True)
+                ActivityReport.objects.filter(activity_id=activity.id).update(approval_status="Pending Approval")
                 ActivityReportSubmitApproval_T.objects.create(user = activityreport.technical_lead,submit_id = instance, document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
                 ActivityReportSubmitApproval_P.objects.create(user = activityreport.program_lead,submit_id = instance,document = instance.document, approval_status=Approvalf_Status.objects.get(id=1))
                 ActivityReportSubmitApproval_F.objects.create(user = activityreport.finance_lead,submit_id = instance,document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
@@ -1090,8 +1113,8 @@ def activityreport_submit_form(request, id, sid):
                 })
             
             elif activityreportsubmit.submission_status_id == 1:
-                ActivityReport.objects.filter(pk=id).update(status=False)
-                ActivityReport.objects.filter(pk=id).update(approval_status="Pending Submission")
+                ActivityReport.objects.filter(activity_id=activity.id).update(status=False)
+                ActivityReport.objects.filter(activity_id=activity.id).update(approval_status="Pending Submission'")
                 subject = 'pproval Request temporarily withdrawn - Pending Re-submission'
                 context = {
                         "program": activity.icn.program,
@@ -1137,7 +1160,7 @@ def activityreport_submit_document(request, id):
     dform = ActivityReportDocumentForm()
     if ActivityReportDocument.objects.filter(activityreport=activityreport.id).exists():
         major = ActivityReportDocument.objects.filter(activityreport=activityreport.id, user=activityreport.user).count() 
-        last_initiator_doc = ActivityReportDocument.objects.filter(activityeport=activityreport.id, user=activityreport.user).latest('id') 
+        last_initiator_doc = ActivityReportDocument.objects.filter(activityreport=activityreport.id, user=activityreport.user).latest('id') 
         minor = ActivityReportDocument.objects.filter(activityreport=activityreport.id, id__gt=last_initiator_doc.id).exclude(user=activityreport.user)
         minor = minor.count()
     else:

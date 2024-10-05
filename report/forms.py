@@ -32,12 +32,12 @@ class IcnReportForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         
         if user and icn:
-           
             program = Program.objects.filter(users_role=user)
             icnreport = IcnReport.objects.filter(user=user)
 
             self.fields['icn'].queryset =  Icn.objects.filter(id=icn.id)
             self.fields['icn'].initial = Icn.objects.filter(id=icn.id).first()
+            self.fields['icn'].widget.attrs['readonly'] = True
             self.fields['program_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user)
             self.fields['program_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user).first()
             self.fields['technical_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_technical_approver=True).exclude(user=user)
@@ -45,6 +45,9 @@ class IcnReportForm(forms.ModelForm):
             self.fields['finance_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user)
             self.fields['finance_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user).first()
             self.fields['actual_report_date'].initial= timezone.now()
+          
+            self.fields['iworeda'].queryset = ImplementationArea.objects.filter(program__in=program)
+       
         myfield = [
             'icn',
             'description',
@@ -120,6 +123,8 @@ class IcnReportForm(forms.ModelForm):
                 'readonly':'true'
                 }
             )
+       
+        #self.fields['icn'].widget.attrs['disabled'] = 'disabled'
         self.fields['description'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-contro-sm', 'rows':'3', 'required':'required'  }    )
        
         self.fields['iworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
@@ -425,9 +430,10 @@ class IcnReportImpactForm(forms.ModelForm):
         
         self.fields['actual_impact_pilot'].required = True 
         self.fields['actual_impact_scaleup'].required = True 
+    
     class Meta:
-        model = IcnReportImpact
-        fields = ['actual_impact_pilot' ,'actual_impact_scaleup',
+         model = IcnReportImpact
+         fields = ['actual_impact_pilot' ,'actual_impact_scaleup',
                     ]
        
 
@@ -435,67 +441,69 @@ class ActivityReportForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         activity = kwargs.pop('activity', None)
-        super().__init__(*args, **kwargs)
-      
+        super().__init__(*args, **kwargs)    
+        
+        program = Program.objects.filter(users_role=user)
         if user and activity:
-            self.fields['activity'].queryset =  Activity.objects.filter(id=activity.id)
-            self.fields['activity'].initial = Activity.objects.filter(id=activity.id).first()
+             print(activity,user)
+             program = Program.objects.filter(users_role=user)
+             print(program)
+             self.fields['activity'].queryset =  Activity.objects.filter(id=activity.id)
+             self.fields['activity'].initial = Activity.objects.filter(id=activity.id).first()
+                
+             program = Program.objects.filter(users_role=user)
+             self.fields['program_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user)
+             self.fields['program_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user).first()
+             self.fields['technical_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_technical_approver=True).exclude(user=user)
+             self.fields['technical_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_technical_approver=True).exclude(user=user).first()
+             self.fields['finance_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user)
+             self.fields['finance_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user).first()
+             self.fields['actual_reporting_date'].initial= timezone.now()
+             self.fields['aworeda'].queryset = ImplementationArea.objects.filter(program__in=program)
+             self.fields['aworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
+             self.fields['aworeda'].queryset = ImplementationArea.objects.filter(program__in=program)
             
-            program = Program.objects.filter(users_role=user)
-            self.fields['program_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user)
-            self.fields['program_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user).first()
-            self.fields['technical_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_technical_approver=True).exclude(user=user)
-            self.fields['technical_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_technical_approver=True).exclude(user=user).first()
-            self.fields['finance_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user)
-            self.fields['finance_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user).first()
-            self.fields['actual_reporting_date'].initial= timezone.now()
-           
+             
+       
+        
         myfield = ['activity',
-           
+        
             'description',
             'actual_start_date', 
             'actual_end_date',
-           
+        
             'actual_reporting_date',
             'program_lead',
             'technical_lead',
             'finance_lead',
-           
+        
             'actual_mc_budget',
-           
+        
             'actual_cost_sharing_budget',
             'cs_currency',
             'mc_currency', 
-         
+            'aworeda',
+        
             
-            
-           
-          
-
-
-           
-            
-
-            ]
+             ]
         for field in myfield:
-            self.fields[field].required = True 
+             self.fields[field].required = True 
 
         
     
 
-       
-       
+    
+    
         self.fields['actual_start_date'].widget = forms.widgets.DateInput(
-          
             attrs={
-               'type': 'date', 'placeholder': 'yyyy-mm-dd',
-                'class': 'form-control',
-                'required': 'true'
-                
-                
-                }
-            )
-  
+                'type': 'date', 'placeholder': 'yyyy-mm-dd',
+                    'class': 'form-control',
+                    'required': 'true'
+                    
+                    
+                    }
+                )
+
         self.fields['actual_end_date'].widget = forms.widgets.DateInput(
             attrs={
                 'type': 'date', 'placeholder': 'yyyy-mm-dd (DOB)',
@@ -506,18 +514,19 @@ class ActivityReportForm(forms.ModelForm):
             attrs={
                 'type': 'date', 
                 'class': 'form-control',
-                 'readonly':'true'
+                'readonly':'true'
                 }
             )
         self.fields['description'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-contro-sm', 'rows':'3', 'required':'required'  }    )
+    
+        
+        #self.fields['aworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
        
        
-        self.fields['aworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
-        self.fields['aworeda'].queryset = ImplementationArea.objects.filter(program__in=program)
-         
+        
     class Meta:
-        model = ActivityReport
-        fields=['activity',
+          model = ActivityReport
+          fields=['activity',
             
             'description',
             'actual_start_date', 
@@ -527,55 +536,55 @@ class ActivityReportForm(forms.ModelForm):
             'program_lead',
             'technical_lead',
             'finance_lead',
-           
+        
             'actual_mc_budget',
-           
+        
             'actual_cost_sharing_budget',
             'cs_currency',
             'mc_currency', 
             
-          
-           
-           
-          
+        
+        
+        
+        
 
 
-           
+        
             
 
             ]
 
-        exclude=  ['status', 'approval_status',  'user',]
+          exclude=  ['status', 'approval_status',  'user',]
         
     def clean(self):
-         cleaned_data = super().clean()
-         
-         program_lead = self.cleaned_data.get('program_lead')
-         finance_lead = self.cleaned_data.get('finance_lead')
-         technical_lead = self.cleaned_data.get('technical_lead')
-         
-         actual_start_date = self.cleaned_data.get('actual_start_date')
-         actual_end_date = self.cleaned_data.get('actual_end_date')
-         actual_reporting_date = self.cleaned_data.get('actual_report_due_date')
-         mc_currency = self.cleaned_data.get('mc_currency')
-         cs_currency = self.cleaned_data.get('cs_currency')
+          cleaned_data = super().clean()
+        
+          program_lead = self.cleaned_data.get('program_lead')
+          finance_lead = self.cleaned_data.get('finance_lead')
+          technical_lead = self.cleaned_data.get('technical_lead')
+        
+          actual_start_date = self.cleaned_data.get('actual_start_date')
+          actual_end_date = self.cleaned_data.get('actual_end_date')
+          actual_reporting_date = self.cleaned_data.get('actual_report_due_date')
+          mc_currency = self.cleaned_data.get('mc_currency')
+          cs_currency = self.cleaned_data.get('cs_currency')
 
-         if (technical_lead==program_lead or technical_lead==finance_lead):
+          if (technical_lead==program_lead or technical_lead==finance_lead):
               self._errors['technical_lead'] = self.error_class(['Lead should take up only one role'])
-         elif (program_lead==technical_lead or program_lead==finance_lead):
+          elif (program_lead==technical_lead or program_lead==finance_lead):
               self._errors['program_lead'] = self.error_class(['Lead should take up only one role'])
-         
-         elif (finance_lead==technical_lead or finance_lead==program_lead):
+        
+          elif (finance_lead==technical_lead or finance_lead==program_lead):
               self._errors['finance_lead'] = self.error_class(['Lead should take up only one role'])
         
-         elif ( actual_end_date != None and actual_start_date != None and actual_end_date < actual_start_date):
-               self._errors['actual_end_date'] = self.error_class(['End date should always be after start date'])
-         elif (actual_reporting_date != None and actual_end_date != None and actual_reporting_date < actual_end_date):
-             self._errors['actual_reporting_date'] = self.error_class(['Reporting Date should always be after end date'])
-         elif (mc_currency != None and cs_currency != None and mc_currency != cs_currency):
-             self._errors['mc_currency'] = self.error_class(['Different currncy used'])
-         
-         return cleaned_data
+          elif ( actual_end_date != None and actual_start_date != None and actual_end_date < actual_start_date):
+              self._errors['actual_end_date'] = self.error_class(['End date should always be after start date'])
+          elif (actual_reporting_date != None and actual_end_date != None and actual_reporting_date < actual_end_date):
+              self._errors['actual_reporting_date'] = self.error_class(['Reporting Date should always be after end date'])
+          elif (mc_currency != None and cs_currency != None and mc_currency != cs_currency):
+              self._errors['mc_currency'] = self.error_class(['Different currncy used'])
+        
+          return cleaned_data
 
 class ActivityReportAreaFormE(forms.ModelForm):
     def __init__(self, *args, **kwargs):

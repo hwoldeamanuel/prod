@@ -32,7 +32,7 @@
 
                 
 
-                <div style="height:370px;">
+                <div style="height:300px;">
                   <div class="row">
                     <div class="table" id="SubmitList" hx-trigger="load, SubmitApprovalListChanged from:body" hx-get= "{% url 'current_activity_submit_approval_list' activity.id %}" hx-target="this" >
 
@@ -48,10 +48,10 @@
 
                       <ul class="nav nav-tabs bar_tabs" id="myTab" data-example-id="togglable-tabs" role="tablist">
                         <li class="nav-item">
-                          <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Submission | Approval Log</a>
+                          <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Concept Note Version Log</a>
                         </li>
                         <li class="nav-item">
-                          <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Concept Note Version Log</a>
+                          <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Submission | Approval Log</a>
                         </li>
                         
                       </ul>
@@ -59,9 +59,8 @@
                         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                               <div>
 
-              
+               <div id="documentlist" hx-trigger="load, SubmitApprovalListChanged from:body" hx-get="{% url 'activity_document_list' activity.id %}" hx-target="this">
                 
-<div  hx-trigger="load, SubmitApprovalListChanged from:body" hx-get="{% url 'activity_submit_approval_list' activity.id %}" hx-target="this">
             
 
                 
@@ -69,7 +68,9 @@
               </div>
                         </div>
                         <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                       <div id="documentlist" hx-trigger="load, SubmitApprovalListChanged from:body" hx-get="{% url 'activity_document_list' activity.id %}" hx-target="this">
+                      
+                        <div  hx-trigger="load, SubmitApprovalListChanged from:body" hx-get="{% url 'activity_submit_approval_list' activity.id %}" hx-target="this">
+
                         </div>
 </div>
                         

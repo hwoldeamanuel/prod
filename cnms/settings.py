@@ -124,6 +124,19 @@ conn_str = env('AZURE_POSTGRESQL_CONNECTIONSTRING')
 conn_str_params = {pair.split('=')[0]: pair.split('=')[1] for pair in conn_str.split(' ')}
 
 DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'paqcnms',
+            'USER': 'postgres',
+            'PASSWORD': 'Letmein@2023_1',
+            'HOST': 'localhost',
+            'PORT': '5432',
+            'DISABLE_SERVER_SIDE_CURSORS': True, 
+        }
+    }
+
+"""
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': conn_str_params['dbname'],
@@ -134,6 +147,7 @@ DATABASES = {
         'sslmode': 'require',
     }
 }
+"""
 #database_url = os.environ.get("DATABASE_URL")
 #DATABASES = {
  #   "default" : dj_database_url.parse(database_url)
