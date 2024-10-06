@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 from portfolio.models import Portfolio
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
+from collections import namedtuple
 from .forms import PortfolioForm, FieldOfficeForm
 from .models import Portfolio, FieldOffice
 from easyaudit.models import LoginEvent, RequestEvent, CRUDEvent
@@ -43,18 +44,11 @@ def portfolios(request):
 @login_required(login_url='login')
 def mercycorps(request):
     portfolio = Portfolio.objects.filter(id=1)
-    qs1 = Icn.objects.filter(Q(ilead_agency__in=portfolio) | Q(ilead_co_agency__in=portfolio)).annotate(m=TruncMonth('created')).values("m").annotate(icn_count=Count('id', distinct=True))
-    qs2 = Activity.objects.filter(Q(alead_agency__in=portfolio) | Q(alead_co_agency__in=portfolio)).annotate(m=TruncMonth('created')).values("m").annotate(activity_count=Count('id', distinct=True))
- 
+   
+        
 
-
-
-    collector = defaultdict(dict)
-
-    for collectible in chain(qs1, qs2):
-        collector[collectible['m']].update(collectible.items())
-
-    all_request = list(collector.values())
+    all_request =  Icn.objects.filter(Q(ilead_agency__in=portfolio) | Q(ilead_co_agency__in=portfolio)).annotate(m=TruncMonth('created')).values("m").annotate(icn_count=Count('id', distinct=True)).annotate(activity_count=Count('activity', distinct=True))
+    
     portfolio = Portfolio.objects.get(id=1)
     total_icn  =  Icn.objects.filter(Q(ilead_agency=portfolio.id) | Q(ilead_co_agency=portfolio.id)).count
     total_acn  =  Activity.objects.filter(Q(alead_agency=portfolio.id) | Q(alead_co_agency=portfolio.id)).count

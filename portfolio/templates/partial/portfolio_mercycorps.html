@@ -174,7 +174,7 @@ var myChart = new Chart(ctx, {
     
     
      data: {
-        labels: [{% for cn in all_request %} "{{ cn.m|date:'M-Y' }}", {% endfor %}],
+        labels: [{% for cn in all_request  %} "{{ cn.m|date:'M-Y' }}", {% endfor %}],
         datasets: [{
           label: "Intervention",
           data: [{% for cn in all_request %} {{ cn.icn_count }}, {% endfor %}],

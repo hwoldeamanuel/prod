@@ -53,7 +53,8 @@ class Icn(models.Model):
     approval_status = models.CharField(max_length=100,null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     
-
+    class Meta:
+        ordering = ('-created',)
     
     
     def save(self,*args, **kwargs):
@@ -339,12 +340,24 @@ class IcnSubmitApproval_F(models.Model):
         return str(self.id)
     
 
+  
 
 class Impact(models.Model):
+    Numeric = 1
+    Percentage = 2
+    Other = 3
+    
+    UNIT = (
+        (Numeric, 'Numeric'),
+        (Percentage, 'Percentage'),
+        (Other, 'Other'),
+       
+        )
     icn =  models.ForeignKey(
         Icn, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(max_length=255, null=True, blank=True)
     description = models.CharField(max_length=255, null=True, blank=True)
+    unit = models.PositiveSmallIntegerField(choices=UNIT, blank=True, null=True)
     impact_pilot  = models.IntegerField(null=True, blank=True)
     impact_scaleup  = models.IntegerField(null=True, blank=True)
     indicators = models.ManyToManyField(Indicator, related_name='impacts')
@@ -392,6 +405,9 @@ class Activity(models.Model):
     approval_status = models.CharField(max_length=100,null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
+    class Meta:
+        ordering = ('-created',)
+
     def save(self,*args, **kwargs):
         super().save(*args, **kwargs)
         suffix = f"{self.pk}".zfill(4)
@@ -426,10 +442,21 @@ class ActivityImplementationArea(models.Model):
         return str(self.pk)
     
 class ActivityImpact(models.Model):
+    Numeric = 1
+    Percentage = 2
+    Other = 3
+    
+    UNIT = (
+        (Numeric, 'Numeric'),
+        (Percentage, 'Percentage'),
+        (Other, 'Other'),
+       
+        )
     activity =  models.ForeignKey(
         Activity, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(max_length=255, null=True, blank=True)
     description = models.CharField(max_length=255, null=True, blank=True)
+    unit = models.PositiveSmallIntegerField(choices=UNIT, blank=True, null=True)
     impact_pilot  = models.IntegerField(null=True, blank=True)
     impact_scaleup  = models.IntegerField(null=True, blank=True)
     impact = models.ManyToManyField(Impact, related_name='activityimpacts')

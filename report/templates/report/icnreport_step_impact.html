@@ -32,7 +32,8 @@
             <tr>
               <th>#</th>
            <th style="width: 25%">Title</th>
-              <th style="width: 35%">Description</th>
+              <th style="width: 25%">Description</th>
+               <th style="width: 10%">Unit</th>
             <th >Pilot(T)</th>
              <th >Scaleup(T)</th>
              <th >Pilot(A)</th>
@@ -54,7 +55,7 @@
                                   <td class="vertical-align-mid">
                                     
                                   {{ impact.description }}</td>
-               
+                 <td class="vertical-align-mid">{{ impact.get_unit_display }}</td>
                 <td class="vertical-align-mid">{{ impact.impact_pilot|intcomma }}</td>
                 <td class="vertical-align-mid">{{ impact.impact_scaleup|intcomma }}</td>
                  <td class="vertical-align-mid">{{ impact.icnreportimpact.actual_impact_pilot|intcomma }}</td>

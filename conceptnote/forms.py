@@ -420,9 +420,10 @@ class ImpactForm(forms.ModelForm):
        
         self.fields['impact_pilot'].required = True 
         self.fields['impact_scaleup'].required = True 
+        self.fields['unit'].required = True 
     class Meta:
         model = Impact
-        fields = ['title', 'description','impact_pilot' ,'impact_scaleup',
+        fields = ['title', 'description','unit','impact_pilot' ,'impact_scaleup',
                     'indicators']
         exclude=  ['icn']
 
@@ -668,7 +669,7 @@ class ActivityImpactForm(forms.ModelForm):
         self.fields['impact_scaleup'].required = True 
     class Meta:
         model = ActivityImpact
-        fields = ['title','description', 'impact_pilot' ,'impact_scaleup',
+        fields = ['title','description','unit', 'impact_pilot' ,'impact_scaleup',
                     'impact']
         exclude=  ['activity']
 

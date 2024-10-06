@@ -7,7 +7,7 @@
         input, select {width: 100%}
     </style>
 <div class="modal-header">
-    <h5 class="modal-title">Impact Form</h5>
+    <h5 class="modal-title">Target Form</h5>
     <button type="button" class="btn-close" class="close" data-bs-dismiss="modal" aria-label="Close"></button>
   </div>
   <div class="modal-body">
@@ -28,6 +28,16 @@
                                 
                                     {% render_field form.description class+="form-control form-control-sm" %}
                                     <div class="invalid-feedback">{{ form.description.errors|first }}</div>
+                            </div>
+                        
+                        </div>
+                             <div class="item form-group">
+                            <label class="col-form-label col-md-2 col-sm-2 label-align" for="first-name">Unit:<span class="required">*</span>
+                            </label>
+                            <div class="col-md-8 col-sm-8 ">
+                                
+                                    {% render_field form.unit class+="form-control form-control-sm" %}
+                                    <div class="invalid-feedback">{{ form.unit.errors|first }}</div>
                             </div>
                         
                         </div>
@@ -52,7 +62,7 @@
                         </div>
      <div class="item form-group">
                             
-                                <label class="col-form-label col-md-2 col-sm-2 label-align" for="impact">Intervention Impact:<span class="required">*</span>
+                                <label class="col-form-label col-md-2 col-sm-2 label-align" for="impact">Intervention Target:<span class="required">*</span>
                                 </label>
                                 <div class="col-md-8 col-sm-8">
                                   
