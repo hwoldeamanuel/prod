@@ -660,14 +660,20 @@ class ActivityReportSubmitForm(forms.ModelForm):
          
          self.fields['document'].required = True 
          
-         self.fields['document'].choices = [
-             (document.pk, document) for document in ActivityReportDocument.objects.filter(user=user, activityreport=activityreport)
-         ]
+       
 
          self.fields['submission_status'].choices = [
             (submission_status.id, submission_status.name) for submission_status in Submission_Status.objects.filter(id=sid)
         ] 
-         
+        
+         if sid==2:
+              self.fields['document'].choices = [
+                (document.pk, document) for document in ActivityReportDocument.objects.none()
+            ] 
+         else:
+               self.fields['document'].choices = [
+                (document.pk, document) for document in ActivityReportDocument.objects.filter(user=user, activityreport=activityreport)
+            ] 
          
       # invalid input from the client; ignore and fallback to empty City queryset
         
@@ -676,7 +682,7 @@ class ActivityReportSubmitForm(forms.ModelForm):
          self.fields['submission_note'].required = True 
        
          self.fields['submission_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
-         
+         self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
              
       # invalid input from the client; ignore and fallback to empty City queryset
         
@@ -726,7 +732,7 @@ class ActivityReportApprovalTForm(forms.ModelForm):
          self.fields['approval_status'].choices = [
              (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalt_Status.objects.filter(id=did)
          ]
-          
+         self.fields['approval_status'].widget.attrs['readonly'] = True
          if did == 2:
                self.fields['document'].choices = [
              (document.pk, document) for document in ActivityReportDocument.objects.none()
@@ -753,7 +759,8 @@ class ActivityReportApprovalPForm(forms.ModelForm):
          self.fields['approval_status'].choices = [
              (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalf_Status.objects.filter(id=did)
          ]
-          
+         
+         self.fields['approval_status'].widget.attrs['readonly'] = True
          if did == 2:
                self.fields['document'].choices = [
              (document.pk, document) for document in ActivityReportDocument.objects.none()

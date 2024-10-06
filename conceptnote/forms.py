@@ -39,7 +39,7 @@ class IcnForm(forms.ModelForm):
             self.fields['technical_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_technical_approver=True).exclude(user=user).first()
             self.fields['finance_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user)
             self.fields['finance_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user).first()
-           
+            
         myfield = ['title',
             'program',
             'description',
@@ -104,7 +104,7 @@ class IcnForm(forms.ModelForm):
         self.fields['ilead_co_agency'].queryset = Portfolio.objects.all()
         self.fields['iworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
         self.fields['iworeda'].queryset = ImplementationArea.objects.filter(program__in=program)
-        self.fields['iworeda'].required = True 
+       
         
     class Meta:
         model = Icn
@@ -320,7 +320,7 @@ class IcnApprovalTForm(forms.ModelForm):
           self.fields['approval_status'].choices = [
              (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalt_Status.objects.filter(id=did)
          ]
-          
+          self.fields['approval_status'].widget.attrs['readonly'] = True
           if did == 2:
                self.fields['document'].choices = [
              (document.pk, document) for document in Document.objects.none()
@@ -349,7 +349,7 @@ class IcnApprovalFForm(forms.ModelForm):
           self.fields['approval_status'].choices = [
              (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalt_Status.objects.filter(id=did)
              ]
-          
+          self.fields['approval_status'].widget.attrs['readonly'] = True
           if did == 2:
                self.fields['document'].choices = [
              (document.pk, document) for document in Document.objects.none()
@@ -379,7 +379,7 @@ class IcnApprovalPForm(forms.ModelForm):
              
       
 
-           
+           self.fields['approval_status'].widget.attrs['readonly'] = True
        
            if did == 2:
                self.fields['document'].choices = [

@@ -35,7 +35,7 @@
                             <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.title.id_for_label }}">Title: <span class="required"></span>
                             </label>
                             <div class="col-md-8 col-sm-8">
-                              {%  render_field form.title class+="form-control form-control-sm required" %}
+                              {% render_field form.title class="form-control form-control-sm" required="required"%}
                               <div class="invalid-feedback">{{ form.title.errors|first }}</div>
                               
 
@@ -53,7 +53,7 @@
                                 </label>
                             <div class="col-md-2 col-sm-2">
                             
-                                {% render_field   form.ilead_agency class="form-control form-control-sm" required= %}
+                                {% render_field   form.ilead_agency class="form-control form-control-sm required" %}
                                 <div class="invalid-feedback">{{ form.ilead_agency.errors|first }}</div>
                             </div>
                             <label class="col-form-label col-md-1 col-sm-1 label-align">Co-Lead:
