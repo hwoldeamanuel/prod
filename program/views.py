@@ -34,7 +34,8 @@ def program_list(request):
         return redirect('program_detail',pk=program.id) 
     
     else:
-        programs = Program.objects.get(users_role=user)
+        programs = Program.objects.filter(users_role=user)
+        
     
    
     context = {'programs': programs}
