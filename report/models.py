@@ -27,6 +27,7 @@ class IcnReport(models.Model):
     actual_report_date = models.DateField(null=True, blank=True)
     program_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='irprogram_lead')
     technical_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='irtechnical_lead')
+    mel_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='irmel_lead')
     finance_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='irfinance_lead')
     description = models.TextField(null=True, blank=True)
     iworeda = models.ManyToManyField(ImplementationArea,  blank=True, related_name='program_rworedas')
@@ -74,14 +75,14 @@ class IcnReportImplementationArea(models.Model):
         return str(self.pk)
 
 def path_and_rename(instance, filename):
-    upload_to = 'documents/'
+    upload_to = 'Report/'
     ext = filename.split('.')[-1]
 
     # get filename
     if hasattr(instance, 'icnreport'):
-        filename = '{}.{}'.format(instance.icnreport.icn.title +"_Version_"+ instance.ver + "_" + instance.user.email.split('@')[0], ext)
+        filename = '{}.{}'.format(instance.icnreport.icn.title +"_Version_"+ instance.ver + "_" + instance.user.username, ext)
     elif hasattr(instance, 'activityreport'):
-         filename = '{}.{}'.format(instance.activityreport.activity.title +"_Version_"+ instance.ver + "_" + instance.user.email.split('@')[0], ext)
+         filename = '{}.{}'.format(instance.activityreport.activity.title +"_Version_"+ instance.ver + "_" + instance.user.username, ext)
         # set filename as random string
     else:
         filename = '{}.{}'.format(uuid4().hex, ext)
@@ -103,7 +104,7 @@ class IcnReportDocument(models.Model):
     
     
     def __str__(self):
-        return "%s %s %s" % ("Version", self.ver, self.user.email.split('@')[0])
+        return "%s %s %s" % ("Version", self.ver, self.user.username)
     
       
 
@@ -161,6 +162,31 @@ class IcnReportSubmitApproval_T(models.Model):
     
     def __str__(self):
         return str(self.id)
+
+class IcnReportSubmitApproval_M(models.Model):
+        
+    user = models.ForeignKey(UserRoles, on_delete=models.CASCADE)
+    submit_id = models.OneToOneField(IcnReportSubmit, on_delete=models.CASCADE)
+    approval_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)
+    approval_note = models.TextField(null=True,  blank=True)
+    approval_status = models.ForeignKey(Approvalt_Status, on_delete=models.CASCADE)
+    document = models.ForeignKey(IcnReportDocument, on_delete=models.CASCADE)
+    
+    def __init__(self, *args, **kwargs):
+        super(IcnReportSubmitApproval_M, self).__init__(*args, **kwargs)
+        self.old_approval_status = self.approval_status
+        self.old_document = self.document
+        
+    
+    def save(self, *args, **kwargs):
+        if (self.approval_status and self.old_approval_status != self.approval_status) or (self.document and self.old_document != self.document):
+            self.approval_date = timezone.now()
+        super(IcnReportSubmitApproval_M, self).save(*args, **kwargs)
+        
+    
+    def __str__(self):
+        return str(self.id)
+    
     
 
 class IcnReportSubmitApproval_P(models.Model):
@@ -238,6 +264,7 @@ class ActivityReport(models.Model):
     actual_reporting_date = models.DateField(null=True, blank=True)
     program_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='arprogram_lead')
     technical_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='artechnical_lead')
+    mel_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='armel_lead')
     finance_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='arfinance_lead')
     description = models.TextField(null=True, blank=True)
    
@@ -311,7 +338,7 @@ class ActivityReportDocument(models.Model):
         ordering = ('-uploaded_at',)
     
     def __str__(self):
-        return "%s %s %s" % ("Version", self.ver, self.user.email.split('@')[0])
+        return "%s %s %s" % ("Version", self.ver, self.user.username)
 
 class ActivityReportSubmit(models.Model):
   
@@ -356,6 +383,30 @@ class ActivityReportSubmitApproval_T(models.Model):
         if (self.approval_status and self.old_approval_status != self.approval_status) or (self.document and self.old_document != self.document):
             self.approval_date = timezone.now()
         super(ActivityReportSubmitApproval_T, self).save(*args, **kwargs)
+        
+    
+    def __str__(self):
+        return str(self.id)
+
+class ActivityReportSubmitApproval_M(models.Model):
+   
+    user = models.ForeignKey(UserRoles, on_delete=models.CASCADE)
+    submit_id = models.OneToOneField(ActivityReportSubmit, on_delete=models.CASCADE)
+    approval_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)
+    approval_note = models.TextField(null=True,  blank=True)
+    approval_status = models.ForeignKey(Approvalt_Status, on_delete=models.CASCADE)
+    document = models.ForeignKey(ActivityReportDocument, on_delete=models.CASCADE)
+    
+    def __init__(self, *args, **kwargs):
+        super(ActivityReportSubmitApproval_M, self).__init__(*args, **kwargs)
+        self.old_approval_status = self.approval_status
+        self.old_document = self.document
+        
+    
+    def save(self, *args, **kwargs):
+        if (self.approval_status and self.old_approval_status != self.approval_status) or (self.document and self.old_document != self.document):
+            self.approval_date = timezone.now()
+        super(ActivityReportSubmitApproval_M, self).save(*args, **kwargs)
         
     
     def __str__(self):

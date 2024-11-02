@@ -29,17 +29,19 @@
                       {% load widget_tweaks %}
                       {% with WIDGET_ERROR_CLASS='is-invalid' %}
                       
-                     <form class="form-horizontal form-label-left" method="post" novalidate action="" enctype="multipart/form-data"   >
+                     <form class="form-horizontal form-label-left" method="post"  enctype="multipart/form-data"   >
                    
                      
                         {% csrf_token %}
                            <div class="form-group row">
-                               <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.icn.id_for_label }}">Intervention title: <span class="required"></span>
+                               <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.icn.id_for_label }}">Intervention Title: <span class="required"></span>
                                 </label>
                                   <div class="col-md-8 col-sm-8">
-                                    {%  render_field form.icn class+="form-control form-control-sm"  %}
+                                    {%  render_field form.icn class+="form-control form-control-sm"  autocomplete="off"  hx-get="/conceptnote/icn_info/" hx-target="#icn_info" hx-swap="innerHTML"  %}
                                   </div>
-                                
+                                  <div id="icn_info">
+                              
+                                </div>
                               </div>
                          <div class="form-group row">
                                 <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.title.id_for_label }}">Activity Title: <span class="required"></span>
@@ -56,7 +58,7 @@
                               <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.alead_agency.id_for_label }}">Lead Agency:</label>
                               <div class="col-md-2 col-sm-2">
                               
-                                 {% render_field   form.alead_agency class="form-control form-control-sm required" %}
+                                 {% render_field   form.alead_agency class="form-control form-control-sm" required= %}
                                  <div class="invalid-feedback">{{ form.alead_agency.errors|first }}</div>
                               </div>
                               <label class="col-form-label col-md-2 col-sm-2 label-align" for=" {% render_field form.alead_co_agency.id_for_label %}">Co-Lead Agency:</label>
@@ -100,10 +102,10 @@
                             <label class="col-form-label col-md-2 col-sm-2 label-align" >Mercy Corps Budget: <span class+="required"></span>
                             </label>
                             <div class="col-md-2 col-sm-2">
-                                   {% render_field form.mc_budget class="form-control form-control-sm" %}
+                                   {% render_field form.mc_budget class="form-control form-control-sm required" %}
                                  <div class="invalid-feedback">{{ form.mc_budget.errors|first }}</div>
                             </div>
-                             <div class="col-md-1 col-sm-1">
+                             <div class="col-md-1 col-sm-12  form-group">
                                    {% render_field form.mc_currency class="form-control form-control-sm" %}
                                  <div class="invalid-feedback">{{ form.mc_currency.errors|first }}</div>
                             </div>
@@ -111,37 +113,45 @@
                             <label class="col-form-label col-md-2 col-sm-2 label-align" >Cost Share Budget:
                             </label>
                             <div class="col-md-2 col-sm-2 ">
-                                    {% render_field form.cost_sharing_budget class="form-control form-control-sm" %}
+                                    {% render_field form.cost_sharing_budget class="form-control form-control-sm required" %}
                                  <div class="invalid-feedback">{{ form.cost_sharing_budget.errors|first }}</div>
                             </div>
                             <div class="col-md-1 col-sm-1">
-                                    {% render_field form.cs_currency class="form-control form-control-sm required" %}
+                                    {% render_field form.cs_currency class="form-control form-control-sm" %}
                                  <div class="invalid-feedback">{{ form.cs_currency.errors|first }}</div>
                             </div>
                           </div>
                           <div class="form-group row">
-                            <label class="col-form-label col-md-2 col-sm-2 label-align" >Program:<span class="required"></span>
-                            </label>
-                            <div class="col-md-2 col-sm-2">
-                            
-                                {% render_field form.program_lead class="form-control form-control-sm" %}
-                                  <div class="invalid-feedback">{{ form.program_lead.errors|first }}</div>
-                                </div>
-                                <label class="col-form-label col-md-1 col-sm-1 label-align" >Techncial: <span class="required"></span>
+                           
+                                <label class="col-form-label col-md-2 col-sm-2 label-align" >Techncial Lead:<span class="required"></span>
                                 </label>
-                                <div class="col-md-2 col-sm-2">
+                                <div class="col-md-3 col-sm-3">
                                   {% render_field form.technical_lead class="form-control form-control-sm"  %}
                                   <div class="invalid-feedback">{{ form.technical_lead.errors|first }}</div>
                                   </div>
+                                    <label class="col-form-label col-md-2 col-sm-2 label-align" >MEL Lead: <span class="required"></span>
+                                </label>
+                                <div class="col-md-3 col-sm-3">
+                                  {% render_field form.mel_lead class="form-control form-control-sm"  %}
+                                  <div class="invalid-feedback">{{ form.mel_lead.errors|first }}</div>
+                                  </div>
                             
-                            
-                              <label class="col-form-label col-md-1 col-sm-1 label-align" >Finance:<span class="required"></span>
+                             </div>
+                          <div class="form-group row">
+                              <label class="col-form-label col-md-2 col-sm-2 label-align" >Finance Lead:<span class="required"></span>
                               </label>
-                              <div class="col-md-2 col-sm-2">
+                              <div class="col-md-3 col-sm-3">
                                 {% render_field form.finance_lead class="form-control form-control-sm" %}
                                   <div class="invalid-feedback">{{ form.finance_lead.errors|first }}</div>
 
 
+                                </div>
+                                 <label class="col-form-label col-md-2 col-sm-2 label-align" >Program Lead:<span class="required"></span>
+                            </label>
+                            <div class="col-md-3 col-sm-3">
+                            
+                                {% render_field form.program_lead class="form-control form-control-sm" %}
+                                  <div class="invalid-feedback">{{ form.program_lead.errors|first }}</div>
                                 </div>
                          </div>
                         <div class="form-group row">
@@ -152,7 +162,7 @@
                             </div>
                         
                           </div>
-                            <div class="ln_solid"></div>
+                               <div class="ln_solid"></div>
 										
 											<div class="col-md-12 col-sm-12">
                       	<div class="col-md-4 col-sm-4"></div>

@@ -257,7 +257,6 @@ class CoAuthorsWidget(s2forms.ModelSelect2MultipleWidget):
 
 class ProgramForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        portfolio = kwargs.pop('portfolio', None)
         super().__init__(*args, **kwargs)
         self.fields['start_date'].widget = forms.widgets.DateInput(
           
@@ -369,7 +368,9 @@ class UserRoleForm(forms.ModelForm):
             
     class Meta:
         model = UserRoles
-        fields=['user','is_pcn_initiator', 'is_pcn_technical_approver', 'is_pcn_program_approver','is_pcn_finance_approver']
+        fields=['user','is_pcn_initiator', 'is_pcn_mel_approver','is_pcn_technical_approver', 'is_pcn_program_approver','is_pcn_finance_approver',
+                'is_pacn_initiator', 'is_pacn_mel_approver','is_pacn_technical_approver', 'is_pacn_program_approver','is_pacn_finance_approver'
+                ]
 
 class UserRoleFormE(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -382,8 +383,12 @@ class UserRoleFormE(forms.ModelForm):
             self.fields['user'].initial = User.objects.filter(id=id).first()
         
         self.fields['user'].required = True 
+        self.fields['user'].widget.attrs['readonly'] = True
         
             
     class Meta:
         model = UserRoles
-        fields=['user','is_pcn_initiator', 'is_pcn_technical_approver', 'is_pcn_program_approver','is_pcn_finance_approver']
+        fields=['user','is_pcn_initiator', 'is_pcn_mel_approver','is_pcn_technical_approver', 'is_pcn_program_approver','is_pcn_finance_approver',
+                'is_pacn_initiator', 'is_pacn_mel_approver','is_pacn_technical_approver', 'is_pacn_program_approver','is_pacn_finance_approver'
+                ]
+        readonly_fields = ('user',)

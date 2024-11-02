@@ -9,7 +9,7 @@
          
           <div class="page-title">
               <div class="title_left">
-                <h3>Concept Note :: Intervention</h3>
+                <h3>Intervention Concept Note :: Invoice </h3>
               </div>
 
               
@@ -38,54 +38,68 @@
                   </div>
                    
 
-<p>Title: <strong>{{ icn.title }}</strong>  &emsp; ID: <strong>{{ icn.icn_number }}</strong></p> 
+<p>Title: <strong>{{ icn.title }}</strong> </p>
+<p>ID: <strong>{{ icn.icn_number }}</strong></p> 
 
-                            <p><strong>Description: </strong> {{ icn.description }}</p>
+                           
                     <section class="content invoice">
                       <!-- title row -->
                      
                       <!-- info row -->
-                      <div class="row invoice-info">
-                        <div class="col-sm-3 invoice-col">
+                      <div class="row invoice-info ">
+                        <div class="col-sm-4 invoice-col">
                           Initited By:
                           <address>
                                           <strong>{{icn.user.profile.full_name}}</strong>
                                           <br>{{icn.user.profile.job_title}}
-                                          <br>{{icn.user.profile.portfolio}}
-                                          <br>{{icn.user.profile.contact_number}}
+                                          ,{{icn.user.profile.portfolio}}
+                                     
                                           <br>{{icn.user.email }}
                                       </address>
                         </div>
                         <!-- /.col -->
-                        <div class="col-sm-3 invoice-col">
+                        <div class="col-sm-4 invoice-col">
                           Techncial Lead:
                           <address>
                                           <strong>{{icn.technical_lead.user.profile.full_name}}</strong>
                                            <br>{{icn.technical_lead.user.profile.job_title}}
-                                          <br>{{icn.technical_lead.user.profile.portfolio}}
-                                          <br>{{icn.technical_lead.user.profile.contact_number}}
+                                          ,{{icn.technical_lead.user.profile.portfolio}}
+                                        
                                           <br>{{icn.technical_lead.user.email }}
                                       </address>
                         </div>
+                           <div class="col-sm-4 invoice-col">
+                          MEL Lead:
+                          <address>
+                                          <strong>{{icn.mel_lead.user.profile.full_name}}</strong>
+                                           <br>{{icn.mel_lead.user.profile.job_title}}
+                                          ,{{icn.mel_lead.user.profile.portfolio}}
+                                   
+                                          <br>{{icn.mel_lead.user.email }}
+                                      </address>
+                        </div>
+                          <div class="col-sm-4 invoice-col">
+                          </div>
                         <!-- /.col -->
-                       <div class="col-sm-3 invoice-col">
+                       <div class="col-sm-4 invoice-col">
                           Finance Lead:
                           <address>
                                            <strong>{{icn.finance_lead.user.profile.full_name}}</strong>
                                          <br>{{icn.finance_lead.user.profile.job_title}}
-                                          <br>{{icn.finance_lead.user.profile.portfolio}}
-                                          <br>{{icn.finance_lead.user.profile.contact_number}}
+                                          ,{{icn.finance_lead.user.profile.portfolio}}
+                                        
                                           <br>{{icn.finance_lead.user.email }}
                                       </address>
                         </div>
-                           <div class="col-sm-3 invoice-col">
+
+                           <div class="col-sm-4 invoice-col">
                           Program Lead:
                           <address>
                                           <strong>{{icn.program_lead.user.profile.full_name}}</strong>
                                           <br>{{icn.program_lead.user.profile.job_title}}
-                                          <br>{{icn.program_lead.user.profile.portfolio}}
-                                          <br>{{icn.program_lead.user.profile.contact_number}}
-                                          <br>{{icn.program_lead.user.email }}
+                                          ,{{icn.program_lead.user.profile.portfolio}}
+                                     
+                                          <br>{{icn.program_lead.user.email }}</br>
                                       </address>
                         </div>
                         <!-- /.col -->
@@ -99,11 +113,11 @@
                             <thead>
                               <tr>
                                 <th>#</th>
-                                <th style="width:18%">Team Lead</th>
-                                <th style="width:22%">Submission/Approval Date</th>
-                                
-                                <th style="width:45%">Submission/Approval Note</th>
-                                <th style="width:15%">Status</th>
+                                <th style="width:22%">Team Lead</th>
+                                <th style="width:12%"> Modified Date</th>
+                                 <th style="width:14%">Status</th>
+                                <th style="width:50%">Submission/Approval Note</th>
+                               
                                
                               </tr>
                             </thead>
@@ -111,47 +125,65 @@
                               <tr>
                                 <td>1</td>
                                 <td>Initiator</br>{{icn.user.profile.full_name}}</td>
-                                <td>{{icnsubmit.submission_date}}</td>
-                               
-                                <td>{{icnsubmit.submission_note}}</td>
-                                 <td>{{icnsubmit.submission_status.name }}
+                               <td>{{icnsubmit.submission_date|date:"M d,Y"}} </br>
+                                {{icnsubmit.submission_date|time }}
                                 </td>
+                                 <td>{{icnsubmit.submission_status.name }}</td>
+                                <td>{{icnsubmit.submission_note}}</td>
+                               
+                                
                               </tr>
                               <tr>
                                 <td>2</td>
                                 <td>Techncial Lead</br>{{icn.technical_lead.user.profile.full_name}}</td>
-                                <td>{{icnsubmit.icnsubmitapproval_t.approval_date}}</td>
-                                
+                                <td>{{icnsubmit.icnsubmitapproval_t.approval_date|date:"M d,Y"}} </br>
+                                {{icnsubmit.icnsubmitapproval_t.approval_date|time }}
+                                </td>
+                                 <td>{{icnsubmit.icnsubmitapproval_t.approval_status.name}}</td>
                                 <td>{{icnsubmit.icnsubmitapproval_t.approval_note }}</td>
-                                <td>{{icnsubmit.icnsubmitapproval_t.approval_status.name}}
+                               
+                                                             </tr>
+                                  <tr>
+                                <td>3</td>
+                                <td>MEL Lead</br>{{icn.mel_lead.user.profile.full_name}}</td>
+                               <td>{{icnsubmit.icnsubmitapproval_m.approval_date|date:"M d,Y"}} </br>
+                                {{icnsubmit.icnsubmitapproval_m.approval_date|time }}
+                                </td>
+                                 <td>{{icnsubmit.icnsubmitapproval_m.approval_status.name}}
+                                <td>{{icnsubmit.icnsubmitapproval_m.approval_note }}</td>
+                               
                                 </td>
                               </tr>
                               <tr>
                                <td>3</td>
                                 <td>Finance Lead</br>{{icn.finance_lead.user.profile.full_name}}</td>
-                                <td>{{icnsubmit.icnsubmitapproval_f.approval_date}}</td>
-                               
-                                <td>{{icnsubmit.icnsubmitapproval_f.approval_note }}</td>
-                                 <td>{{icnsubmit.icnsubmitapproval_f.approval_status.name }}
+                              <td>{{icnsubmit.icnsubmitapproval_f.approval_date|date:"M d,Y"}} </br>
+                                {{icnsubmit.icnsubmitapproval_f.approval_date|time }}
                                 </td>
+                               <td>{{icnsubmit.icnsubmitapproval_f.approval_status.name }}
+                                </td>
+                                <td>{{icnsubmit.icnsubmitapproval_f.approval_note }}</td>
+                                 
                               </tr>
                               <tr>
                                 <td>4</td>
                                 <td>Program Lead</br>{{icn.program_lead.user.profile.full_name}}</td>
-                                <td>{{icnsubmit.icnsubmitapproval_p.approval_date}}</td>
-                                
-                                <td>{{icnsubmit.icnsubmitapproval_p.approval_note }}</td>
-                                <td>{{icnsubmit.icnsubmitapproval_p.approval_status.name }}
+                              <td>{{icnsubmit.icnsubmitapproval_p.approval_date|date:"M d,Y"}} </br>
+                                {{icnsubmit.icnsubmitapproval_p.approval_date|time }}
                                 </td>
+                                  <td>{{icnsubmit.icnsubmitapproval_p.approval_status.name }}
+                                </td>
+                                <td>{{icnsubmit.icnsubmitapproval_p.approval_note }}</td>
+                              
                               </tr>
                               <tr>
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                
-                                <td></td>
                                 <td>{{icn.approval_status}}
                                 </td>
+                                <td></td>
+                                
                               </tr>
                             </tbody>
                           </table>
@@ -165,7 +197,7 @@
                         <div class="col-md-6">
                          
                           <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
-                            Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles, weebly ning heekya handango imeem plugg dopplr jibjab, movity jajah plickers sifteo edmodo ifttt zimbra.
+                          {{ icn.description }}
                           </p>
                         </div>
                         <!-- /.col -->

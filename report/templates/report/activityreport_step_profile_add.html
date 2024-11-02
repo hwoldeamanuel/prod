@@ -44,7 +44,7 @@
                          <div class="form-group row">
                                 <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.icn.id_for_label }}">Activity:
                                 </label>
-                                  <div class="col-md-9 col-sm-9">
+                                  <div class="col-md-8 col-sm-8">
                                     {%  render_field form.activity class+="form-control form-control-sm required" %}
                                     <div class="invalid-feedback">{{ form.activity.errors|first }}</div>
 
@@ -56,7 +56,7 @@
                                <div class="form-group row">
                              <label class="col-form-label col-md-2 col-sm-2 label-align">Woredas:<span class="required">*</span>
                               </label>
-                              <div class="col-md-9 col-sm-9 ">
+                              <div class="col-md-8 col-sm-8 ">
                                    {% render_field form.aworeda class+="form-control form-control-sm form-select form-select-solid" attr="data-control:select2" %}
                                     <div class="invalid-feedback">{{ form.aworeda.errors|first }}</div>
                               </div>
@@ -64,17 +64,23 @@
                                                      <div class="form-group row">
                               <label class="col-form-label col-md-2 col-sm-2 label-align" >Start Date:
                                   </label>
-                              <div class="col-md-3 col-sm-3">
+                              <div class="col-md-2 col-sm-2">
                                  {% render_field form.actual_start_date class+="form-control form-control-sm" %}
                                    <div class="invalid-feedback">{{ form.actual_start_date.errors|first }}</div>
                               </div>
                               
-                              <label class="col-form-label col-md-3 col-sm-3 label-align" >End Date:
+                              <label class="col-form-label col-md-1 col-sm-1 label-align" >End Date:
                               </label>
-                              <div class="col-md-3 col-sm-3">
+                              <div class="col-md-2 col-sm-2">
                                  {% render_field form.actual_end_date class+="form-control form-control-sm" %}
                                   <div class="invalid-feedback">{{ form.actual_end_date.errors|first }}</div>
                               </div>
+                               <label class="col-form-label col-md-1 col-sm-1 label-align" ><small>Report Date:</small>
+                            </label>
+                            <div class="col-md-2 col-sm-2">
+                                   {% render_field form.actual_reporting_date class="form-control form-control-sm"  %}
+                                 <div class="invalid-feedback">{{ form.actual_reporting_date.errors|first }}</div>
+                            </div>
                             </div>
                         
                             <div class="form-group row">
@@ -100,40 +106,42 @@
                                  <div class="invalid-feedback">{{ form.cs_currency.errors|first }}</div>
                             </div>
                           </div>
-                                   <div class="form-group row">
-                            <label class="col-form-label col-md-2 col-sm-2 label-align" >Program:
-                            </label>
-                            <div class="col-md-3 col-sm-3">
-                                   {% render_field form.program_lead class="form-control form-control-sm" placeholder=" budget(USD)" %}
-                                 <div class="invalid-feedback">{{ form.program_lead.errors|first }}</div>
-                            </div>
-                          
-                            <label class="col-form-label col-md-3 col-sm-3 label-align">Technical:
+                                   
+                           <div class="form-group row">
+                            <label class="col-form-label col-md-2 col-sm-2 label-align">Technical Lead:
                             </label>
                             <div class="col-md-3 col-sm-3">
                                     {% render_field form.technical_lead class="form-control form-control-sm" placeholder=" budget(USD)" %}
                                  <div class="invalid-feedback">{{ form.technical_lead.errors|first }}</div>
                             </div>
+                               <label class="col-form-label col-md-2 col-sm-2 label-align">MEL Lead:
+                            </label>
+                            <div class="col-md-3 col-sm-3">
+                                    {% render_field form.mel_lead class="form-control form-control-sm" placeholder=" budget(USD)" %}
+                                 <div class="invalid-feedback">{{ form.mel_lead.errors|first }}</div>
+                            </div>
                             </div>
                             <div class="form-group row">
-                            <label class="col-form-label col-md-2 col-sm-2 label-align" >Finance:
+                            
+                            <label class="col-form-label col-md-2 col-sm-2 label-align" >Finance Lead:
                             </label>
                             <div class="col-md-3 col-sm-3">
                                    {% render_field form.finance_lead class="form-control form-control-sm" placeholder=" budget(USD)" %}
                                  <div class="invalid-feedback">{{ form.finance_lead.errors|first }}</div>
                             </div>
-                              <label class="col-form-label col-md-3 col-sm-3 label-align" >Report Date:
+                               <label class="col-form-label col-md-2 col-sm-2 label-align" >Program Lead:
                             </label>
                             <div class="col-md-3 col-sm-3">
-                                   {% render_field form.actual_reporting_date class="form-control form-control-sm"  %}
-                                 <div class="invalid-feedback">{{ form.actual_reporting_date.errors|first }}</div>
+                                   {% render_field form.program_lead class="form-control form-control-sm" placeholder=" budget(USD)" %}
+                                 <div class="invalid-feedback">{{ form.program_lead.errors|first }}</div>
                             </div>
+                             
                             </div>
                         
                              <div class="form-group row">
                             <label class="col-form-label col-md-2 col-sm-2 label-align" >Description:
                             </label>
-                            <div class="col-md-9 col-sm-9">
+                            <div class="col-md-8 col-sm-8">
                             
                                 {% render_field form.description class="form-control form-control-sm" %}
                                   <div class="invalid-feedback">{{ form.description.errors|first }}</div>

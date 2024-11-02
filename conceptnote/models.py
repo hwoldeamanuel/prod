@@ -25,6 +25,7 @@ class Icn(models.Model):
     ilead_co_agency = models.ManyToManyField(Portfolio,  blank=True, related_name='co_leads')
     final_report_due_date = models.DateField(null=True, blank=True)
     program_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='iprogram_lead')
+    mel_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='imel_lead')
     technical_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='itechnical_lead')
     finance_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='ifinance_lead')
     description = models.TextField(null=True, blank=True)
@@ -51,6 +52,7 @@ class Icn(models.Model):
     status = models.BooleanField("Status", default=False, 
                                     choices=STATUS_CHOICES)
     approval_status = models.CharField(max_length=100,null=True, blank=True)
+
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     
     class Meta:
@@ -144,7 +146,7 @@ class IcnImplementationArea(models.Model):
         return str(self.pk)
 
 def path_and_rename(instance, filename):
-    upload_to = 'documents/'
+    upload_to = 'Concept/'
     ext = filename.split('.')[-1]
 
     # get filename
@@ -269,7 +271,31 @@ class IcnSubmitApproval_T(models.Model):
     def __str__(self):
         return str(self.id)
     
-
+class IcnSubmitApproval_M(models.Model):
+   
+    
+    user = models.ForeignKey(UserRoles, on_delete=models.CASCADE)
+    submit_id = models.OneToOneField(IcnSubmit, on_delete=models.CASCADE)
+    approval_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)
+    approval_note = models.TextField(null=True,  blank=True)
+    approval_status = models.ForeignKey(Approvalt_Status, on_delete=models.CASCADE)
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    
+    def __init__(self, *args, **kwargs):
+        super(IcnSubmitApproval_M, self).__init__(*args, **kwargs)
+        self.old_approval_status = self.approval_status
+        self.old_document = self.document
+        
+    
+    def save(self, *args, **kwargs):
+        if (self.approval_status and self.old_approval_status != self.approval_status) or (self.document and self.old_document != self.document):
+            self.approval_date = timezone.now()
+        super(IcnSubmitApproval_M, self).save(*args, **kwargs)
+        
+    
+    def __str__(self):
+        return str(self.id)
+    
 class IcnSubmitApproval_P(models.Model):
     Pending_Review = 1
     Require_Doc_Update = 2
@@ -376,6 +402,7 @@ class Activity(models.Model):
     alead_co_agency = models.ManyToManyField(Portfolio,  blank=True, related_name='aco_leads')
     final_report_due_date = models.DateField(null=True, blank=True)
     program_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='aprogram_lead')
+    mel_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='amel_lead')
     technical_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='atechnical_lead')
     finance_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='afinance_lead')
     description = models.TextField(null=True, blank=True)
@@ -476,7 +503,7 @@ class ActivityDocument(models.Model):
         ordering = ('-uploaded_at',)
     
     def __str__(self):
-        return "%s %s %s" % ("Version", self.ver, self.user.email.split('@')[0])
+        return "%s %s %s" % ("Version", self.ver, self.user.username)
 
 class ActivitySubmit(models.Model):
     Draft = 1
@@ -510,18 +537,6 @@ class ActivitySubmit(models.Model):
         return str(self.id)
 
 class ActivitySubmitApproval_T(models.Model):
-    Pending_Review = 1
-    Require_Doc_Update = 2
-    Approved = 3
-    Rejected = 4
-    STATUS = (
-        (Pending_Review, 'Pending Review'),
-        (Require_Doc_Update, 'Require Doc Update'),
-        (Approved, 'Request Approved'),
-        (Rejected, 'Request Rejected'),
-        )
-
-    
     user = models.ForeignKey(UserRoles, on_delete=models.CASCADE)
     submit_id = models.OneToOneField(ActivitySubmit, on_delete=models.CASCADE)
     approval_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)
@@ -539,6 +554,29 @@ class ActivitySubmitApproval_T(models.Model):
         if (self.approval_status and self.old_approval_status != self.approval_status) or (self.document and self.old_document != self.document):
             self.approval_date = timezone.now()
         super(ActivitySubmitApproval_T, self).save(*args, **kwargs)
+        
+    
+    def __str__(self):
+        return str(self.id)
+
+class ActivitySubmitApproval_M(models.Model):
+    user = models.ForeignKey(UserRoles, on_delete=models.CASCADE)
+    submit_id = models.OneToOneField(ActivitySubmit, on_delete=models.CASCADE)
+    approval_date = models.DateTimeField(auto_now_add=True, null=True,   blank=True)
+    approval_note = models.TextField(null=True,  blank=True)
+    approval_status = models.ForeignKey(Approvalt_Status, on_delete=models.CASCADE)
+    document = models.ForeignKey(ActivityDocument, on_delete=models.CASCADE)
+    
+    def __init__(self, *args, **kwargs):
+        super(ActivitySubmitApproval_M, self).__init__(*args, **kwargs)
+        self.old_approval_status = self.approval_status
+        self.old_document = self.document
+        
+    
+    def save(self, *args, **kwargs):
+        if (self.approval_status and self.old_approval_status != self.approval_status) or (self.document and self.old_document != self.document):
+            self.approval_date = timezone.now()
+        super(ActivitySubmitApproval_M, self).save(*args, **kwargs)
         
     
     def __str__(self):

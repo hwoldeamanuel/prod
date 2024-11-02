@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Icn, Activity,Impact,ActivityImpact, IcnImplementationArea,  ActivityImplementationArea,IcnSubmit, Document, IcnSubmitApproval_F, IcnSubmitApproval_T, IcnSubmitApproval_P, ActivityDocument, ActivitySubmit,ActivitySubmitApproval_F,ActivitySubmitApproval_P,ActivitySubmitApproval_T
+from .models import Icn, Activity,Impact,ActivityImpact, IcnImplementationArea,  ActivityImplementationArea,IcnSubmit, Document, IcnSubmitApproval_F, IcnSubmitApproval_T, IcnSubmitApproval_P, IcnSubmitApproval_M, ActivityDocument, ActivitySubmit,ActivitySubmitApproval_F,ActivitySubmitApproval_P,ActivitySubmitApproval_T, ActivitySubmitApproval_M
 from django import forms
 
 from program.models import  Program, ImplementationArea, Indicator, UserRoles
@@ -33,13 +33,16 @@ class IcnForm(forms.ModelForm):
             self.fields['program'].queryset = Program.objects.filter(users_role=user, userroles__is_pcn_initiator=True)
             self.fields['program'].initial=Program.objects.filter(users_role=user, userroles__is_pcn_initiator=True).first()
             program = Program.objects.filter(users_role=user, userroles__is_pcn_initiator=True)
-            self.fields['program_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user)
-            self.fields['program_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user).first()
+            self.fields['mel_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pcn_mel_approver=True).exclude(user=user)
+            self.fields['mel_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_mel_approver=True).exclude(user=user).first()
             self.fields['technical_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_technical_approver=True).exclude(user=user)
             self.fields['technical_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_technical_approver=True).exclude(user=user).first()
             self.fields['finance_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user)
             self.fields['finance_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user).first()
-            
+            self.fields['program_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user)
+            self.fields['program_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user).first()
+
+
         myfield = ['title',
             'program',
             'description',
@@ -50,6 +53,7 @@ class IcnForm(forms.ModelForm):
             'program_lead',
             'technical_lead',
             'finance_lead',
+            'mel_lead',
             'iworeda',
             'mc_budget',
            
@@ -117,6 +121,7 @@ class IcnForm(forms.ModelForm):
             'cs_currency',
             'final_report_due_date',
             'program_lead',
+            'mel_lead',
             'technical_lead',
             'finance_lead',
             'iworeda',
@@ -145,6 +150,7 @@ class IcnForm(forms.ModelForm):
          program_lead = self.cleaned_data.get('program_lead')
          finance_lead = self.cleaned_data.get('finance_lead')
          technical_lead = self.cleaned_data.get('technical_lead')
+         mel_lead = self.cleaned_data.get('mel_lead')
          eniromental_impact = self.cleaned_data.get('eniromental_impact')
          environmental_assessment_att = self.cleaned_data.get('environmental_assessment_att')
          proposed_start_date = self.cleaned_data.get('proposed_start_date')
@@ -158,13 +164,15 @@ class IcnForm(forms.ModelForm):
          if program_lead not in UserRoles.objects.filter(program=program) or technical_lead not in UserRoles.objects.filter(program=program) or finance_lead not in UserRoles.objects.filter(program=program):
                self._errors['program'] = self.error_class(['At least 1 of the Leads not belong this program'])
 
-         elif (technical_lead==program_lead or technical_lead==finance_lead):
+         elif (technical_lead==program_lead or technical_lead==finance_lead or technical_lead==mel_lead):
               self._errors['technical_lead'] = self.error_class(['Lead should take up only one role'])
-         elif (program_lead==technical_lead or program_lead==finance_lead):
+         elif (program_lead==technical_lead or program_lead==finance_lead or program_lead==mel_lead):
               self._errors['program_lead'] = self.error_class(['Lead should take up only one role'])
          
-         elif (finance_lead==technical_lead or finance_lead==program_lead):
+         elif (finance_lead==technical_lead or finance_lead==program_lead or finance_lead==mel_lead):
               self._errors['finance_lead'] = self.error_class(['Lead should take up only one role'])
+         elif (mel_lead==technical_lead or mel_lead==program_lead or mel_lead==finance_lead):
+              self._errors['mel_lead'] = self.error_class(['Lead should take up only one role'])
          elif (eniromental_impact == '3' and environmental_assessment_att==None):
               self._errors['eniromental_impact'] = self.error_class(['Attachment required for High Impact'])
          elif ( proposed_end_date != None and proposed_start_date != None and proposed_end_date < proposed_start_date):
@@ -178,12 +186,7 @@ class IcnForm(forms.ModelForm):
          return cleaned_data
 
 
-IcnAreaFormset = modelformset_factory(
-    IcnImplementationArea,
-    fields=('region', 'zone','woreda'),
-    extra=4,
-   
-) 
+
 
 
 
@@ -338,7 +341,35 @@ class IcnApprovalTForm(forms.ModelForm):
 
             exclude=  ['icn','user',]
             
+class IcnApprovalMForm(forms.ModelForm):
+     def __init__(self, *args, **kwargs):
+          did = kwargs.pop('did', None)
+          super(IcnApprovalMForm, self).__init__(*args, **kwargs)
+       
+    
+     
+        
+          self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'required'  }    )
+          self.fields['approval_status'].choices = [
+             (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalt_Status.objects.filter(id=did)
+         ]
+          self.fields['approval_status'].widget.attrs['readonly'] = True
+          if did == 2:
+               self.fields['document'].choices = [
+             (document.pk, document) for document in Document.objects.none()
+         ]
+       
+          if did == 3 or did==4:
+               self.fields['document'].widget.attrs['readonly'] = True
+        
+          self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
+        
+     class Meta:
+            model = IcnSubmitApproval_M
+            fields = ('approval_note','approval_status','document')
+            readonly_fields = ('approval_status',)
 
+            exclude=  ['icn','user',]
 
 class IcnApprovalFForm(forms.ModelForm):
      def __init__(self, *args, **kwargs):
@@ -434,13 +465,15 @@ class ActivityForm(forms.ModelForm):
       
         if user:
             
-            program = Program.objects.filter(users_role=user, userroles__is_pcn_initiator=True)
-            self.fields['program_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user)
-            self.fields['program_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user).first()
-            self.fields['technical_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_technical_approver=True).exclude(user=user)
-            self.fields['technical_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_technical_approver=True).exclude(user=user).first()
-            self.fields['finance_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user)
-            self.fields['finance_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user).first()
+            program = Program.objects.filter(users_role=user, userroles__is_pacn_initiator=True)
+            self.fields['program_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pacn_program_approver=True).exclude(user=user)
+            self.fields['program_lead'].initial=UserRoles.objects.filter(program__in=program, is_pacn_program_approver=True).exclude(user=user).first()
+            self.fields['technical_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pacn_technical_approver=True).exclude(user=user)
+            self.fields['technical_lead'].initial=UserRoles.objects.filter(program__in=program, is_pacn_technical_approver=True).exclude(user=user).first()
+            self.fields['mel_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pacn_mel_approver=True).exclude(user=user)
+            self.fields['mel_lead'].initial=UserRoles.objects.filter(program__in=program, is_pacn_mel_approver=True).exclude(user=user).first()
+            self.fields['finance_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pacn_finance_approver=True).exclude(user=user)
+            self.fields['finance_lead'].initial=UserRoles.objects.filter(program__in=program, is_pacn_finance_approver=True).exclude(user=user).first()
             self.fields['icn'].queryset = Icn.objects.filter(program__in=program, approval_status="100% Approved")
            
         myfield = ['title',
@@ -453,6 +486,7 @@ class ActivityForm(forms.ModelForm):
             'program_lead',
             'technical_lead',
             'finance_lead',
+            'mel_lead',
             'mc_currency',
             'cs_currency',
             'mc_budget',
@@ -524,6 +558,7 @@ class ActivityForm(forms.ModelForm):
             'program_lead',
             'technical_lead',
             'finance_lead',
+            'mel_lead',
             'aworeda',
             'mc_budget',
            
@@ -578,18 +613,21 @@ class ActivityForm(forms.ModelForm):
         program_lead = self.cleaned_data.get('program_lead')
         finance_lead = self.cleaned_data.get('finance_lead')
         technical_lead = self.cleaned_data.get('technical_lead')
+        mel_lead = self.cleaned_data.get('mel_lead')
          
         proposed_start_date = self.cleaned_data.get('proposed_start_date')
         proposed_end_date = self.cleaned_data.get('proposed_end_date')
         final_report_due_date = self.cleaned_data.get('final_report_due_date')
 
-        if (technical_lead==program_lead or technical_lead==finance_lead):
+        if (technical_lead==program_lead or technical_lead==finance_lead or technical_lead==mel_lead):
               self._errors['technical_lead'] = self.error_class(['Lead should take up only one role'])
-        elif (program_lead==technical_lead or program_lead==finance_lead):
+        elif (program_lead==technical_lead or program_lead==finance_lead or program_lead==mel_lead):
               self._errors['program_lead'] = self.error_class(['Lead should take up only one role'])
          
-        elif (finance_lead==technical_lead or finance_lead==program_lead):
+        elif (finance_lead==technical_lead or finance_lead==program_lead or finance_lead==mel_lead):
               self._errors['finance_lead'] = self.error_class(['Lead should take up only one role'])
+        elif (mel_lead==technical_lead or mel_lead==program_lead or mel_lead == finance_lead):
+              self._errors['mel_lead'] = self.error_class(['Lead should take up only one role'])
         
         elif ( proposed_end_date != None and proposed_start_date != None and proposed_end_date < proposed_start_date):
                self._errors['proposed_end_date'] = self.error_class(['End date should always be after start date'])
@@ -764,6 +802,36 @@ class ActivityApprovalTForm(forms.ModelForm):
         
     class Meta:
             model = ActivitySubmitApproval_T
+            fields = ('approval_note','approval_status','document')
+
+            exclude=  ['activity','user',]
+
+class ActivityApprovalMForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        did = kwargs.pop('did', None)
+        super(ActivityApprovalMForm, self).__init__(*args, **kwargs)
+
+        self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'  }    )
+        self.fields['approval_status'].choices = [
+             (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalt_Status.objects.filter(id=did)
+         ]
+          
+        if did == 2:       
+             self.fields['document'].choices = [
+             (document.pk, document) for document in ActivityDocument.objects.none()
+            
+         ]
+
+       
+        if did == 3 or did == 4:
+               self.fields['document'].widget.attrs['readonly'] = True
+
+        self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
+        
+        
+        
+    class Meta:
+            model = ActivitySubmitApproval_M
             fields = ('approval_note','approval_status','document')
 
             exclude=  ['activity','user',]

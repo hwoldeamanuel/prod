@@ -1,15 +1,15 @@
 
-<table class="data table table-striped no-margin" >
+<table class="data table table-sm table-striped no-margin" >
     <thead>
       <tr>
         <th>#</th>
-        <th>Team Lead</th>
-        <th>Date</th>
+        <th style="width:25%">Team Lead</th>
+        <th style="width:20%">Date</th>
        
-        <th>Concept Note Ver#</th>
-        <th>Status</th>
-        <th>Action</th>
-        <th style="width:14%"></th>
+        <th style="width:20%">Concept Note Ver#</th>
+        <th style="width:15%">Status</th>
+        <th style="width:10%"></th>
+        <th style="width:15%"></th>
       
       </tr>
     </thead>
@@ -84,14 +84,14 @@
     
 </tr>
             <tr>
-        <td>1</td>
+        <td>2</td>
         <td>
           <a>Techncial</a>
           <br />
           <small>{{ icn.technical_lead.user.profile.full_name }}</small>
         </td>
         {% if icnsubmit %}
-        <td>{% if icnsubmit.icnsubmitapproval_t.approval_date|time == icnsubmit.submission_date|time %}{{ icnsubmit.submission_date|timesince }} {% else %} {{icnsubmit.icnsubmitapproval_t.approval_date|date:"M d,Y"}}</br><small>{{icnsubmit.icnsubmitapproval_t.approval_date|time}}</small> {% endif %}</td>
+        <td>{% if icnsubmit.icnsubmitapproval_t.approval_status_id == 1 %}{{ icnsubmit.submission_date|timesince }} {% else %} {{icnsubmit.icnsubmitapproval_t.approval_date|date:"M d,Y"}}</br><small>{{icnsubmit.icnsubmitapproval_t.approval_date|time}}</small> {% endif %}</td>
        
         <td>{{icnsubmit.icnsubmitapproval_t.document }}</td>
         <td>
@@ -123,16 +123,55 @@
 
     
 </tr>
+  <tr>
+        <td>3</td>
+        <td>
+          <a>MEL</a>
+          <br />
+          <small>{{ icn.mel_lead.user.profile.full_name }}</small>
+        </td>
+        {% if icnsubmit %}
+        <td>{% if icnsubmit.icnsubmitapproval_m.approval_status_id == 1 %}{{ icnsubmit.submission_date|timesince }} {% else %} {{icnsubmit.icnsubmitapproval_m.approval_date|date:"M d,Y"}}</br><small>{{icnsubmit.icnsubmitapproval_m.approval_date|time}}</small> {% endif %}</td>
+       
+        <td>{{icnsubmit.icnsubmitapproval_m.document }}</td>
+        <td>
+          <span class="badge  {% if icnsubmit.icnsubmitapproval_m.approval_status_id == 1 %} badge-primary {% elif icnsubmit.icnsubmitapproval_m.approval_status_id == 2 %}badge-warning {% elif icnsubmit.icnsubmitapproval_m.approval_status_id == 3 %}badge-success {% elif icnsubmit.icnsubmitapproval_m.approval_status_id == 4 %}badge-danger{% endif %}">{{ icnsubmit.icnsubmitapproval_m.approval_status.name }}</span> 
+        </td>
+         <td><div class="btn-group">
+                    <button type="button" class="{% if request.user != icn.mel_lead.user or icnsubmit.icnsubmitapproval_m.approval_status_id != 1 %}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Action
+                    </button>
+                    <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
+                      <a class="dropdown-item" hx-get={% url 'icn_approvalm' icnsubmit.id 2 %} hx-target="#SubmitList">Require Revision</a>
+                      <a class="dropdown-item" hx-get={% url 'icn_approvalm' icnsubmit.id 3 %} hx-target="#SubmitList">Endorese Request</a>
+                    
+                      <div class="dropdown-divider"></div>
+                      <a class="dropdown-item" hx-get={% url 'icn_approvalm' icnsubmit.id 4 %} hx-target="#SubmitList">Reject Request</a>
+                    </div>
+                  </div></td>
+                    <td></td>
+        {% else %}
+        <td></td>
+        <td></td>
+        <td></td>
+       <td></td>
+         <td></td>
+        {% endif%}
 
+
+
+
+    
+</tr>
 <tr>
-    <td>2</td>
+    <td>4</td>
     <td>
       <a>Finance</a>
       <br />
       <small>{{ icn.finance_lead.user.profile.full_name }}</small>
     </td>
     {% if icnsubmit %}
-    <td> {% if icnsubmit.icnsubmitapproval_f.approval_date|time == icnsubmit.submission_date|time %}{{ icnsubmit.submission_date|timesince }}{% else %}{{icnsubmit.icnsubmitapproval_f.approval_date|date:"M d,Y"}}</br><small>{{icnsubmit.icnsubmitapproval_f.approval_date|time}}</small>{% endif %}</td>
+    <td> {% if icnsubmit.icnsubmitapproval_f.approval_status_id == 1 %}{{ icnsubmit.submission_date|timesince }}{% else %}{{icnsubmit.icnsubmitapproval_f.approval_date|date:"M d,Y"}}</br><small>{{icnsubmit.icnsubmitapproval_f.approval_date|time}}</small>{% endif %}</td>
        
     <td>{{icnsubmit.icnsubmitapproval_f.document }}</td>
     <td>
@@ -150,26 +189,29 @@
                        <a class="dropdown-item" hx-get={% url 'icn_approvalf' icnsubmit.id 4 %} hx-target="#SubmitList">Reject Request</a>
                     </div>
                   </div>
-     </td>  <td></td>
+     </td>  <td>  	</td>
     {% else %}
     <td></td>
     <td></td>
      <td></td>
-   <td></td>  <td></td>
+   <td></td>  <td>  
+												
+												</td>
+
     {% endif%}
 
 
 
 </tr>
 <tr>
-    <td>3</td>
+    <td>5</td>
     <td>
       <a>Program</a>
       <br />
       <small>{{ icn.program_lead.user.profile.full_name }}</small>
     </td>
     {% if icnsubmit %}
-    <td>{% if icnsubmit.icnsubmitapproval_p.approval_date|time == icnsubmit.submission_date|time %}{{ icnsubmit.submission_date|timesince }}{% else %}{{icnsubmit.icnsubmitapproval_p.approval_date|date:"M d,Y"}}</br><small>{{icnsubmit.icnsubmitapproval_p.approval_date|time}}</small>{% endif %}</td>
+    <td>{% if icnsubmit.icnsubmitapproval_p.approval_status_id == 1%}{{ icnsubmit.submission_date|timesince }}{% else %}{{icnsubmit.icnsubmitapproval_p.approval_date|date:"M d,Y"}}</br><small>{{icnsubmit.icnsubmitapproval_p.approval_date|time}}</small>{% endif %}</td>
         
     <td>{{icnsubmit.icnsubmitapproval_p.document}}</td>
     <td>
@@ -177,7 +219,7 @@
     </td>
      <td>
       <div class="btn-group">
-                    <button type="button" class="{% if request.user != icn.program_lead.user or icnsubmit.icnsubmitapproval_p.approval_status_id != 1 %}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="{% if request.user != icn.program_lead.user or icnsubmit.icnsubmitapproval_p.approval_status_id != 1 or icn.approval_status != '75% Approved' %}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       Action
                     </button>
                     <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
@@ -206,7 +248,7 @@
     <td></td>
  <td></td>  <td>
   <div class="btn-group">
-														<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-sm dropdown-toggle btn-{% if 'Rejected' in icn.approval_status %}danger{% elif 'Approved' in icn.approval_status %}success{% else %}warning{% endif %}"><small>{% if icn.approval_status %} {{ icn.approval_status}} {% else %}Pending Submission{% endif %}</small>
+														<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-sm dropdown-toggle btn-{% if 'Rejected' in icn.approval_status %}danger{% elif 'Approved' in icn.approval_status %}success{% else %}warning{% endif %}"><small>{% if icn.approval_status %} {{ icn.approval_status }} {% else %}Pending Submission{% endif %}</small>
 														</button>
 													
 												 <div class="dropdown-menu">

@@ -1,15 +1,15 @@
 
-<table class="data table table-striped no-margin">
+<table class="data table table-sm table-striped no-margin">
     <thead>
-      <tr>
-        <th>#</th>
-        <th>Team Lead</th>
-        <th>Date</th>
+     <tr>
+       <th>#</th>
+        <th style="width:22%">Team Lead</th>
+        <th style="width:17%">Date</th>
        
-        <th>ACN Report Ver#</th>
-        <th>Status</th>
-        <th>Action</th>
-           <th style="width:17%"></th>
+        <th style="width:18%">ACN Report Version #</th>
+        <th style="width:12%">Status</th>
+        <th style="width:10%"></th>
+        <th style="width:18%"></th>
       
       </tr>
     </thead>
@@ -25,7 +25,7 @@
         <td></td>
          <td></td>
           <td>
-           <button type="button" class="btn btn-danger btn-sm btn-xs" ><small>Pending Submission</small></button>
+           <span  class="badge badge-danger" >Pending Submission</span>
           </td>
            <td>
           
@@ -84,14 +84,14 @@
     
 </tr>
             <tr>
-        <td>1</td>
+        <td>2</td>
         <td>
           <a>Techncial</a>
           <br />
           <small>{{ activityreport.technical_lead.user.profile.full_name }}</small>
         </td>
         {% if activityreportsubmit %}
-        <td>{% if activityreportsubmit.activityreportsubmitapproval_t.approval_date|time == activityreportsubmit.submission_date|time %}{{ activityreportsubmit.submission_date|timesince }} {% else %} {{activityreportsubmit.activityreportsubmitapproval_t.approval_date|date:"M d,Y"}}</br><small>{{activityreportsubmit.activityreportsubmitapproval_t.approval_date|time}}</small> {% endif %}</td>
+        <td>{% if activityreportsubmit.activityreportsubmitapproval_t.approval_status_id == 1 %}{{ activityreportsubmit.submission_date|timesince }} {% else %} {{activityreportsubmit.activityreportsubmitapproval_t.approval_date|date:"M d,Y"}}</br><small>{{activityreportsubmit.activityreportsubmitapproval_t.approval_date|time}}</small> {% endif %}</td>
        
         <td>{{activityreportsubmit.activityreportsubmitapproval_t.document }}</td>
         <td>
@@ -102,8 +102,9 @@
                       Action
                     </button>
                     <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
+                                           <a class="dropdown-item" hx-get={% url 'activityreport_approvalt' activityreportsubmit.id 3 %} hx-target="#SubmitList">Endorese Request</a>
                       <a class="dropdown-item" hx-get={% url 'activityreport_approvalt' activityreportsubmit.id 2 %} hx-target="#SubmitList">Require Revision</a>
-                      <a class="dropdown-item" hx-get={% url 'activityreport_approvalt' activityreportsubmit.id 3 %} hx-target="#SubmitList">Endorese Request</a>
+
                      
                       <div class="dropdown-divider"></div>
                        <a class="dropdown-item" hx-get={% url 'activityreport_approvalt' activityreportsubmit.id 4 %} hx-target="#SubmitList">Reject Request</a>
@@ -121,16 +122,54 @@
 <td></td>
     
 </tr>
+ <tr>
+        <td>3</td>
+        <td>
+          <a>MEL</a>
+          <br />
+          <small>{{ activityreport.mel_lead.user.profile.full_name }}</small>
+        </td>
+        {% if activityreportsubmit %}
+        <td>{% if activityreportsubmit.activityreportsubmitapproval_m.approval_status_id == 1%}{{ activityreportsubmit.submission_date|timesince }} {% else %} {{activityreportsubmit.activityreportsubmitapproval_m.approval_date|date:"M d,Y"}}</br><small>{{activityreportsubmit.activityreportsubmitapproval_m.approval_date|time}}</small> {% endif %}</td>
+       
+        <td>{{activityreportsubmit.activityreportsubmitapproval_m.document }}</td>
+        <td>
+          <span class="badge {% if activityreportsubmit.activityreportsubmitapproval_m.approval_status_id == 1 %} badge-primary{% elif activityreportsubmit.activityreportsubmitapproval_m.approval_status_id == 2 %}badge-warning {% elif activityreportsubmit.activityreportsubmitapproval_m.approval_status_id == 3 %}badge-success{% elif activityreportsubmit.activityreportsubmitapproval_m.approval_status_id == 4 %}badge-danger {% endif %}" >{% if activityreportsubmit.activityreportsubmitapproval_m %} {{ activityreportsubmit.activityreportsubmitapproval_m.approval_status.name }} {% endif %}</span>
+        </td>
+         <td><div class="btn-group">
+                    <button type="button" class="{% if request.user != activityreport.mel_lead.user or activityreportsubmit.activityreportsubmitapproval_m.approval_status_id != 1 %}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Action
+                    </button>
+                    <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
+                       <a class="dropdown-item" hx-get={% url 'activityreport_approvalm' activityreportsubmit.id 3 %} hx-target="#SubmitList">Endorese Request</a>
+                      <a class="dropdown-item" hx-get={% url 'activityreport_approvalm' activityreportsubmit.id 2 %} hx-target="#SubmitList">Require Revision</a>
+                     
+                     
+                      <div class="dropdown-divider"></div>
+                       <a class="dropdown-item" hx-get={% url 'activityreport_approvalm' activityreportsubmit.id 4 %} hx-target="#SubmitList">Reject Request</a>
+                    </div>
+                  </div></td>
+        {% else %}
+        <td></td>
+        <td></td>
+        <td></td>
+       <td></td>
+        {% endif%}
 
+
+
+<td></td>
+    
+</tr>
 <tr>
-    <td>2</td>
+    <td>4</td>
     <td>
       <a>Finance</a>
       <br />
       <small>{{ activityreport.finance_lead.user.profile.full_name }}</small>
     </td>
     {% if activityreportsubmit %}
-    <td> {% if activityreportsubmit.activityreportsubmitapproval_f.approval_date|time == activityreportsubmit.submission_date|time %}{{ activityreportsubmit.submission_date|timesince }}{% else %}{{activityreportsubmit.activityreportsubmitapproval_f.approval_date|date:"M d,Y"}}</br><small>{{activityreportsubmit.activityreportsubmitapproval_f.approval_date|time}}</small>{% endif %}</td>
+    <td> {% if activityreportsubmit.activityreportsubmitapproval_f.approval_status_id == 1 %}{{ activityreportsubmit.submission_date|timesince }}{% else %}{{activityreportsubmit.activityreportsubmitapproval_f.approval_date|date:"M d,Y"}}</br><small>{{activityreportsubmit.activityreportsubmitapproval_f.approval_date|time}}</small>{% endif %}</td>
        
     <td>{{activityreportsubmit.activityreportsubmitapproval_f.document }}</td>
     <td>
@@ -141,8 +180,9 @@
                       Action
                     </button>
                     <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
+                       <a class="dropdown-item" hx-get={% url 'activityreport_approvalf' activityreportsubmit.id 3 %} hx-target="#SubmitList">Endorese Request</a>
                       <a class="dropdown-item" hx-get={% url 'activityreport_approvalf' activityreportsubmit.id 2 %} hx-target="#SubmitList">Require Revision</a>
-                      <a class="dropdown-item" hx-get={% url 'activityreport_approvalf' activityreportsubmit.id 3 %} hx-target="#SubmitList">Endorese Request</a>
+                     
                      
                       <div class="dropdown-divider"></div>
                       <a class="dropdown-item" hx-get={% url 'activityreport_approvalf' activityreportsubmit.id 4 %} hx-target="#SubmitList">Reject Request</a>
@@ -160,14 +200,14 @@
 
 </tr>
 <tr>
-    <td>3</td>
+    <td>5</td>
     <td>
       <a>Program</a>
       <br />
       <small>{{ activityreport.program_lead.user.profile.full_name }}</small>
     </td>
     {% if activityreportsubmit %}
-    <td>{% if activityreportsubmit.activityreportsubmitapproval_p.approval_date|time == activityreportsubmit.submission_date|time %}{{ activityreportsubmit.submission_date|timesince }}{% else %}{{activityreportsubmit.activityreportsubmitapproval_p.approval_date|date:"M d,Y"}}</br><small>{{activityreportsubmit.activityreportsubmitapproval_p.approval_date|time}}</small>{% endif %}</td>
+    <td>{% if activityreportsubmit.activityreportsubmitapproval_p.approval_status_id == 1 %}{{ activityreportsubmit.submission_date|timesince }}{% else %}{{activityreportsubmit.activityreportsubmitapproval_p.approval_date|date:"M d,Y"}}</br><small>{{activityreportsubmit.activityreportsubmitapproval_p.approval_date|time}}</small>{% endif %}</td>
         
     <td>{{activityreportsubmit.activityreportsubmitapproval_p.document}}</td>
     <td>
@@ -175,12 +215,13 @@
     </td>
      <td>
       <div class="btn-group">
-                    <button type="button" class="{% if request.user != activityreport.program_lead.user or activityreportsubmit.activityreportsubmitapproval_p.approval_status_id != 1 %}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="{% if request.user != activityreport.program_lead.user or activityreportsubmit.activityreportsubmitapproval_p.approval_status_id != 1 or activityreport.approval_status != '75% Approved' %}disabled {% endif %}btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       Action
                     </button>
                     <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
+                                           <a class="dropdown-item" hx-get={% url 'activityreport_approvalp' activityreportsubmit.id 3 %} hx-target="#SubmitList">Approve Request</a>
                       <a class="dropdown-item" hx-get={% url 'activityreport_approvalp' activityreportsubmit.id 2 %} hx-target="#SubmitList">Require Revision</a>
-                      <a class="dropdown-item" hx-get={% url 'activityreport_approvalp' activityreportsubmit.id 3 %} hx-target="#SubmitList">Approve Request</a>
+
                       
                       <div class="dropdown-divider"></div>
                       <a class="dropdown-item" hx-get={% url 'activityreport_approvalp' activityreportsubmit.id 4 %} hx-target="#SubmitList">Reject Request</a>
@@ -197,7 +238,7 @@
 
 <td>
     
-														<button type="button" class="btn btn-sm {% if 'Rejected' in activityreport.approval_status %}btn-danger{% elif 'Approved' in activityreport.approval_status %}btn-success{% else %}btn-warning{% endif %}"><small>{% if activityreport.approval_status %}{{ activityreport.approval_status}}{% else %}Pnding Submission{% endif %}</small> 
+														<button type="button" class="btn btn-block btn-sm {% if 'Rejected' in activityreport.approval_status %}btn-danger{% elif 'Approved' in activityreport.approval_status %}btn-success{% else %}btn-warning{% endif %}">{% if activityreport.approval_status %}{{ activityreport.approval_status}}{% else %}Pending Submission{% endif %}
 														</button>
 													
 												

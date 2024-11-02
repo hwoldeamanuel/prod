@@ -104,9 +104,12 @@
                             <li>
                           <img src="{% static 'images/user.png' %}" class="avatar" title="{{ activity.user.profile.full_name}} (Initiator) ">
                         </li>
-                      
+                     
                         <li>
                           <img src="{% static 'images/user.png' %}" class="avatar" title="{{ activity.technical_lead.user.profile.full_name }} (Technical Lead)">
+                        </li>
+                         <li>
+                          <img src="{% static 'images/user.png' %}" class="avatar" title="{{ activity.mel_lead.user.profile.full_name }} (MEL Lead)">
                         </li>
                            <li>
                          <img src="{% static 'images/user.png' %}" class="avatar" title="{{ activity.finance_lead.user.profile.full_name }} (Finance Lead)">

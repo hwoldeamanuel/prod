@@ -30,7 +30,7 @@
     <div class="invalid-feedback">{{ form.document.errors|first }}</div>
 </div>
   <div class="col-md-3 col-sm-3">
- <button type="button" hx-get="/report/icnreport_submit_document/{{icnreport.id}}/" hx-target="#dialog" class="btn btn-info btn-sm" ><i class="fa fa-paperclip"></i> Attach Report</button>
+ <button type="button"  {% if sid == 1 %} disabled{% endif %} hx-get="/report/icnreport_submit_document/{{icnreport.id}}/" hx-target="#dialog" class="btn btn-info btn-sm" ><i class="fa fa-paperclip"></i> Attach Report</button>
    
 </div>
 
@@ -39,9 +39,9 @@
  <div class="ln_solid"></div>
     <div class="item form-group">
         <div class="col-md-6 col-sm-6 offset-md-3">
- <button type="button" class="btn  btn-sm btn-secondary" value="Previous Page" onClick="javascript:history.go(0);">Close</button>
-            <button class="btn btn-sm btn-primary" type="reset">Reset</button>
-            <button type="submit" class="btn btn-sm btn-success">Submit</button>
+ <button type="button" class="btn  btn-secondary" value="Previous Page" onClick="javascript:history.go(0);">Close</button>
+            <button class="btn btn-primary" type="reset">Reset</button>
+            <button type="submit" class="btn  btn-success">Submit</button>
  
         </div>
     </div>

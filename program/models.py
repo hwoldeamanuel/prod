@@ -53,9 +53,16 @@ class UserRoles(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     program = models.ForeignKey(Program, on_delete=models.DO_NOTHING)
     is_pcn_initiator = models.BooleanField(default=False)
+    is_pcn_mel_approver = models.BooleanField(default=False)
     is_pcn_technical_approver = models.BooleanField(default=False)
     is_pcn_program_approver = models.BooleanField(default=False)
     is_pcn_finance_approver = models.BooleanField(default=False)
+    is_pacn_initiator = models.BooleanField(default=False)
+    is_pacn_mel_approver = models.BooleanField(default=False)
+    is_pacn_technical_approver = models.BooleanField(default=False)
+    is_pacn_program_approver = models.BooleanField(default=False)
+    is_pacn_finance_approver = models.BooleanField(default=False)
+    
     
     def __str__(self):
         return str(self.user)

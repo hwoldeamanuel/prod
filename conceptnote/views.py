@@ -12,8 +12,8 @@ from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView
 from django.contrib.auth import get_user_model
-from .models import Icn, Activity, ActivityImpact,ActivityImplementationArea,  Indicator, IcnImplementationArea,  Impact, IcnSubmit, Document, Icn_Approval, IcnSubmitApproval_P, IcnSubmitApproval_F, IcnSubmitApproval_T, ActivityDocument, ActivitySubmit, ActivitySubmitApproval_F,ActivitySubmitApproval_P,ActivitySubmitApproval_T
-from .forms import IcnForm, ActivityForm,ImpactForm, ActivityImpactForm, ActivityAreaFormE, IcnAreaFormE, IcnSubmitForm, IcnAreaFormset, IcnDocumentForm, IcnApprovalTForm, IcnApprovalFForm, IcnApprovalPForm, ActivitySubmitForm, ActivityDocumentForm, ActivityApprovalFForm, ActivityApprovalPForm,ActivityApprovalTForm
+from .models import Icn, Activity, ActivityImpact,ActivityImplementationArea,  Indicator, IcnImplementationArea,  Impact, IcnSubmit, Document, Icn_Approval, IcnSubmitApproval_P, IcnSubmitApproval_F, IcnSubmitApproval_M,IcnSubmitApproval_T, ActivityDocument, ActivitySubmit, ActivitySubmitApproval_F,ActivitySubmitApproval_P, ActivitySubmitApproval_M, ActivitySubmitApproval_T
+from .forms import IcnForm, ActivityForm,ImpactForm, ActivityImpactForm, ActivityAreaFormE, IcnAreaFormE, IcnSubmitForm,  IcnDocumentForm, IcnApprovalTForm, IcnApprovalFForm, IcnApprovalPForm, IcnApprovalMForm,ActivitySubmitForm, ActivityDocumentForm, ActivityApprovalFForm, ActivityApprovalPForm,ActivityApprovalTForm, ActivityApprovalMForm
 from program.models import  Program,  ImplementationArea
 from django.http import QueryDict
 from django.conf import settings
@@ -374,7 +374,9 @@ def icn_submit_form(request, id, sid):
             if icnsubmit.submission_status_id == 2:
                 Icn.objects.filter(pk=id).update(status=True)
                 Icn.objects.filter(pk=id).update(approval_status="Pending Approval")
+                
                 IcnSubmitApproval_T.objects.create(user = icn.technical_lead,submit_id = instance, document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
+                IcnSubmitApproval_M.objects.create(user = icn.mel_lead,submit_id = instance, document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
                 IcnSubmitApproval_P.objects.create(user = icn.program_lead,submit_id = instance,document = instance.document, approval_status=Approvalf_Status.objects.get(id=1))
                 IcnSubmitApproval_F.objects.create(user = icn.finance_lead,submit_id = instance,document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
                 subject = 'Request for Approval'
@@ -397,13 +399,14 @@ def icn_submit_form(request, id, sid):
                 message = plain_message
                 
                 email_from = None 
-                recipient_list = [icn.user.email, icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
+                recipient_list = [icn.user.email, icn.technical_lead.user.email, icn.mel_lead.user.email, icn.finance_lead.user.email]
                 send_mail(subject, message, email_from, recipient_list) 
              
              
             elif icnsubmit.submission_status_id == 1:
                 Icn.objects.filter(pk=id).update(status=False)
                 Icn.objects.filter(pk=id).update(approval_status="Pending Submission")
+               
                 icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
                 subject = 'Approval Request temporarily withdrawn - Pending Re-submission'
                 context = {
@@ -425,7 +428,7 @@ def icn_submit_form(request, id, sid):
                 message = plain_message
                 
                 email_from = None 
-                recipient_list = [icn.user.email, icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
+                recipient_list = [icn.user.email, icn.technical_lead.user.email, icn.mel_lead.user.email, icn.finance_lead.user.email]
                 send_mail(subject, message, email_from, recipient_list) 
              
 
@@ -512,8 +515,30 @@ def icn_approvalt(request, id, did):
             message = plain_message
             
             email_from = None 
-            recipient_list = [icn.user.email, icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
+            recipient_list = [icn.user.email, icn.mel_lead.user.email, icn.technical_lead.user.email,  icn.finance_lead.user.email]
             send_mail(subject, message, email_from, recipient_list) 
+            if icn.approval_status == '75% Approved':
+                subject = 'Request for Final Approval'
+                context = {
+                "program": icn.program,
+                "title": icn.title,
+                "id": icn.id,
+                "cn_id": icn.icn_number,
+                "initiator": icnsubmitApproval_t.user.user.username,
+                "user_role": "Techncial Lead",
+                
+                "date": icnsubmit.submission_date,
+                }
+                template_name = "partial/intervention_mail.html"
+                convert_to_html_content =  render_to_string(
+                template_name=template_name,
+                context=context
+                                    )
+                plain_message = strip_tags(convert_to_html_content)
+                message = plain_message
+                recipient_list = [icn.user.email, icn.mel_lead.user.email, icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
+                send_mail(subject, message, email_from, recipient_list) 
+
             context = {'icn':icn, 'icnsubmit':icnsubmit , 'did':did}
             return HttpResponse(
                 status=204,
@@ -526,7 +551,78 @@ def icn_approvalt(request, id, did):
         
         return render(request, 'icn_approval_tform.html', {'form':form, 'did':did})
   
- 
+@login_required(login_url='login') 
+def icn_approvalm(request, id, did):
+     
+    icnsubmitApproval_m = get_object_or_404(IcnSubmitApproval_M, submit_id_id=id)
+    icnsubmit = get_object_or_404(IcnSubmit, pk=id)
+    did=did
+    icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
+
+   
+      
+    if request.method == "GET":
+        icnsubmitApproval_m = get_object_or_404(IcnSubmitApproval_M, submit_id_id=id)
+        if did != 2:
+            form = IcnApprovalMForm(instance=icnsubmitApproval_m, did=did)
+            form.fields['document'].choices = [
+                (document.pk, document) for document in Document.objects.filter(id=icnsubmitApproval_m.document.id)
+                ]
+        else:
+            form = IcnApprovalMForm(instance=icnsubmitApproval_m, did=did)
+         
+        context = {'icnsubmitapproval_m':icnsubmitApproval_m, 'form': form, 'icn':icn, 'did':did}
+        return render(request, 'icn_approval_mform.html', context)
+    
+    elif request.method == "PUT":
+        icnsubmitApproval_m = get_object_or_404(IcnSubmitApproval_M, submit_id_id=id)
+        data = QueryDict(request.body).dict()
+        form = IcnApprovalMForm(data, instance=icnsubmitApproval_m, did=did)
+        if form.is_valid():
+            instance = form.save()
+            icnsubmit = get_object_or_404(IcnSubmit, pk=id)
+            update_approval_status(icnsubmit.id)
+            icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
+           
+            subject = 'Approval Status changed'
+            context = {
+                    "program": icn.program,
+                    "title": icn.title,
+                    "id": icn.id,
+                    "cn_id": icn.icn_number,
+                    "initiator": icnsubmitApproval_m.user.user.username,
+                    "user_role": "MEL Lead",
+                    
+                    "date": icnsubmit.submission_date,
+                    }
+            template_name = "partial/intervention_mail.html"
+            convert_to_html_content =  render_to_string(
+            template_name=template_name,
+            context=context
+                                )
+            plain_message = strip_tags(convert_to_html_content)
+            message = plain_message
+            
+            email_from = None 
+            recipient_list = [icn.user.email, icn.mel_lead.user.email, icn.technical_lead.user.email,  icn.finance_lead.user.email]
+            send_mail(subject, message, email_from, recipient_list) 
+            if icn.approval_status == '75% Approved':
+                subject = 'Request for Final Approval'
+                recipient_list = [icn.user.email, icn.mel_lead.user.email, icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
+                send_mail(subject, message, email_from, recipient_list) 
+
+            context = {'icn':icn, 'icnsubmit':icnsubmit , 'did':did}
+            return HttpResponse(
+                status=204,
+                headers={
+                    'HX-Trigger': json.dumps({
+                        "SubmitApprovalListChanged": None,
+                        "showMessage": f"{instance.id} added."
+                    })
+                })
+        
+        return render(request, 'icn_approval_mform.html', {'form':form, 'did':did})
+
 def icn_approvalp(request, id, did):
     
     icnsubmitApproval_p = get_object_or_404(IcnSubmitApproval_P, submit_id_id=id)
@@ -558,7 +654,7 @@ def icn_approvalp(request, id, did):
         if form.is_valid():
             instance = form.save()
             icnsubmit = get_object_or_404(IcnSubmit, pk=id)
-            update_approval_status(icnsubmit.id)
+            update_approval_status_final(icnsubmit.id)
             icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
             
             subject = 'Approval Status changed'
@@ -581,7 +677,7 @@ def icn_approvalp(request, id, did):
             message = plain_message
             
             email_from = None 
-            recipient_list = [icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
+            recipient_list = [icn.user.email,icn.technical_lead.user.email, icn.mel_lead.user.email,icn.program_lead.user.email, icn.finance_lead.user.email]
             send_mail(subject, message, email_from, recipient_list) 
             context = {'icn':icn, 'icnsubmit':icnsubmit, 'did':did }
             return HttpResponse(
@@ -648,8 +744,13 @@ def icn_approvalf(request, id, did):
             message = plain_message
             
             email_from = None 
-            recipient_list = [icn.user.email ,icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
+            recipient_list = [icn.user.email, icn.mel_lead.user.email, icn.technical_lead.user.email,  icn.finance_lead.user.email]
             send_mail(subject, message, email_from, recipient_list) 
+            if icn.approval_status == '75% Approved':
+                subject = 'Request for Final Approval'
+                recipient_list = [icn.user.email, icn.mel_lead.user.email, icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
+                send_mail(subject, message, email_from, recipient_list) 
+
             context = {'icn':icn, 'icnsubmit':icnsubmit, 'did':did }
             return HttpResponse(
                 status=204,
@@ -822,30 +923,51 @@ def current_submit_approval_list(request, id):
 def update_approval_status(id):
     icnsubmit = get_object_or_404(IcnSubmit, pk=id)
     icnsubmitapproval_t = get_object_or_404(IcnSubmitApproval_T, submit_id_id=id)
+    icnsubmitapproval_m = get_object_or_404(IcnSubmitApproval_M, submit_id_id=id)
     icnsubmitapproval_p = get_object_or_404(IcnSubmitApproval_P, submit_id_id=id)
     icnsubmitapproval_f = get_object_or_404(IcnSubmitApproval_F, submit_id_id=id)
    
     approval_t = icnsubmitapproval_t.approval_status
     approval_t = int(approval_t)
-    approval_p = icnsubmitapproval_p.approval_status
-    approval_p = int(approval_p)
+    
+    approval_m = icnsubmitapproval_m.approval_status
+    approval_m = int(approval_m)
+   
     approval_f = icnsubmitapproval_f.approval_status
     approval_f = int(approval_f)
+    approval_p = icnsubmitapproval_p.approval_status
+    approval_p = int(approval_p)
     
-    if approval_t == 4 or approval_p== 4 or approval_f== 4:
-        Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="100% Rejected")
-    elif approval_t == 2 or approval_p == 2 or approval_f == 2:
+    if approval_t == 4 or  approval_m== 4  or approval_f== 4:
+        Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="Rejected")
+    elif approval_t == 2 or approval_m == 2 or approval_f == 2:
         Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="Revision Required")
-    elif approval_t == 1 and approval_p == 1 and approval_f == 1:
+    elif approval_t == 1 and approval_m == 1 and approval_f == 1:
         Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="Pending Approval")
-    elif approval_t == 3 and approval_p ==3 and approval_f==3:
-         Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="100% Approved")
-    elif (approval_t == 3 and approval_p ==3 and approval_f !=3) or (approval_t == 3 and approval_p !=3 and approval_f ==3) or (approval_t != 3 and approval_p ==3 and approval_f ==3):
-        Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="67% Approved")
-    elif (approval_t == 3 and approval_p !=3 and approval_f !=3) or (approval_t != 3 and approval_p ==3 and approval_f !=3) or (approval_t != 3 and approval_p !=3 and approval_f ==3):
-        Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="33% Approved") 
+    elif approval_t == 3 and approval_m ==3 and approval_f==3:
+         Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="75% Approved")
+    elif (approval_t == 3 and approval_m ==3 and approval_f !=3) or (approval_t == 3 and approval_m !=3 and approval_f ==3) or (approval_t != 3 and approval_m ==3 and approval_f ==3):
+        Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="50% Approved")
+    elif (approval_t == 3 and approval_m !=3 and approval_f !=3) or (approval_t != 3 and approval_m ==3 and approval_f !=3) or (approval_t != 3 and approval_m !=3 and approval_f ==3):
+        Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="25% Approved") 
  
+def update_approval_status_final(id):
+    icnsubmit = get_object_or_404(IcnSubmit, pk=id)
+    
+    icnsubmitapproval_p = get_object_or_404(IcnSubmitApproval_P, submit_id_id=id)
+    
    
+    
+    approval_p = icnsubmitapproval_p.approval_status
+    approval_p = int(approval_p)
+    
+    if approval_p == 4 :
+        Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="Rejected")
+    elif approval_p == 2:
+        Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="Revision Required")
+    
+    elif approval_p == 3:
+        Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="100% Approved")
    
    
    
@@ -1292,6 +1414,7 @@ def activity_submit_form(request, id, sid):
                 Activity.objects.filter(pk=id).update(status=True)
                 Activity.objects.filter(pk=id).update(approval_status="Pending Approval")
                 ActivitySubmitApproval_T.objects.create(user = activity.technical_lead,submit_id = instance, document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
+                ActivitySubmitApproval_M.objects.create(user = activity.mel_lead,submit_id = instance, document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
                 ActivitySubmitApproval_P.objects.create(user = activity.program_lead,submit_id = instance,document = instance.document, approval_status=Approvalf_Status.objects.get(id=1))
                 ActivitySubmitApproval_F.objects.create(user = activity.finance_lead,submit_id = instance,document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
 
@@ -1316,7 +1439,7 @@ def activity_submit_form(request, id, sid):
                 message = plain_message
                 
                 email_from = None 
-                recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
+                recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.finance_lead.user.email]
                 send_mail(subject, message, email_from, recipient_list)
                 return HttpResponse(
                 status=204,
@@ -1351,7 +1474,7 @@ def activity_submit_form(request, id, sid):
                 message = plain_message
                 
                 email_from = None 
-                recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
+                recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.finance_lead.user.email]
                 send_mail(subject, message, email_from, recipient_list)
                 return HttpResponse(
                 status=204,
@@ -1493,8 +1616,14 @@ def activity_approvalt(request, id, did):
             message = plain_message
             
             email_from = None 
-            recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
+            recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.finance_lead.user.email]
             send_mail(subject, message, email_from, recipient_list)
+            if activity.approval_status == '75% Approved':
+                subject = 'Request for Final Approval'
+                recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
+                send_mail(subject, message, email_from, recipient_list)
+                
+                
             return HttpResponse(
                 status=204,
                 headers={
@@ -1506,7 +1635,76 @@ def activity_approvalt(request, id, did):
         
         return render(request, 'activity_approval_tform.html', {'form':form, 'did':did})
 
- 
+def activity_approvalm(request, id, did):
+     
+    activitysubmitApproval_m = get_object_or_404(ActivitySubmitApproval_M, submit_id_id=id)
+    activitysubmit = get_object_or_404(ActivitySubmit, pk=id)
+    
+    activity =  get_object_or_404(Activity, id=activitysubmit.activity_id)
+
+    if request.method == "GET":
+        activitysubmitApproval_m = get_object_or_404(ActivitySubmitApproval_M, submit_id_id=id)
+        if did != 2:
+            form = ActivityApprovalMForm(instance=activitysubmitApproval_m, did=did)
+            form.fields['document'].choices = [
+                (document.pk, document) for document in ActivityDocument.objects.filter(id=activitysubmitApproval_m.document.id)
+                ]
+        else:
+            form = ActivityApprovalMForm(instance=activitysubmitApproval_t, did=did)
+       
+        context = {'activitysubmitapproval_m':activitysubmitApproval_m, 'form': form, 'activity':activity, 'did':did }
+        return render(request, 'activity_approval_mform.html', context)
+    
+    elif request.method == "PUT":
+        activitysubmitApproval_t = get_object_or_404(ActivitySubmitApproval_M, submit_id_id=id)
+        data = QueryDict(request.body).dict()
+        form = ActivityApprovalMForm(data, instance=activitysubmitApproval_m)
+        if form.is_valid():
+            instance =form.save()
+           
+            activitysubmit = get_object_or_404(ActivitySubmit, pk=id)
+            activity =  get_object_or_404(Activity, id=activitysubmit.activity_id)
+            update_activity_approval_status(activitysubmit.id)
+           
+            subject = 'Approval Status Changed'
+            context = {
+                            "program": activity.icn.program,
+                            "title": activity.title,
+                            "id": activity.id,
+                            "cn_id": activity.acn_number,
+                            "initiator": activity.mel_lead.user.username,
+                            "user_role": "MEL Lead",
+                        
+                        
+                            "date":activitysubmit.submission_date,
+                            }
+            template_name = "partial/activity_mail.html"
+            convert_to_html_content =  render_to_string(
+            template_name=template_name,
+            context=context
+                                )
+            plain_message = strip_tags(convert_to_html_content)
+            message = plain_message
+            
+            email_from = None 
+            recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.finance_lead.user.email]
+            send_mail(subject, message, email_from, recipient_list)
+            if activity.approval_status == '75% Approved':
+                subject = 'Request for Final Approval'
+                recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
+                send_mail(subject, message, email_from, recipient_list)
+            return HttpResponse(
+                status=204,
+                headers={
+                    'HX-Trigger': json.dumps({
+                        "SubmitApprovalListChanged": None,
+                        "showMessage": f"{instance.id} added."
+                    })
+                })
+        
+        return render(request, 'activity_approval_mform.html', {'form':form, 'did':did})
+
+
 def activity_approvalp(request, id, did):
      
     activitysubmitApproval_p = get_object_or_404(ActivitySubmitApproval_P, submit_id_id=id)
@@ -1536,7 +1734,7 @@ def activity_approvalp(request, id, did):
            
             activitysubmit = get_object_or_404(ActivitySubmit, pk=id)
             activity =  get_object_or_404(Activity, id=activitysubmit.activity_id)
-            update_activity_approval_status(activitysubmit.id)
+            update_activity_approval_status_final(activitysubmit.id)
            
             subject = 'Approval Status Changed'
             context = {
@@ -1626,8 +1824,12 @@ def activity_approvalf(request, id, did):
             message = plain_message
             
             email_from = None 
-            recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
+            recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.finance_lead.user.email]
             send_mail(subject, message, email_from, recipient_list)
+            if activity.approval_status == '75% Approved':
+                subject = 'Request for Final Approval'
+                recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
+                send_mail(subject, message, email_from, recipient_list)
             return HttpResponse(
                 status=204,
                 headers={
@@ -1642,31 +1844,50 @@ def activity_approvalf(request, id, did):
 def update_activity_approval_status(id):
     activitysubmit = get_object_or_404(ActivitySubmit, pk=id)
     activitysubmitapproval_t = get_object_or_404(ActivitySubmitApproval_T, submit_id_id=id)
-    activitysubmitapproval_p = get_object_or_404(ActivitySubmitApproval_P, submit_id_id=id)
+    activitysubmitapproval_m = get_object_or_404(ActivitySubmitApproval_M, submit_id_id=id)
     activitysubmitapproval_f = get_object_or_404(ActivitySubmitApproval_F, submit_id_id=id)
     
     approval_t = activitysubmitapproval_t.approval_status
     approval_t = int(approval_t)
-    approval_p = activitysubmitapproval_p.approval_status
-    approval_p = int(approval_p)
+    approval_m = activitysubmitapproval_m.approval_status
+    approval_m = int(approval_m)
     approval_f = activitysubmitapproval_f.approval_status
     approval_f = int(approval_f)
     
  
     
-    if approval_t == 4 or approval_p== 4 or approval_f== 4:
+    if approval_t == 4 or approval_m== 4 or approval_f== 4:
         Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="100% Rejected")
-    elif approval_t == 2 or approval_p == 2 or approval_p == 2:
+    elif approval_t == 2 or approval_m == 2 or approval_m == 2:
         Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="Revision Required")
-    elif approval_t == 1 and approval_p == 1 and approval_p == 1:
+    elif approval_t == 1 and approval_m == 1 and approval_m == 1:
         Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="Pending Approval")
     
-    elif approval_t == 3 and approval_p ==3 and approval_f==3:
+    elif approval_t == 3 and approval_m ==3 and approval_f==3:
+        Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="75% Approved")
+    elif (approval_t == 3 and approval_m ==3 and approval_f !=3) or (approval_t == 3 and approval_m !=3 and approval_f ==3) or (approval_t != 3 and approval_m ==3 and approval_f ==3):
+        Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="50% Approved")
+    elif (approval_t == 3 and approval_m !=3 and approval_f !=3) or (approval_t != 3 and approval_m ==3 and approval_f !=3) or (approval_t != 3 and approval_m !=3 and approval_f ==3):
+        Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="25% Approved") 
+
+def update_activity_approval_status_final(id):
+    activitysubmit = get_object_or_404(ActivitySubmit, pk=id)
+    activitysubmitapproval_p = get_object_or_404(ActivitySubmitApproval_P, submit_id_id=id)
+    
+    
+    approval_p = activitysubmitapproval_p.approval_status
+    approval_p = int(approval_p)
+    
+ 
+    
+    if approval_p == 4:
+        Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="Rejected")
+    elif approval_p == 2:
+        Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="Revision Required")
+    elif approval_p == 3:
         Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="100% Approved")
-    elif (approval_t == 3 and approval_p ==3 and approval_f !=3) or (approval_t == 3 and approval_p !=3 and approval_f ==3) or (approval_t != 3 and approval_p ==3 and approval_f ==3):
-        Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="67% Approved")
-    elif (approval_t == 3 and approval_p !=3 and approval_f !=3) or (approval_t != 3 and approval_p ==3 and approval_f !=3) or (approval_t != 3 and approval_p !=3 and approval_f ==3):
-        Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="33% Approved") 
+        
+    
 
 def downloada(request, id):
     document = get_object_or_404(ActivityDocument, id=id)
