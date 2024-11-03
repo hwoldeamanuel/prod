@@ -67,7 +67,7 @@ htmxpatterns = [
  path('activity_approvalf/<int:id>/<int:did>/', views.activity_approvalf, name='activity_approvalf'),
  path('icn_filter/', views.search_results_view, name='icn_filter'),
  path('activity_filter/', views.search_results_view2, name='activity_filter'),
- 
+ path('woredas/', views.iworedas, name='iworedas'),
  path('document_list/<int:id>/', views.document_list, name='document_list'),
  path('activity_document_list/<int:id>/', views.activity_document_list, name='activity_document_list'),
  path('iarea_list/<int:id>/', views.iarea_list, name='iarea_list'),

@@ -253,7 +253,7 @@ def icnreport_submit_form(request, id, sid):
                         "title": icn.title,
                         "id": icnreport.id,
                         "cn_id": icnreport.icn.icn_number,
-                        "initiator": icnreport.user,
+                        "initiator": icnreport.user.profile.full_name,
                         "user_role": "Concept Note Initiator",
                        
                        
@@ -1390,6 +1390,7 @@ def activityreport_approvalt(request, id, did):
             email_from = None 
             recipient_list = [activityreport.user.email, activityreport.technical_lead.user.email, activityreport.mel_lead.user.email, activityreport.finance_lead.user.email]
             send_mail(subject, message, email_from, recipient_list)
+            activityreport =  get_object_or_404(ActivityReport, id=activityreportsubmit.activityreport_id)
             if activityreport.approval_status == '75% Approved':
                 subject = 'Request for Final Approval'
                 recipient_list = [activityreport.user.email, activityreport.mel_lead.user.email, activityreport.technical_lead.user.email, activityreport.program_lead.user.email, activityreport.finance_lead.user.email]
@@ -1461,6 +1462,7 @@ def activityreport_approvalm(request, id, did):
             email_from = None 
             recipient_list = [activityreport.user.email, activityreport.technical_lead.user.email, activityreport.mel_lead.user.email, activityreport.finance_lead.user.email]
             send_mail(subject, message, email_from, recipient_list)
+            activityreport =  get_object_or_404(ActivityReport, id=activityreportsubmit.activityreport_id)
             if activityreport.approval_status == '75% Approved':
                 subject = 'Request for Final Approval'
                 recipient_list = [activityreport.user.email, activityreport.mel_lead.user.email, activityreport.technical_lead.user.email, activityreport.program_lead.user.email, activityreport.finance_lead.user.email]
@@ -1598,6 +1600,7 @@ def activityreport_approvalf(request, id, did):
             email_from = None 
             recipient_list = [activityreport.user.email, activityreport.technical_lead.user.email, activityreport.mel_lead.user.email, activityreport.finance_lead.user.email]
             send_mail(subject, message, email_from, recipient_list)
+            activityreport =  get_object_or_404(ActivityReport, id=activityreportsubmit.activityreport_id)
             if activityreport.approval_status == '75% Approved':
                 subject = 'Request for Final Approval'
                 recipient_list = [activityreport.user.email, activityreport.mel_lead.user.email, activityreport.technical_lead.user.email, activityreport.program_lead.user.email, activityreport.finance_lead.user.email]

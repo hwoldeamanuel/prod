@@ -215,8 +215,8 @@ def izones(request):
    
 
 def iworedas(request):
-    form = IcnAreaFormE(request.GET)
-    return HttpResponse(form['woreda'])
+    form = IcnForm(request.GET)
+    return HttpResponse(form['iworeda'])
 
  
 def iregion(request, id):
@@ -501,7 +501,7 @@ def icn_approvalt(request, id, did):
                     "title": icn.title,
                     "id": icn.id,
                     "cn_id": icn.icn_number,
-                    "initiator": icnsubmitApproval_t.user.user.username,
+                    "initiator": icnsubmitApproval_t.user.user.profile.full_name,
                     "user_role": "Techncial Lead",
                     
                     "date": icnsubmit.submission_date,
@@ -524,7 +524,7 @@ def icn_approvalt(request, id, did):
                 "title": icn.title,
                 "id": icn.id,
                 "cn_id": icn.icn_number,
-                "initiator": icnsubmitApproval_t.user.user.username,
+                "initiator": icnsubmitApproval_t.user.user.profile.full_name,
                 "user_role": "Techncial Lead",
                 
                 "date": icnsubmit.submission_date,
@@ -590,7 +590,7 @@ def icn_approvalm(request, id, did):
                     "title": icn.title,
                     "id": icn.id,
                     "cn_id": icn.icn_number,
-                    "initiator": icnsubmitApproval_m.user.user.username,
+                    "initiator": icnsubmitApproval_m.user.user.profile.full_name,
                     "user_role": "MEL Lead",
                     
                     "date": icnsubmit.submission_date,
@@ -663,7 +663,7 @@ def icn_approvalp(request, id, did):
                     "title": icn.title,
                     "id": icn.id,
                     "cn_id": icn.icn_number,
-                    "initiator": icn.program_lead.user.username,
+                    "initiator": icnsubmitApproval_p.user.user.profile.full_name,
                     "user_role": "Program Lead",
                     
                     "date": icnsubmit.submission_date,
@@ -730,7 +730,7 @@ def icn_approvalf(request, id, did):
                     "title": icn.title,
                     "id": icn.id,
                     "cn_id": icn.icn_number,
-                    "initiator": icn.finance_lead.user.username,
+                    "initiator": icnsubmitApproval_f.user.user.profile.full_name,
                     "user_role": "Finance Lead",
                     
                     "date": icnsubmit.submission_date,
@@ -1069,6 +1069,7 @@ def download_env_att(request, id):
 def icn_submit_form_partial(request, id): 
     icn = get_object_or_404(Icn, pk=id)
     form = IcnSubmitForm(user=request.user,icn=icn)
+    
     
     context = {'form':form, 'icn':icn}
     return render(request, 'partial/partial_doc_form.html', context)
@@ -1601,7 +1602,7 @@ def activity_approvalt(request, id, did):
                             "title": activity.title,
                             "id": activity.id,
                             "cn_id": activity.acn_number,
-                            "initiator": activity.technical_lead.user.username,
+                            "initiator": activitysubmitApproval_t.user.user.profile.full_name,
                             "user_role": "Technical Lead",
                         
                         
@@ -1650,13 +1651,13 @@ def activity_approvalm(request, id, did):
                 (document.pk, document) for document in ActivityDocument.objects.filter(id=activitysubmitApproval_m.document.id)
                 ]
         else:
-            form = ActivityApprovalMForm(instance=activitysubmitApproval_t, did=did)
+            form = ActivityApprovalMForm(instance=activitysubmitApproval_m, did=did)
        
         context = {'activitysubmitapproval_m':activitysubmitApproval_m, 'form': form, 'activity':activity, 'did':did }
         return render(request, 'activity_approval_mform.html', context)
     
     elif request.method == "PUT":
-        activitysubmitApproval_t = get_object_or_404(ActivitySubmitApproval_M, submit_id_id=id)
+        activitysubmitApproval_m = get_object_or_404(ActivitySubmitApproval_M, submit_id_id=id)
         data = QueryDict(request.body).dict()
         form = ActivityApprovalMForm(data, instance=activitysubmitApproval_m)
         if form.is_valid():
@@ -1672,7 +1673,7 @@ def activity_approvalm(request, id, did):
                             "title": activity.title,
                             "id": activity.id,
                             "cn_id": activity.acn_number,
-                            "initiator": activity.mel_lead.user.username,
+                            "initiator": activitysubmitApproval_m.user.user.profile.full_name,
                             "user_role": "MEL Lead",
                         
                         
@@ -1742,7 +1743,7 @@ def activity_approvalp(request, id, did):
                             "title": activity.title,
                             "id": activity.id,
                             "cn_id": activity.acn_number,
-                            "initiator": activity.program_lead.user.username,
+                            "initiator": activitysubmitApproval_p.user.user.profile.full_name,
                             "user_role": "Program Lead",
                         
                         
@@ -1809,7 +1810,7 @@ def activity_approvalf(request, id, did):
                             "title": activity.title,
                             "id": activity.id,
                             "cn_id": activity.acn_number,
-                            "initiator": activity.finance_lead.user.username,
+                            "initiator": activitysubmitApproval_f.user.user.profile.full_name,
                             "user_role": "Finance Lead",
                         
                         

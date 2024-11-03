@@ -108,6 +108,9 @@ class IcnForm(forms.ModelForm):
         self.fields['ilead_co_agency'].queryset = Portfolio.objects.all()
         self.fields['iworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
         self.fields['iworeda'].queryset = ImplementationArea.objects.filter(program__in=program)
+    
+
+        
        
         
     class Meta:
@@ -133,6 +136,8 @@ class IcnForm(forms.ModelForm):
             'environmental_assessment_att',
             'ilead_agency',
             'ilead_co_agency',
+            
+           
            
           
 
@@ -263,10 +268,12 @@ class IcnSubmitForm(forms.ModelForm):
                self.fields['document'].choices = [
                 (document.pk, document) for document in Document.objects.none()
             ] 
+               
          else:
                self.fields['document'].choices = [
                 (document.pk, document) for document in Document.objects.filter(user=user, icn=icn)
-            ] 
+            ]  
+               self.fields['document'].widget.attrs['readonly'] = True
               
       # invalid input from the client; ignore and fallback to empty City queryset
         
@@ -275,8 +282,9 @@ class IcnSubmitForm(forms.ModelForm):
 
          self.fields['submission_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
          self.fields['submission_note'].required = True 
-         self.fields['submission_status'].required = True 
+         self.fields['submission_status'].widget.attrs['readonly'] = True
          self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
+
    
          
           
@@ -735,7 +743,7 @@ class ActivitySubmitForm(forms.ModelForm):
             ] 
          else:
               self.fields['document'].choices = [
-                (document.pk, document) for document in ActivityDocument.objects.filter(user=user, activity=activity)
+                (document.pk, document) for document in ActivityDocument.objects.filter(user=user, activity=activity).latest('id')
             ] 
              
       # invalid input from the client; ignore and fallback to empty City queryset

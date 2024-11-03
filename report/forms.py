@@ -726,6 +726,7 @@ class ActivityReportSubmitForm(forms.ModelForm):
                 (document.pk, document) for document in ActivityReportDocument.objects.filter(user=user, activityreport=activityreport)
             ] 
               self.fields['document'].widget.attrs['readonly'] = True
+             
          
       # invalid input from the client; ignore and fallback to empty City queryset
         

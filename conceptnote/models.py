@@ -146,7 +146,7 @@ class IcnImplementationArea(models.Model):
         return str(self.pk)
 
 def path_and_rename(instance, filename):
-    upload_to = 'Concept/'
+    upload_to = 'ConceptNote/'
     ext = filename.split('.')[-1]
 
     # get filename

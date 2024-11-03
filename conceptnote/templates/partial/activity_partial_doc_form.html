@@ -1,8 +1,8 @@
 {% load widget_tweaks %}
-{% with WIDGET_ERROR_CLASS='is-invalid' %} 
+{% with WIDGET_ERROR_CLASS='is-invalid'  %} 
 
 <div>
-    {%  render_field form.document class+="form-control form-control-sm" %}
+    {%  render_field form.document class+="form-control form-control-sm" readonly="readonly" %}
  
 </div>
 
