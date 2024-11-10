@@ -29,6 +29,7 @@ class Icn(models.Model):
     technical_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='itechnical_lead')
     finance_lead = models.ForeignKey(UserRoles, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='ifinance_lead')
     description = models.TextField(null=True, blank=True)
+  
     iworeda = models.ManyToManyField(ImplementationArea,  blank=True, related_name='program_woredas')
     
     mc_budget = models.FloatField(null=True, blank=True)

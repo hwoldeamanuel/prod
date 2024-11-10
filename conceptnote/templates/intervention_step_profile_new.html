@@ -29,7 +29,7 @@
 								                      {% load widget_tweaks %}
                       {% with WIDGET_ERROR_CLASS='is-invalid' %}
                       
-                        <form class="form-horizontal form-label-left" method="post"  enctype="multipart/form-data"   >
+                        <form class="form-horizontal form-label-left" method="post"   enctype="multipart/form-data"   >
                            {% csrf_token %}
                          <div class="form-group row">
                             <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.title.id_for_label }}">Title: <span class="required"></span>
@@ -53,7 +53,7 @@
                                 </label>
                             <div class="col-md-2 col-sm-2">
                             
-                                {% render_field   form.ilead_agency class="form-control form-control-sm required" %}
+                                {% render_field   form.ilead_agency class="form-control form-control-sm required"   %}
                                 <div class="invalid-feedback">{{ form.ilead_agency.errors|first }}</div>
                             </div>
                             <label class="col-form-label col-md-1 col-sm-1 label-align">Co-Lead:
@@ -83,12 +83,16 @@
                                  <div class="invalid-feedback">{{ form.final_report_due_date.errors|first }}</div>
                             </div>
                             </div>
+                            
+                            
+      
+       
                           <div class="form-group row">
                             
                              <label class="col-form-label col-md-2 col-sm-2 label-align">Intervention Woreda:
                               </label>
                               <div class="col-md-8 col-sm-8">
-                                   {% render_field form.iworeda class+="form-control form-control-sm select2_group form-control" attr="data-control:select2"  %}
+                                   {% render_field form.iworeda class+="form-control form-control-sm"  %}
                                     <div class="invalid-feedback">{{ form.iworeda.errors|first }}</div>
                               </div>
                           </div>
@@ -199,3 +203,16 @@
 					</div>
 				</div>
 {% endblock %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var selectElements = document.querySelectorAll('.select2');
+    selectElements.forEach(function(select) {
+        select.addEventListener('select2:select', function(event) {
+            // Criando e disparando o evento de mudança
+            var changeEvent = new Event('change');
+            select.dispatchEvent(changeEvent);
+        });
+    });
+});
+</script>

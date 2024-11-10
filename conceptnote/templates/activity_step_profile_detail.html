@@ -26,28 +26,29 @@
      
               
                    <div class="panel-body">
-                     
+                       
                                             
-                       <div class="col-md-9 col-sm-9 project_detail text-truncate">
+                        <div class="col-md-9 col-sm-9 project_detail text-truncate" >
                           
-                          <p>Title:<strong> {{ activity.title }}</strong></p>
-                         
+                          <p>Intervention Title:<strong> {{ activity.icn.title }}</strong></p>
+                            <p>Activity Title:<strong> {{ activity.title }}</strong></p>
                          </div>
                          <div class="col-md-3 col-sm-3 project_detail">
-                         <p>ID:<strong> {{ activity.acn_number }}</strong> </p>
-                        
+                       
+                          <p>ID:<strong> {{ activity.icn.icn_number }}</strong> </p>
+                           <p>ID:<strong> {{ activity.acn_number }}</strong> </p>
                           
-                          
-                        </div>
-                      <p></br></p>
+                                                   </div>
  
                           <div class="col-md-4 col-sm-4 project_detail">
 
                            <p>Lead Agency:<strong> {{ activity.alead_agency }}</strong></p>
-                              <p>Co-Lead Agency:
+                            
+                       <p>Co-Lead Agency: {% if activity.alead_co_agency.all|length > 0 %}
                       {% for colead in activity.alead_co_agency.all %}
                       <strong>{{colead}},</strong>
                       {% endfor %}</p>
+                      {% else %} None {% endif %}</p>
                              <p class="">Proposed Start Date<strong>
                       {{activity.proposed_start_date}}</strong></p>
                       <p class="">Proposed End Date<strong>
@@ -56,12 +57,21 @@
                             
                           </div>
   <div class="col-md-4 col-sm-4 project_detail">
-  <p>Implementation Woredas:
-                      {% for woreda in activity.aworeda.all %}
-                      <strong>{{woreda}},</strong>
-                      {% endfor %}</p>
-                              <p>Intervention. Env.Impact: {% if activity.icn.eniromental_impact == '3' %}<strong>High</strong>{% elif activity.icn.eniromental_impact == '2' %}<strong>Medium</strong>{% elif activity.icn.eniromental_impact == '1' %}<strong>Low</strong>{% endif %}</p>
-                              <p>Intervention. Env.Impact Doc <i class="fa fa-paperclip"></i>:<strong>{% if activity.icn.environmental_assessment_att %}<a href="{% url 'download_env_att' activity.icn.id %}">  download </a> {% else %}NA{% endif%} </strong></p>
+   Implementation Woredas: <strong>{{ activity.aworeda.all|length }}</strong>
+  {% regroup activity.aworeda.all  by region as region_list %}
+                  
+    {% for region in region_list %}
+     <li>   <strong>{{ region.grouper }}</strong>
+            (
+            {% for woreda in region.list %}
+                {{ woreda }},
+            {% endfor %}
+            )
+           </li>
+    {% endfor %}
+ 
+                              <p>Environmnetal Impact: {% if activity.icn.eniromental_impact == '3' %}<strong>High</strong>{% elif activity.icn.eniromental_impact == '2' %}<strong>Medium</strong>{% elif activity.icn.eniromental_impact == '1' %}<strong>Low</strong>{% endif %}
+                            Att <i class="fa fa-paperclip"></i>:<strong>{% if activity.icn.environmental_assessment_att %}<a href="{% url 'download_env_att' activity.icn.id %}">  download </a> {% else %}NA{% endif%} </strong></p>
 
                               <p>Mercy Corps budget:<strong> {{ activity.mc_budget|floatformat:"2g"}}</strong>{{activity.get_mc_currency_display }}</p>
                               <p>Cost-share budget:<strong> {{ activity.cost_sharing_budget|floatformat:"2g"}}</strong>{{activity.get_cs_currency_display }}</p>
@@ -95,7 +105,7 @@
                           <div class="text-center mtop20">
                             <a class="btn btn-success source" {% if activity.status == True or activity.user != request.user %} onclick="new PNotify({
                                   title: 'Permission',
-                                  text: 'Current User doesnot match with ICN Owner and/or ICN submission status should be Draft;',
+                                  text: 'User doesnot match ICN Owner or ICN not in Draft status;',
                                   type: 'info',
                                   styling: 'bootstrap3'
                               });" {% else %} href="{% url 'activity_edit' activity.id %} {% endif %}" ><i class="fa fa-edit m-right-xs"></i>Edit Profile</a>

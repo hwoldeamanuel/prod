@@ -86,6 +86,7 @@ htmxpatterns = [
  path('activity_impact/<int:pk>/remove', views.remove_activity_impact, name='remove_activity_impact'),
  
  path('add_impact_form/', views.add_impact_form, name='add_impact_form'),
+ path('iworedas/', views.iworedas, name='iworedas'),
  
 ]
 

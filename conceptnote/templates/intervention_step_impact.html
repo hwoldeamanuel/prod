@@ -31,12 +31,13 @@
         <thead>
             <tr>
               <th>#</th>
-             <th style="width: 25%">Title</th>
-              <th style="width: 25%">Description <small> (Or Disaggregates) </small></th>
-              <th style="width: 10%">Unit</th>
-            <th  >Pilot <small>Target</small></th>
-             <th >Scale-Up <small>Target</small></th>
-            <th ><small>Program</small> Indicators</th>
+            <th style="width: 30%">Title</th>
+              <th style="width: 15%">Disaggregates</th>
+              <th style="width: 12%">Unit</th>
+            <th style="width: 12%" >Pilot <small>Target</small></th>
+             <th style="width: 12%">Scale-Up <small>Target</small></th>
+            <th  style="width: 20%"><small>Program</small> Indicators</th>
+          
                
             </tr>
         </thead>
@@ -88,7 +89,7 @@
                                   text: 'Current User doesnot match with ICN Owner and/or ICN submission status should be Draft;',
                                   type: 'info',
                                   styling: 'bootstrap3'
-                              });" {% else %} hx-get="/conceptnote/add_impact/{{icn.id}}/ {% endif %}" hx-target="#dialog" ><i class="fa fa-plus m-right-xs"> Add New Target</i></button>
+                              });" {% else %} hx-get="/conceptnote/add_impact/{{icn.id}}/ {% endif %}" hx-target="#dialog" ><i class="fa fa-plus m-right-xs"> Add Target</i></button>
                          
 <div class="modal fade bs-example-modal-lg" id="modal" class="modal fade">
                                                   <div id="dialog" class="modal-dialog modal-lg" hx-target="this"></div>

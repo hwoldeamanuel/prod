@@ -36,7 +36,7 @@
                        
                           <p>ID:<strong> {{ icn.icn_number }}</strong> </p>
                           
-                             </br>                        </div>
+                                                </div>
                     
  
                           
@@ -44,10 +44,11 @@
                           <div class="col-md-4 col-sm-4 project_detail">
 
                            <p>Lead Agency:<strong> {{ icn.ilead_agency }}</strong></p>
-                              <p>Co-Lead Agency:
+                              <p>Co-Lead Agency: {% if icn.ilead_co_agency.all|length > 0 %}
                       {% for colead in icn.ilead_co_agency.all %}
                       <strong>{{colead}},</strong>
                       {% endfor %}</p>
+                      {% else %} None {% endif %}
                       </br>
                              <p class="">Proposed Start Date<strong>
                       {{icn.proposed_start_date}}</strong></p>
@@ -57,10 +58,19 @@
                             
                           </div>
   <div class="col-md-4 col-sm-4 project_detail">
-  <p>Implementation Woredas:
-                      {% for woreda in icn.iworeda.all %}
-                      <strong>{{woreda}},</strong>
-                      {% endfor %}</p>
+  Implementation Woredas: <strong>{{ icn.iworeda.all|length }}</strong>
+  {% regroup icn.iworeda.all  by region as region_list %}
+                 
+    {% for region in region_list %}
+       <li>    <strong>{{ region.grouper }}</strong>
+            (
+            {% for woreda in region.list %}
+                {{ woreda }},
+            {% endfor %}
+            )
+       </li>
+    {% endfor %} 
+
                               <p>Environmnetal Impact: {% if icn.eniromental_impact == '3' %}<strong>High</strong>{% elif icn.eniromental_impact == '2' %}<strong>Medium</strong>{% elif icn.eniromental_impact == '1' %}<strong>Low</strong>{% endif %}
                             &nbsp;  Attachment <i class="fa fa-paperclip"></i>:<strong>{% if icn.environmental_assessment_att %}<a href="{% url 'download_env_att' icn.id %}"> download </a> {% else %}NA{% endif%} </strong></p>
                         

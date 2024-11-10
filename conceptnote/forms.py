@@ -12,6 +12,13 @@ from app_admin.models import Country , Region , Zone , Woreda , Approvalt_Status
 from django.contrib.auth.models import User
 from portfolio.models import Portfolio
 from django.forms import inlineformset_factory
+
+
+
+
+
+
+
 CHOICE1 =(
     ("1", "Low"),
     ("2", "Medium"),
@@ -25,9 +32,13 @@ CHOICE2 =(
     
 )
 class IcnForm(forms.ModelForm):
+           
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
-        super().__init__(*args, **kwargs)
+        super(IcnForm, self).__init__(*args, **kwargs)
+               
+        
+       
       
         if user:
             self.fields['program'].queryset = Program.objects.filter(users_role=user, userroles__is_pcn_initiator=True)
@@ -74,8 +85,16 @@ class IcnForm(forms.ModelForm):
             self.fields[field].required = True 
 
         
-    
-
+        self.fields['iworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
+        pia = ImplementationArea.objects.filter(program__in=program).values_list('region').distinct()
+        all_woreda = Region.objects.filter(id__in=pia)
+        self.fields['iworeda'].choices = [
+             
+             
+             (name, [(ia.id, ia) for ia in ImplementationArea.objects.filter(region=name, program__in=program)])
+                        for name in all_woreda
+                
+            ]
        
        
         self.fields['proposed_start_date'].widget = forms.widgets.DateInput(
@@ -106,11 +125,9 @@ class IcnForm(forms.ModelForm):
         self.fields['eniromental_impact'].widget = forms.widgets.Select(choices = CHOICE1,attrs={'type': 'choice', 'class': 'form-control form-control-sm', 'rows':'1', 'placeholder':''   }    )
         self.fields['ilead_co_agency'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
         self.fields['ilead_co_agency'].queryset = Portfolio.objects.all()
-        self.fields['iworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
-        self.fields['iworeda'].queryset = ImplementationArea.objects.filter(program__in=program)
-    
 
-        
+       
+       
        
         
     class Meta:
@@ -129,7 +146,7 @@ class IcnForm(forms.ModelForm):
             'finance_lead',
             'iworeda',
             'mc_budget',
-           
+            
             'cost_sharing_budget',
             
             'eniromental_impact',
@@ -309,6 +326,7 @@ class IcnDocumentForm(forms.ModelForm):
         self.fields['description'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'required'  }    )
         self.fields['description'].required = True 
         self.fields['document'].required = True 
+        self.fields['document'].widget= forms.widgets.FileInput(attrs={'accept':'application/doc'})
     
     
         
@@ -317,6 +335,8 @@ class IcnDocumentForm(forms.ModelForm):
         fields = ('description', 'document',)
 
         exclude=  ['icn','user', 'ver']
+    
+    
 
 
 class IcnApprovalTForm(forms.ModelForm):
@@ -518,7 +538,16 @@ class ActivityForm(forms.ModelForm):
         
     
 
-       
+        self.fields['aworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
+        pia = ImplementationArea.objects.filter(program__in=program).values_list('region').distinct()
+        all_woreda = Region.objects.filter(id__in=pia)
+        self.fields['aworeda'].choices = [
+             
+             
+             (name, [(ia.id, ia) for ia in ImplementationArea.objects.filter(region=name, program__in=program)])
+                        for name in all_woreda
+                
+            ]
        
         self.fields['proposed_start_date'].widget = forms.widgets.DateInput(
           
@@ -547,8 +576,8 @@ class ActivityForm(forms.ModelForm):
         
         self.fields['alead_co_agency'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
         self.fields['alead_co_agency'].queryset = Portfolio.objects.all()
-        self.fields['aworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
-        self.fields['aworeda'].queryset = ImplementationArea.objects.filter(program__in=program)
+       
+       
         self.fields['aworeda'].required = True 
         self.fields['mc_budget'].required = True 
         self.fields['cost_sharing_budget'].required = True 
@@ -743,7 +772,7 @@ class ActivitySubmitForm(forms.ModelForm):
             ] 
          else:
               self.fields['document'].choices = [
-                (document.pk, document) for document in ActivityDocument.objects.filter(user=user, activity=activity).latest('id')
+                (document.pk, document) for document in ActivityDocument.objects.filter(user=user, activity=activity)
             ] 
              
       # invalid input from the client; ignore and fallback to empty City queryset

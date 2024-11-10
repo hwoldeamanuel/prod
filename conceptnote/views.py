@@ -1147,13 +1147,13 @@ def activity_edit(request, id):
             return redirect('activity_detail',instance.pk) 
         
         form = ActivityForm(request.POST,  instance=activity, user=request.user) 
-        context = {'form':form}
+        context = {'form':form, 'activity':activity}
         return render(request, 'activity_step_profile_edit.html', context)
             
     
     if activity.user == request.user and activity.status == False:
         form = ActivityForm(instance=activity,  user=request.user) 
-        context = {'form':form}
+        context = {'form':form, 'activity':activity}
         return render(request, 'activity_step_profile_edit.html', context)
     return HttpResponseRedirect(request.path_info)
     
@@ -1980,10 +1980,12 @@ def icn_info(request):
     if query:
         
         icn = Icn.objects.get(id=query)
-        print(icn.id)
+        
         return render(request, 'partial/intervention_info.html', {'icn':icn})
     
     return render(request, 'partial/intervention_info.html')
 
-
+def iworedas(request):
     
+    form = IcnForm(request.GET)
+    return HttpResponse(form['iworeda'])
