@@ -385,7 +385,8 @@ def icn_submit_form(request, id, sid):
                         "title": icn.title,
                         "id": icn.id,
                         "cn_id": icn.icn_number,
-                        "initiator": icn.user.username,
+                        "creator": icn.user.profile.full_name,
+                        "initiator": icn.user.profile.full_name,
                         "user_role": "Concept Note Initiator",
                        
                         "date": icnsubmit.submission_date,
@@ -414,6 +415,7 @@ def icn_submit_form(request, id, sid):
                         "title": icn.title,
                         "id": icn.id,
                         "cn_id": icn.icn_number,
+                        "creator": icn.user.profile.full_name,
                         "initiator": icn.user.username,
                         "user_role": "Concept Note Initiator",
                        
@@ -501,6 +503,7 @@ def icn_approvalt(request, id, did):
                     "title": icn.title,
                     "id": icn.id,
                     "cn_id": icn.icn_number,
+                    "creator": icn.user.profile.full_name,
                     "initiator": icnsubmitApproval_t.user.user.profile.full_name,
                     "user_role": "Techncial Lead",
                     
@@ -524,6 +527,7 @@ def icn_approvalt(request, id, did):
                 "title": icn.title,
                 "id": icn.id,
                 "cn_id": icn.icn_number,
+                "creator": icn.user.profile.full_name,
                 "initiator": icnsubmitApproval_t.user.user.profile.full_name,
                 "user_role": "Techncial Lead",
                 
@@ -589,6 +593,7 @@ def icn_approvalm(request, id, did):
                     "program": icn.program,
                     "title": icn.title,
                     "id": icn.id,
+                    "creator": icn.user.profile.full_name,
                     "cn_id": icn.icn_number,
                     "initiator": icnsubmitApproval_m.user.user.profile.full_name,
                     "user_role": "MEL Lead",
@@ -630,7 +635,7 @@ def icn_approvalp(request, id, did):
     did = did
     icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
     subject = 'Approval Status changed'
-    message = 'Reviewed & status has been updated to this Concept Note has been submitted'
+    message = 'Reviewed & status has been updated'
     email_from = None 
     recipient_list = [icn.user.email ,icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
        
@@ -657,12 +662,13 @@ def icn_approvalp(request, id, did):
             update_approval_status_final(icnsubmit.id)
             icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
             
-            subject = 'Approval Status changed'
+            subject = 'Final Approval Status changed'
             context = {
                     "program": icn.program,
                     "title": icn.title,
                     "id": icn.id,
                     "cn_id": icn.icn_number,
+                    "creator": icn.user.profile.full_name,
                     "initiator": icnsubmitApproval_p.user.user.profile.full_name,
                     "user_role": "Program Lead",
                     
@@ -699,7 +705,7 @@ def icn_approvalf(request, id, did):
     did = did
     icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
     subject = 'Approval Status changed'
-    message = 'Reviewed & status has been updated to this Concept Note has been submitted'
+    message = 'Reviewed & status has been updated'
     email_from = None 
     recipient_list = [icn.user.email ,icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
        
@@ -729,6 +735,7 @@ def icn_approvalf(request, id, did):
                     "program": icn.program,
                     "title": icn.title,
                     "id": icn.id,
+                    "creator": icn.user.profile.full_name,
                     "cn_id": icn.icn_number,
                     "initiator": icnsubmitApproval_f.user.user.profile.full_name,
                     "user_role": "Finance Lead",
@@ -1424,6 +1431,7 @@ def activity_submit_form(request, id, sid):
                             "program": activity.icn.program,
                             "title": activity.title,
                             "id": activity.id,
+                            "creator": activity.user.profile.full_name,
                             "cn_id": activity.acn_number,
                             "initiator": activity.user.username,
                             "user_role": "Concept Note Initiator",
@@ -1460,6 +1468,7 @@ def activity_submit_form(request, id, sid):
                             "title": activity.title,
                             "id": activity.id,
                             "cn_id": activity.acn_number,
+                            "creator": activity.user.profile.full_name,
                             "initiator": activity.user.username,
                             "user_role": "Concept Note Initiator",
                         
@@ -1601,6 +1610,7 @@ def activity_approvalt(request, id, did):
                             "program": activity.icn.program,
                             "title": activity.title,
                             "id": activity.id,
+                            "creator": activity.user.profile.full_name,
                             "cn_id": activity.acn_number,
                             "initiator": activitysubmitApproval_t.user.user.profile.full_name,
                             "user_role": "Technical Lead",
@@ -1673,6 +1683,7 @@ def activity_approvalm(request, id, did):
                             "title": activity.title,
                             "id": activity.id,
                             "cn_id": activity.acn_number,
+                            "creator": activity.user.profile.full_name,
                             "initiator": activitysubmitApproval_m.user.user.profile.full_name,
                             "user_role": "MEL Lead",
                         
@@ -1737,12 +1748,13 @@ def activity_approvalp(request, id, did):
             activity =  get_object_or_404(Activity, id=activitysubmit.activity_id)
             update_activity_approval_status_final(activitysubmit.id)
            
-            subject = 'Approval Status Changed'
+            subject = 'Final Approval Status Changed'
             context = {
                             "program": activity.icn.program,
                             "title": activity.title,
                             "id": activity.id,
                             "cn_id": activity.acn_number,
+                            "creator": activity.user.profile.full_name,
                             "initiator": activitysubmitApproval_p.user.user.profile.full_name,
                             "user_role": "Program Lead",
                         
@@ -1810,6 +1822,7 @@ def activity_approvalf(request, id, did):
                             "title": activity.title,
                             "id": activity.id,
                             "cn_id": activity.acn_number,
+                            "creator": activity.user.profile.full_name,
                             "initiator": activitysubmitApproval_f.user.user.profile.full_name,
                             "user_role": "Finance Lead",
                         

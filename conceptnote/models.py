@@ -395,7 +395,7 @@ class Impact(models.Model):
 class Activity(models.Model):
     title = models.CharField(max_length=255)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True)
-    icn = models.ForeignKey(Icn, on_delete=models.DO_NOTHING)
+    icn = models.ForeignKey(Icn,  null=False, blank=False, on_delete=models.DO_NOTHING)
     proposed_start_date = models.DateField()
     proposed_end_date = models.DateField()
     acn_number =  models.CharField(max_length=100, null=True, blank=True)
