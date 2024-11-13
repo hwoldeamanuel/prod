@@ -423,7 +423,7 @@ def icn_submit_form(request, id, sid):
                         "id": icn.id,
                         "cn_id": icn.icn_number,
                         "creator": icn.user.profile.full_name,
-                        "initiator": icn.user.username,
+                        "initiator": icn.user.profile.full_name,
                         "user_role": "Concept Note Initiator",
                        
                         "date": icnsubmit.submission_date,
@@ -518,17 +518,20 @@ def icn_approvalt(request, id, did):
                     
                     "date": icnsubmit.submission_date,
                     }
-            template_name = "partial/intervention_mail.html"
-            convert_to_html_content =  render_to_string(
-            template_name=template_name,
-            context=context
-                                )
-            plain_message = strip_tags(convert_to_html_content)
-            message = plain_message
+            html_message = render_to_string("partial/intervention_mail.html", context=context)
+            plain_message = strip_tags(html_message)
+            recipient_list = [icn.user.email, icn.technical_lead.user.email, icn.mel_lead.user.email, icn.finance_lead.user.email]
+                
+            message = EmailMultiAlternatives(
+            subject = subject, 
+            body = plain_message,
+            from_email = None ,
+            to= recipient_list
+                )
             
-            email_from = None 
-            recipient_list = [icn.user.email, icn.mel_lead.user.email, icn.technical_lead.user.email,  icn.finance_lead.user.email]
-            send_mail(subject, message, email_from, recipient_list) 
+            message.attach_alternative(html_message, "text/html")
+            message.send()
+            
             if icn.approval_status == '75% Approved':
                 subject = 'Request for Final Approval'
                 context = {
@@ -542,15 +545,22 @@ def icn_approvalt(request, id, did):
                 
                 "date": icnsubmit.submission_date,
                 }
-                template_name = "partial/intervention_mail.html"
-                convert_to_html_content =  render_to_string(
-                template_name=template_name,
-                context=context
-                                    )
-                plain_message = strip_tags(convert_to_html_content)
-                message = plain_message
+               
                 recipient_list = [icn.user.email, icn.mel_lead.user.email, icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
-                send_mail(subject, message, email_from, recipient_list) 
+  
+                html_message = render_to_string("partial/intervention_mail.html", context=context)
+                plain_message = strip_tags(html_message)
+               
+                
+                message = EmailMultiAlternatives(
+                subject = subject, 
+                body = plain_message,
+                from_email = None ,
+                to= recipient_list
+                    )
+               
+                message.attach_alternative(html_message, "text/html")
+                message.send()
 
             context = {'icn':icn, 'icnsubmit':icnsubmit , 'did':did}
             return HttpResponse(
@@ -609,21 +619,35 @@ def icn_approvalm(request, id, did):
                     
                     "date": icnsubmit.submission_date,
                     }
-            template_name = "partial/intervention_mail.html"
-            convert_to_html_content =  render_to_string(
-            template_name=template_name,
-            context=context
-                                )
-            plain_message = strip_tags(convert_to_html_content)
-            message = plain_message
+            html_message = render_to_string("partial/intervention_mail.html", context=context)
+            plain_message = strip_tags(html_message)
+            recipient_list = [icn.user.email, icn.technical_lead.user.email, icn.mel_lead.user.email, icn.finance_lead.user.email]
             
-            email_from = None 
-            recipient_list = [icn.user.email, icn.mel_lead.user.email, icn.technical_lead.user.email,  icn.finance_lead.user.email]
-            send_mail(subject, message, email_from, recipient_list) 
+            message = EmailMultiAlternatives(
+            subject = subject, 
+            body = plain_message,
+            from_email = None ,
+            to= recipient_list
+                )
+            
+            message.attach_alternative(html_message, "text/html")
+            message.send()
             if icn.approval_status == '75% Approved':
                 subject = 'Request for Final Approval'
                 recipient_list = [icn.user.email, icn.mel_lead.user.email, icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
-                send_mail(subject, message, email_from, recipient_list) 
+                html_message = render_to_string("partial/intervention_mail.html", context=context)
+                plain_message = strip_tags(html_message)
+                
+                
+                message = EmailMultiAlternatives(
+                subject = subject, 
+                body = plain_message,
+                from_email = None ,
+                to= recipient_list
+                    )
+               
+                message.attach_alternative(html_message, "text/html")
+                message.send()
 
             context = {'icn':icn, 'icnsubmit':icnsubmit , 'did':did}
             return HttpResponse(
@@ -683,17 +707,19 @@ def icn_approvalp(request, id, did):
                     
                     "date": icnsubmit.submission_date,
                     }
-            template_name = "partial/intervention_mail.html"
-            convert_to_html_content =  render_to_string(
-            template_name=template_name,
-            context=context
-                                )
-            plain_message = strip_tags(convert_to_html_content)
-            message = plain_message
+            html_message = render_to_string("partial/intervention_mail.html", context=context)
+            plain_message = strip_tags(html_message)
+            recipient_list = [icn.user.email, icn.program_lead.user.email, icn.technical_lead.user.email, icn.mel_lead.user.email, icn.finance_lead.user.email]
             
-            email_from = None 
-            recipient_list = [icn.user.email,icn.technical_lead.user.email, icn.mel_lead.user.email,icn.program_lead.user.email, icn.finance_lead.user.email]
-            send_mail(subject, message, email_from, recipient_list) 
+            message = EmailMultiAlternatives(
+            subject = subject, 
+            body = plain_message,
+            from_email = None ,
+            to= recipient_list
+                )
+            
+            message.attach_alternative(html_message, "text/html")
+            message.send()
             context = {'icn':icn, 'icnsubmit':icnsubmit, 'did':did }
             return HttpResponse(
                 status=204,
@@ -751,21 +777,34 @@ def icn_approvalf(request, id, did):
                     
                     "date": icnsubmit.submission_date,
                     }
-            template_name = "partial/intervention_mail.html"
-            convert_to_html_content =  render_to_string(
-            template_name=template_name,
-            context=context
-                                )
-            plain_message = strip_tags(convert_to_html_content)
-            message = plain_message
+            html_message = render_to_string("partial/intervention_mail.html", context=context)
+            plain_message = strip_tags(html_message)
+            recipient_list = [icn.user.email, icn.technical_lead.user.email, icn.mel_lead.user.email, icn.finance_lead.user.email]
             
-            email_from = None 
-            recipient_list = [icn.user.email, icn.mel_lead.user.email, icn.technical_lead.user.email,  icn.finance_lead.user.email]
-            send_mail(subject, message, email_from, recipient_list) 
+            message = EmailMultiAlternatives(
+            subject = subject, 
+            body = plain_message,
+            from_email = None ,
+            to= recipient_list
+                )
+            
+            message.attach_alternative(html_message, "text/html")
+            message.send()
             if icn.approval_status == '75% Approved':
                 subject = 'Request for Final Approval'
-                recipient_list = [icn.user.email, icn.mel_lead.user.email, icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
-                send_mail(subject, message, email_from, recipient_list) 
+                html_message = render_to_string("partial/intervention_mail.html", context=context)
+                plain_message = strip_tags(html_message)
+                recipient_list = [icn.user.email, icn.program_lead.user.email,icn.technical_lead.user.email, icn.mel_lead.user.email, icn.finance_lead.user.email]
+            
+                message = EmailMultiAlternatives(
+                subject = subject, 
+                body = plain_message,
+                from_email = None ,
+                to= recipient_list
+                )
+            
+                message.attach_alternative(html_message, "text/html")
+                message.send()
 
             context = {'icn':icn, 'icnsubmit':icnsubmit, 'did':did }
             return HttpResponse(
@@ -1448,17 +1487,20 @@ def activity_submit_form(request, id, sid):
                         
                             "date":activitysubmit.submission_date,
                             }
-                template_name = "partial/activity_mail.html"
-                convert_to_html_content =  render_to_string(
-                template_name=template_name,
-                context=context
-                                    )
-                plain_message = strip_tags(convert_to_html_content)
-                message = plain_message
                 
-                email_from = None 
+                html_message = render_to_string("partial/activity_mail.html", context=context)
+                plain_message = strip_tags(html_message)
                 recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.finance_lead.user.email]
-                send_mail(subject, message, email_from, recipient_list)
+                
+                message = EmailMultiAlternatives(
+                subject = subject, 
+                body = plain_message,
+                from_email = None ,
+                to= recipient_list
+                    )
+                
+                message.attach_alternative(html_message, "text/html")
+                message.send()
                 return HttpResponse(
                 status=204,
                 headers={
@@ -1484,17 +1526,20 @@ def activity_submit_form(request, id, sid):
                         
                             "date":activitysubmit.submission_date,
                             }
-                template_name = "partial/activity_mail.html"
-                convert_to_html_content =  render_to_string(
-                template_name=template_name,
-                context=context
-                                    )
-                plain_message = strip_tags(convert_to_html_content)
-                message = plain_message
-                
-                email_from = None 
+                html_message = render_to_string("partial/activity_mail.html", context=context)
+                plain_message = strip_tags(html_message)
                 recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.finance_lead.user.email]
-                send_mail(subject, message, email_from, recipient_list)
+                
+                message = EmailMultiAlternatives(
+                subject = subject, 
+                body = plain_message,
+                from_email = None ,
+                to= recipient_list
+                    )
+                
+                message.attach_alternative(html_message, "text/html")
+                message.send()
+               
                 return HttpResponse(
                 status=204,
                 headers={
@@ -1627,21 +1672,36 @@ def activity_approvalt(request, id, did):
                         
                             "date":activitysubmit.submission_date,
                             }
-            template_name = "partial/activity_mail.html"
-            convert_to_html_content =  render_to_string(
-            template_name=template_name,
-            context=context
-                                )
-            plain_message = strip_tags(convert_to_html_content)
-            message = plain_message
-            
-            email_from = None 
+            html_message = render_to_string("partial/activity_mail.html", context=context)
+            plain_message = strip_tags(html_message)
             recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.finance_lead.user.email]
-            send_mail(subject, message, email_from, recipient_list)
+                
+            message = EmailMultiAlternatives(
+                subject = subject, 
+                body = plain_message,
+                from_email = None ,
+                to= recipient_list
+                    )
+                
+            message.attach_alternative(html_message, "text/html")
+            message.send()
+
             if activity.approval_status == '75% Approved':
                 subject = 'Request for Final Approval'
+                
+                html_message = render_to_string("partial/activity_mail.html", context=context)
+                plain_message = strip_tags(html_message)
                 recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
-                send_mail(subject, message, email_from, recipient_list)
+                
+                message = EmailMultiAlternatives(
+                subject = subject, 
+                body = plain_message,
+                from_email = None ,
+                to= recipient_list
+                    )
+                
+                message.attach_alternative(html_message, "text/html")
+                message.send()
                 
                 
             return HttpResponse(
@@ -1699,21 +1759,36 @@ def activity_approvalm(request, id, did):
                         
                             "date":activitysubmit.submission_date,
                             }
-            template_name = "partial/activity_mail.html"
-            convert_to_html_content =  render_to_string(
-            template_name=template_name,
-            context=context
-                                )
-            plain_message = strip_tags(convert_to_html_content)
-            message = plain_message
-            
-            email_from = None 
+            html_message = render_to_string("partial/activity_mail.html", context=context)
+            plain_message = strip_tags(html_message)
             recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.finance_lead.user.email]
-            send_mail(subject, message, email_from, recipient_list)
+                
+            message = EmailMultiAlternatives(
+                subject = subject, 
+                body = plain_message,
+                from_email = None ,
+                to= recipient_list
+                    )
+                
+            message.attach_alternative(html_message, "text/html")
+            message.send()
+            
             if activity.approval_status == '75% Approved':
                 subject = 'Request for Final Approval'
                 recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
-                send_mail(subject, message, email_from, recipient_list)
+                html_message = render_to_string("partial/activity_mail.html", context=context)
+                plain_message = strip_tags(html_message)
+                
+                
+                message = EmailMultiAlternatives(
+                    subject = subject, 
+                    body = plain_message,
+                    from_email = None ,
+                    to= recipient_list
+                        )
+                
+                message.attach_alternative(html_message, "text/html")
+                message.send()
             return HttpResponse(
                 status=204,
                 headers={
@@ -1770,17 +1845,21 @@ def activity_approvalp(request, id, did):
                         
                             "date":activitysubmit.submission_date,
                             }
-            template_name = "partial/activity_mail.html"
-            convert_to_html_content =  render_to_string(
-            template_name=template_name,
-            context=context
-                                )
-            plain_message = strip_tags(convert_to_html_content)
-            message = plain_message
-            
-            email_from = None 
+            html_message = render_to_string("partial/activity_mail.html", context=context)
+            plain_message = strip_tags(html_message)
             recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
-            send_mail(subject, message, email_from, recipient_list)
+                
+            message = EmailMultiAlternatives(
+                subject = subject, 
+                body = plain_message,
+                from_email = None ,
+                to= recipient_list
+                    )
+                
+            message.attach_alternative(html_message, "text/html")
+            message.send()
+           
+          
             return HttpResponse(
                 status=204,
                 headers={
@@ -1838,21 +1917,35 @@ def activity_approvalf(request, id, did):
                         
                             "date":activitysubmit.submission_date,
                             }
-            template_name = "partial/activity_mail.html"
-            convert_to_html_content =  render_to_string(
-            template_name=template_name,
-            context=context
-                                )
-            plain_message = strip_tags(convert_to_html_content)
-            message = plain_message
-            
-            email_from = None 
-            recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.finance_lead.user.email]
-            send_mail(subject, message, email_from, recipient_list)
+            html_message = render_to_string("partial/activity_mail.html", context=context)
+            plain_message = strip_tags(html_message)
+            recipient_list = [activity.user.email, activity.technical_lead.user.email,  activity.finance_lead.user.email]
+                
+            message = EmailMultiAlternatives(
+                subject = subject, 
+                body = plain_message,
+                from_email = None ,
+                to= recipient_list
+                    )
+                
+            message.attach_alternative(html_message, "text/html")
+            message.send()
+          
             if activity.approval_status == '75% Approved':
                 subject = 'Request for Final Approval'
-                recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
-                send_mail(subject, message, email_from, recipient_list)
+                html_message = render_to_string("partial/activity_mail.html", context=context)
+                plain_message = strip_tags(html_message)
+                recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
+                
+                message = EmailMultiAlternatives(
+                    subject = subject, 
+                    body = plain_message,
+                    from_email = None ,
+                    to= recipient_list
+                        )
+                
+                message.attach_alternative(html_message, "text/html")
+                message.send()
             return HttpResponse(
                 status=204,
                 headers={
