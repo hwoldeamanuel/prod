@@ -7,7 +7,7 @@
 <form  hx-put="{{ request.path }}" hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}' class="modal-content">
     {% csrf_token %}
  <div class="modal-header">
-    <h5 class="modal-title">User form</h5>
+    <h5 class="modal-title">User Role Form</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
   </div>
   <div class="modal-body">
@@ -102,7 +102,34 @@
         </div>
        
     </div>
+    {% if user_role.is_pcn_program_approver or user_role.is_pacn_program_approver %}
+    <div class="form-group row">
+    <div class="col-6 col-sm-6"></div>
+ 
+     <label  class="col-form-label col-md-3 col-sm-3 label-align">Budget Limit(USD$):<span class="required"></span>
+                </label>
+                
+       
+                    <label class="col-form-label col-md-1 col-sm-1 label-align">Minimum<span class="required"></span>
+                </label>
+                <div class="col-2 col-sm-2">
+                {% render_field form.approval_budget_min_usd class="form-control form-control-sm"  %}
+    </div>
+    </div>
+     <div class="form-group row">
+    <div class="col-9 col-sm-"></div>
+ 
+   
+                
+       
+                    <label class="col-form-label col-md-1 col-sm-1 label-align">Maximum<span class="required"></span>
+                </label>
+                <div class="col-2 col-sm-2">
+                {% render_field form.approval_budget_max_usd class="form-control form-control-sm"  %}
+    </div>
+    </div>
 </div>
+{% endif %}
 <div class="modal-footer">
     							
      

@@ -20,8 +20,9 @@
      {% for user in users %}
      <tr>
        <td>{{ forloop.counter}}</td>
-       <td>{{user.user.profile.full_name}}</br><small>{{ user.user.profile.portfolio  }}</small>
+       <td>{{user.user.profile.full_name}}
        </br><small>{{ user.user.profile.job_title  }}</small>
+       </br><small>{{ user.user.profile.portfolio  }}</small>
        </td>
        <td>Intervention
        </br></br>

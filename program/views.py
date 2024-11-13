@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from portfolio.models import Portfolio
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from .forms import ProgramForm, AddProgramAreaForm,EditProgramAreaForm, IndicatorForm, UserRoleForm, UserRoleFormE, UserForm
+from .forms import ProgramForm, AddProgramAreaForm,EditProgramAreaForm, IndicatorForm, UserRoleForm, UserRoleFormE,UserRoleFormP, UserForm
 
 from .models import Program, ImplementationArea, Indicator, UserRoles
 from django.contrib.auth.models import User
@@ -399,8 +399,15 @@ def update_user_roles(request, id):
     user = get_object_or_404(User, pk=user_role.user_id)
     if request.method == "PUT":
         user_role = UserRoles.objects.get(pk=id)
+       
+            
         data = QueryDict(request.body).dict()
-        form = UserRoleFormE(data, instance=user_role, user=user)
+        if user_role.is_pacn_program_approver == True or user_role.is_pcn_program_approver == True:
+             form = UserRoleFormP(data, instance=user_role, user=user)
+        else:
+             form = UserRoleFormE(data, instance=user_role, user=user)
+        
+       
         if form.is_valid():
             instance = form.save()
             return HttpResponse(
@@ -412,12 +419,20 @@ def update_user_roles(request, id):
                     })
                 })
         
-        form = UserRoleFormE(instance=user_role, user=user) 
+        if user_role.is_pacn_program_approver == True or user_role.is_pcn_program_approver == True:
+            form = UserRoleFormP(instance=user_role, user=user)
+        else:
+            form = UserRoleFormE(instance=user_role, user=user)
+            
         context = {'form': form}
         return render(request, 'partial/edit_user_role.html', context)
     
     else:
-        form = UserRoleFormE(instance=user_role, user=user)
+        if user_role.is_pacn_program_approver == True or user_role.is_pcn_program_approver == True:
+            form = UserRoleFormP(instance=user_role, user=user)
+        else:
+            form = UserRoleFormE(instance=user_role, user=user)
+
         return render(request, 'partial/edit_user_role.html', {
         'form': form,
         'user_role': user_role,

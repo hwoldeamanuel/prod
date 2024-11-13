@@ -7,6 +7,7 @@ from django.http.response import HttpResponse, HttpResponsePermanentRedirect
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
 from django.urls import reverse 
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.http import QueryDict
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
@@ -21,7 +22,7 @@ from app_admin.models import Country , Region , Zone , Woreda
 
 from portfolio.models import Portfolio
 from django.conf import settings
-from django.core.mail import send_mail
+
 from django.forms.models import modelformset_factory
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
@@ -42,11 +43,14 @@ from app_admin.models import Approvalt_Status, Approvalf_Status, Submission_Stat
 
 @login_required(login_url='login')
 def conceptnotes(request):
+    
     user = request.user
+    program = Program.objects.filter(users_role=user)
+   
+  
     if user.is_superuser:
         icns = Icn.objects.all()
     else:
-        program = Program.objects.filter(users_role=user)
         icns = Icn.objects.filter(program__in=program).order_by('-id')
 
 
@@ -391,17 +395,20 @@ def icn_submit_form(request, id, sid):
                        
                         "date": icnsubmit.submission_date,
                         }
-                template_name = "partial/intervention_mail.html"
-                convert_to_html_content =  render_to_string(
-                template_name=template_name,
-                context=context
-                                    )
-                plain_message = strip_tags(convert_to_html_content)
-                message = plain_message
                 
-                email_from = None 
+                html_message = render_to_string("partial/intervention_mail.html", context=context)
+                plain_message = strip_tags(html_message)
                 recipient_list = [icn.user.email, icn.technical_lead.user.email, icn.mel_lead.user.email, icn.finance_lead.user.email]
-                send_mail(subject, message, email_from, recipient_list) 
+                
+                message = EmailMultiAlternatives(
+                subject = subject, 
+                body = plain_message,
+                from_email = None ,
+                to= recipient_list
+                    )
+               
+                message.attach_alternative(html_message, "text/html")
+                message.send()
              
              
             elif icnsubmit.submission_status_id == 1:
@@ -421,17 +428,19 @@ def icn_submit_form(request, id, sid):
                        
                         "date": icnsubmit.submission_date,
                         }
-                template_name = "partial/intervention_mail.html"
-                convert_to_html_content =  render_to_string(
-                template_name=template_name,
-                context=context
-                                    )
-                plain_message = strip_tags(convert_to_html_content)
-                message = plain_message
-                
-                email_from = None 
+                html_message = render_to_string("partial/intervention_mail.html", context=context)
+                plain_message = strip_tags(html_message)
                 recipient_list = [icn.user.email, icn.technical_lead.user.email, icn.mel_lead.user.email, icn.finance_lead.user.email]
-                send_mail(subject, message, email_from, recipient_list) 
+                
+                message = EmailMultiAlternatives(
+                subject = subject, 
+                body = plain_message,
+                from_email = None ,
+                to= recipient_list
+                    )
+               
+                message.attach_alternative(html_message, "text/html")
+                message.send()
              
 
                

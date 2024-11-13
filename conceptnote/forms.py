@@ -50,8 +50,8 @@ class IcnForm(forms.ModelForm):
             self.fields['technical_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_technical_approver=True).exclude(user=user).first()
             self.fields['finance_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user)
             self.fields['finance_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user).first()
-            self.fields['program_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user)
-            self.fields['program_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user).first()
+            self.fields['program_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True, approval_budget_min_usd__isnull=False, approval_budget_max_usd__isnull=False).exclude(user=user)
+            self.fields['program_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True, approval_budget_min_usd__isnull=False, approval_budget_max_usd__isnull=False).exclude(user=user).first()
 
 
         myfield = ['title',
@@ -179,10 +179,25 @@ class IcnForm(forms.ModelForm):
          proposed_end_date = self.cleaned_data.get('proposed_end_date')
          final_report_due_date = self.cleaned_data.get('final_report_due_date')
          ilead_agency = self.cleaned_data.get('ilead_agency')
+         cs_budget = self.cleaned_data.get('cost_sharing_budget')
+         mc_budget = self.cleaned_data.get('mc_budget')
          mc_currency = self.cleaned_data.get('mc_currency')
          cs_currency = self.cleaned_data.get('cs_currency')
+         if mc_currency == 2:
+            mc_budget = mc_budget/120
+    
+         if cs_currency == 2:
+            cs_budget = cs_budget/120
+            
+         total_budget_usd = mc_budget + cs_budget
+         
+         budget_limit_min = UserRoles.objects.get(program=program, user=program_lead.user)
+         budget_limit_max = UserRoles.objects.get(program=program, user=program_lead.user)
+         budget_limit_min = budget_limit_min.approval_budget_min_usd
+         budget_limit_max = budget_limit_max.approval_budget_max_usd
 
          ilead_co_agency = self.cleaned_data.get('ilead_co_agency')
+        
          if program_lead not in UserRoles.objects.filter(program=program) or technical_lead not in UserRoles.objects.filter(program=program) or finance_lead not in UserRoles.objects.filter(program=program):
                self._errors['program'] = self.error_class(['At least 1 of the Leads not belong this program'])
 
@@ -205,6 +220,8 @@ class IcnForm(forms.ModelForm):
              self._errors['ilead_agency'] = self.error_class(['Lead Agency & Co-Lead Agency should be different'])
          elif (mc_currency != None and cs_currency != None and mc_currency != cs_currency):
              self._errors['mc_currency'] = self.error_class(['Different Currency for MC & Cost Sharing'])
+         elif (total_budget_usd > budget_limit_max or total_budget_usd <budget_limit_min):
+             self._errors['program_lead'] = self.error_class(['Program Lead not aligh with total budget '])
          return cleaned_data
 
 
@@ -494,8 +511,8 @@ class ActivityForm(forms.ModelForm):
         if user:
             
             program = Program.objects.filter(users_role=user, userroles__is_pacn_initiator=True)
-            self.fields['program_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pacn_program_approver=True).exclude(user=user)
-            self.fields['program_lead'].initial=UserRoles.objects.filter(program__in=program, is_pacn_program_approver=True).exclude(user=user).first()
+            self.fields['program_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pacn_program_approver=True, approval_budget_min_usd__isnull=False, approval_budget_max_usd__isnull=False).exclude(user=user)
+            self.fields['program_lead'].initial=UserRoles.objects.filter(program__in=program, is_pacn_program_approver=True, approval_budget_min_usd__isnull=False, approval_budget_max_usd__isnull=False).exclude(user=user).first()
             self.fields['technical_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pacn_technical_approver=True).exclude(user=user)
             self.fields['technical_lead'].initial=UserRoles.objects.filter(program__in=program, is_pacn_technical_approver=True).exclude(user=user).first()
             self.fields['mel_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pacn_mel_approver=True).exclude(user=user)
@@ -651,10 +668,16 @@ class ActivityForm(forms.ModelForm):
         finance_lead = self.cleaned_data.get('finance_lead')
         technical_lead = self.cleaned_data.get('technical_lead')
         mel_lead = self.cleaned_data.get('mel_lead')
+        
          
         proposed_start_date = self.cleaned_data.get('proposed_start_date')
         proposed_end_date = self.cleaned_data.get('proposed_end_date')
         final_report_due_date = self.cleaned_data.get('final_report_due_date')
+
+        budget_limit_min = UserRoles.objects.get(program=icn.program, user=program_lead.user)
+        budget_limit_max = UserRoles.objects.get(program=icn.program, user=program_lead.user)
+        budget_limit_min = budget_limit_min.approval_budget_min_usd
+        budget_limit_max = budget_limit_max.approval_budget_max_usd
 
         if (technical_lead==program_lead or technical_lead==finance_lead or technical_lead==mel_lead):
               self._errors['technical_lead'] = self.error_class(['Lead should take up only one role'])
@@ -682,6 +705,8 @@ class ActivityForm(forms.ModelForm):
               self._errors['mc_currency'] = self.error_class(['Different currency for MC & cost sharing budget'])
         elif ((mc_budget != None and cs_budget != None) and tactbud > rembud  ):
               self._errors['mc_budget'] = self.error_class(['Please check Intervention & Activity Budget '])
+        elif (tactbud < budget_limit_min or tactbud > budget_limit_max  ):
+              self._errors['program_lead'] = self.error_class(['Program Lead not aligh with total budget'])
         return cleaned_data
 
 class ActivityAreaFormE(forms.ModelForm):

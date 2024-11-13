@@ -62,7 +62,9 @@ class UserRoles(models.Model):
     is_pacn_technical_approver = models.BooleanField(default=False)
     is_pacn_program_approver = models.BooleanField(default=False)
     is_pacn_finance_approver = models.BooleanField(default=False)
-    
+    approval_budget_min_usd = models.FloatField(null=True, blank=True)
+    approval_budget_max_usd = models.FloatField(null=True, blank=True)
+
     
     def __str__(self):
         return str(self.user)

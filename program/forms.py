@@ -365,7 +365,8 @@ class UserRoleForm(forms.ModelForm):
            
             self.fields['user'].queryset = User.objects.filter(is_active=True)
         
-            
+        self.fields['user'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
+
     class Meta:
         model = UserRoles
         fields=['user','is_pcn_initiator', 'is_pcn_mel_approver','is_pcn_technical_approver', 'is_pcn_program_approver','is_pcn_finance_approver',
@@ -382,13 +383,36 @@ class UserRoleFormE(forms.ModelForm):
             self.fields['user'].queryset = User.objects.filter(id=id)
             self.fields['user'].initial = User.objects.filter(id=id).first()
         
-        self.fields['user'].required = True 
-        self.fields['user'].widget.attrs['readonly'] = True
+       
+        self.fields['user'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
         
             
     class Meta:
         model = UserRoles
         fields=['user','is_pcn_initiator', 'is_pcn_mel_approver','is_pcn_technical_approver', 'is_pcn_program_approver','is_pcn_finance_approver',
                 'is_pacn_initiator', 'is_pacn_mel_approver','is_pacn_technical_approver', 'is_pacn_program_approver','is_pacn_finance_approver'
+                ]
+        readonly_fields = ('user',)
+
+class UserRoleFormP(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        
+        if user:
+            id = user.pk
+            self.fields['user'].queryset = User.objects.filter(id=id)
+            self.fields['user'].initial = User.objects.filter(id=id).first()
+        
+       
+        self.fields['user'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
+        self.fields['approval_budget_min_usd'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
+        self.fields['approval_budget_max_usd'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
+            
+    class Meta:
+        model = UserRoles
+        fields=['user','is_pcn_initiator', 'is_pcn_mel_approver','is_pcn_technical_approver', 'is_pcn_program_approver','is_pcn_finance_approver',
+                'is_pacn_initiator', 'is_pacn_mel_approver','is_pacn_technical_approver', 'is_pacn_program_approver','is_pacn_finance_approver'
+                ,'approval_budget_min_usd', 'approval_budget_max_usd'
                 ]
         readonly_fields = ('user',)
