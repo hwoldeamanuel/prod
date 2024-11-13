@@ -739,11 +739,7 @@ def icn_approvalf(request, id, did):
     icnsubmit = get_object_or_404(IcnSubmit, pk=id)
     did = did
     icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
-    subject = 'Approval Status changed'
-    message = 'Reviewed & status has been updated'
-    email_from = None 
-    recipient_list = [icn.user.email ,icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
-       
+           
     if request.method == "GET":
         icnsubmitApproval_f = get_object_or_404(IcnSubmitApproval_F, submit_id_id=id)
         if did != 2:
@@ -1481,7 +1477,7 @@ def activity_submit_form(request, id, sid):
                             "id": activity.id,
                             "creator": activity.user.profile.full_name,
                             "cn_id": activity.acn_number,
-                            "initiator": activity.user.username,
+                            "initiator": activity.user.profile.full_name,
                             "user_role": "Concept Note Initiator",
                         
                         
@@ -1520,7 +1516,7 @@ def activity_submit_form(request, id, sid):
                             "id": activity.id,
                             "cn_id": activity.acn_number,
                             "creator": activity.user.profile.full_name,
-                            "initiator": activity.user.username,
+                            "initiator": activity.user.profile.full_name,
                             "user_role": "Concept Note Initiator",
                         
                         
