@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     'storages',
     'api',
     'rest_framework',
+    'django_crontab',
  
  
   
@@ -251,7 +252,10 @@ DEFAULT_FROM_EMAIL = "CNMS App"
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
-
+CRONJOBS = [
+    ('0 0 * * *', 'conceptnote.tasks.reminder'),
+    
+]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
