@@ -352,22 +352,14 @@ def icn_submit_form(request, id, sid):
         icnsubmit = IcnSubmit.objects.filter(icn_id=icn.id).latest('id')
        
         form = IcnSubmitForm(sid=sid, icn=icn, user=request.user,icnsubmit=icnsubmit.id )
-        form.fields['document'].choices = [
-                (document.pk, document) for document in Document.objects.filter(id=icnsubmit.document.id)
-                ]
-    if sid== 2 and  IcnSubmit.objects.filter(icn_id=icn.id).exists():
+        
+    elif sid== 2 and  IcnSubmit.objects.filter(icn_id=icn.id).exists():
         icnsubmit = IcnSubmit.objects.filter(icn_id=icn.id).latest('id')
        
-        form = IcnSubmitForm(sid=sid, icn=icn, user=request.user,icnsubmit=icnsubmit.id )
-        form.fields['document'].choices = [
-                (document.pk, document) for document in Document.objects.filter(id__gt=icnsubmit.document.id)
-                ]           
+        form = IcnSubmitForm(sid=sid, icn=icn, user=request.user,icnsubmit=icnsubmit.id )         
     else:
-    
         form = IcnSubmitForm(user=request.user,icn=icn, sid=sid)
-        form.fields['document'].choices = [
-                (document.pk, document) for document in Document.objects.none()
-                ]
+       
 
     if request.method == "POST":
         form = IcnSubmitForm(request.POST, request.FILES)
@@ -391,66 +383,16 @@ def icn_submit_form(request, id, sid):
                 IcnSubmitApproval_M.objects.create(user = icn.mel_lead,submit_id = instance, document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
                 IcnSubmitApproval_P.objects.create(user = icn.program_lead,submit_id = instance,document = instance.document, approval_status=Approvalf_Status.objects.get(id=1))
                 IcnSubmitApproval_F.objects.create(user = icn.finance_lead,submit_id = instance,document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
-                subject = 'Request for Approval'
-                context = {
-                        "program": icn.program,
-                        "title": icn.title,
-                        "id": icn.id,
-                        "cn_id": icn.icn_number,
-                        "creator": icn.user.profile.full_name,
-                        "initiator": icn.user.profile.full_name,
-                        "user_role": "Concept Note Initiator",
-                       
-                        "date": icnsubmit.submission_date,
-                        }
-                
-                html_message = render_to_string("partial/intervention_mail.html", context=context)
-                plain_message = strip_tags(html_message)
-                recipient_list = [icn.user.email, icn.technical_lead.user.email, icn.mel_lead.user.email, icn.finance_lead.user.email]
-                
-                message = EmailMultiAlternatives(
-                subject = subject, 
-                body = plain_message,
-                from_email = None ,
-                to= recipient_list
-                    )
-               
-                message.attach_alternative(html_message, "text/html")
-                message.send()
-             
+                send_icn_notify(icn.id, 12)
+                           
              
             elif icnsubmit.submission_status_id == 1:
                 Icn.objects.filter(pk=id).update(status=False)
                 Icn.objects.filter(pk=id).update(approval_status="Pending Submission")
                
                 icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
-                subject = 'Approval Request temporarily withdrawn - Pending Re-submission'
-                context = {
-                        "program": icn.program,
-                        "title": icn.title,
-                        "id": icn.id,
-                        "cn_id": icn.icn_number,
-                        "creator": icn.user.profile.full_name,
-                        "initiator": icn.user.profile.full_name,
-                        "user_role": "Concept Note Initiator",
-                       
-                        "date": icnsubmit.submission_date,
-                        }
-                html_message = render_to_string("partial/intervention_mail.html", context=context)
-                plain_message = strip_tags(html_message)
-                recipient_list = [icn.user.email, icn.technical_lead.user.email, icn.mel_lead.user.email, icn.finance_lead.user.email]
+                send_icn_notify(icn.id, 11)
                 
-                message = EmailMultiAlternatives(
-                subject = subject, 
-                body = plain_message,
-                from_email = None ,
-                to= recipient_list
-                    )
-               
-                message.attach_alternative(html_message, "text/html")
-                message.send()
-             
-
                
                 return HttpResponse(
                 status=204,
@@ -513,63 +455,8 @@ def icn_approvalt(request, id, did):
             icnsubmit = get_object_or_404(IcnSubmit, pk=id)
             update_approval_status(icnsubmit.id)
             icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
-           
-            subject = 'Approval Status changed'
-            context = {
-                    "program": icn.program,
-                    "title": icn.title,
-                    "id": icn.id,
-                    "cn_id": icn.icn_number,
-                    "creator": icn.user.profile.full_name,
-                    "initiator": icnsubmitApproval_t.user.user.profile.full_name,
-                    "user_role": "Techncial Lead",
-                    
-                    "date": icnsubmit.submission_date,
-                    }
-            html_message = render_to_string("partial/intervention_mail.html", context=context)
-            plain_message = strip_tags(html_message)
-            recipient_list = [icn.user.email, icn.technical_lead.user.email, icn.mel_lead.user.email, icn.finance_lead.user.email]
-                
-            message = EmailMultiAlternatives(
-            subject = subject, 
-            body = plain_message,
-            from_email = None ,
-            to= recipient_list
-                )
-            
-            message.attach_alternative(html_message, "text/html")
-            message.send()
-            
-            if icn.approval_status == '75% Approved':
-                subject = 'Request for Final Approval'
-                context = {
-                "program": icn.program,
-                "title": icn.title,
-                "id": icn.id,
-                "cn_id": icn.icn_number,
-                "creator": icn.user.profile.full_name,
-                "initiator": icnsubmitApproval_t.user.user.profile.full_name,
-                "user_role": "Techncial Lead",
-                
-                "date": icnsubmit.submission_date,
-                }
-               
-                recipient_list = [icn.user.email, icn.mel_lead.user.email, icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
-  
-                html_message = render_to_string("partial/intervention_mail.html", context=context)
-                plain_message = strip_tags(html_message)
-               
-                
-                message = EmailMultiAlternatives(
-                subject = subject, 
-                body = plain_message,
-                from_email = None ,
-                to= recipient_list
-                    )
-               
-                message.attach_alternative(html_message, "text/html")
-                message.send()
-
+            send_icn_notify(icn.id, 2)
+                      
             context = {'icn':icn, 'icnsubmit':icnsubmit , 'did':did}
             return HttpResponse(
                 status=204,
@@ -614,49 +501,8 @@ def icn_approvalm(request, id, did):
             icnsubmit = get_object_or_404(IcnSubmit, pk=id)
             update_approval_status(icnsubmit.id)
             icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
+            send_icn_notify(icn.id, 3)
            
-            subject = 'Approval Status changed'
-            context = {
-                    "program": icn.program,
-                    "title": icn.title,
-                    "id": icn.id,
-                    "creator": icn.user.profile.full_name,
-                    "cn_id": icn.icn_number,
-                    "initiator": icnsubmitApproval_m.user.user.profile.full_name,
-                    "user_role": "MEL Lead",
-                    
-                    "date": icnsubmit.submission_date,
-                    }
-            html_message = render_to_string("partial/intervention_mail.html", context=context)
-            plain_message = strip_tags(html_message)
-            recipient_list = [icn.user.email, icn.technical_lead.user.email, icn.mel_lead.user.email, icn.finance_lead.user.email]
-            
-            message = EmailMultiAlternatives(
-            subject = subject, 
-            body = plain_message,
-            from_email = None ,
-            to= recipient_list
-                )
-            
-            message.attach_alternative(html_message, "text/html")
-            message.send()
-            if icn.approval_status == '75% Approved':
-                subject = 'Request for Final Approval'
-                recipient_list = [icn.user.email, icn.mel_lead.user.email, icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
-                html_message = render_to_string("partial/intervention_mail.html", context=context)
-                plain_message = strip_tags(html_message)
-                
-                
-                message = EmailMultiAlternatives(
-                subject = subject, 
-                body = plain_message,
-                from_email = None ,
-                to= recipient_list
-                    )
-               
-                message.attach_alternative(html_message, "text/html")
-                message.send()
-
             context = {'icn':icn, 'icnsubmit':icnsubmit , 'did':did}
             return HttpResponse(
                 status=204,
@@ -703,32 +549,8 @@ def icn_approvalp(request, id, did):
             update_approval_status_final(icnsubmit.id)
             icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
             
-            subject = 'Final Approval Status changed'
-            context = {
-                    "program": icn.program,
-                    "title": icn.title,
-                    "id": icn.id,
-                    "cn_id": icn.icn_number,
-                    "creator": icn.user.profile.full_name,
-                    "initiator": icnsubmitApproval_p.user.user.profile.full_name,
-                    "user_role": "Program Lead",
-                    
-                    "date": icnsubmit.submission_date,
-                    }
-            html_message = render_to_string("partial/intervention_mail.html", context=context)
-            plain_message = strip_tags(html_message)
-            recipient_list = [icn.user.email, icn.program_lead.user.email, icn.technical_lead.user.email, icn.mel_lead.user.email, icn.finance_lead.user.email]
-            
-            message = EmailMultiAlternatives(
-            subject = subject, 
-            body = plain_message,
-            from_email = None ,
-            to= recipient_list
-                )
-            
-            message.attach_alternative(html_message, "text/html")
-            message.send()
-            context = {'icn':icn, 'icnsubmit':icnsubmit, 'did':did }
+            send_icn_notify(icn.id, 5)
+
             return HttpResponse(
                 status=204,
                 headers={
@@ -769,46 +591,7 @@ def icn_approvalf(request, id, did):
             icnsubmit = get_object_or_404(IcnSubmit, id=id)
             update_approval_status(icnsubmit.id)
             icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
-            subject = 'Approval Status changed'
-            context = {
-                    "program": icn.program,
-                    "title": icn.title,
-                    "id": icn.id,
-                    "creator": icn.user.profile.full_name,
-                    "cn_id": icn.icn_number,
-                    "initiator": icnsubmitApproval_f.user.user.profile.full_name,
-                    "user_role": "Finance Lead",
-                    
-                    "date": icnsubmit.submission_date,
-                    }
-            html_message = render_to_string("partial/intervention_mail.html", context=context)
-            plain_message = strip_tags(html_message)
-            recipient_list = [icn.user.email, icn.technical_lead.user.email, icn.mel_lead.user.email, icn.finance_lead.user.email]
-            
-            message = EmailMultiAlternatives(
-            subject = subject, 
-            body = plain_message,
-            from_email = None ,
-            to= recipient_list
-                )
-            
-            message.attach_alternative(html_message, "text/html")
-            message.send()
-            if icn.approval_status == '75% Approved':
-                subject = 'Request for Final Approval'
-                html_message = render_to_string("partial/intervention_mail.html", context=context)
-                plain_message = strip_tags(html_message)
-                recipient_list = [icn.user.email, icn.program_lead.user.email,icn.technical_lead.user.email, icn.mel_lead.user.email, icn.finance_lead.user.email]
-            
-                message = EmailMultiAlternatives(
-                subject = subject, 
-                body = plain_message,
-                from_email = None ,
-                to= recipient_list
-                )
-            
-                message.attach_alternative(html_message, "text/html")
-                message.send()
+            send_icn_notify(icn.id, 4)
 
             context = {'icn':icn, 'icnsubmit':icnsubmit, 'did':did }
             return HttpResponse(
@@ -1887,15 +1670,16 @@ def iworedas(request):
     form = IcnForm(request.GET)
     return HttpResponse(form['iworeda'])
 
+
 def send_activity_notify(id, uid):
     activity = get_object_or_404(Activity, id=id)
     if uid == 12:
         subject = 'Request for Activity Approval'
-        initiator = activity.user.full_name
+        initiator = activity.user.profile.full_name
         user_role = 'Initiator'
     elif uid == 11:
         subject = 'Activity Approval Request temporarily withdrawn'
-        initiator = activity.user.full_name
+        initiator = activity.user.profile.full_name
         user_role = 'Initiator'
         
     elif uid ==2:
@@ -1943,10 +1727,81 @@ def send_activity_notify(id, uid):
     message.send()
     
     if uid !=5 and activity.approval_status == '75% Approved':
-        subject = 'Request for Final Approval'
+        subject = 'Request for Activity Final Approval'
         html_message = render_to_string("partial/activity_mail.html", context=context)
         plain_message = strip_tags(html_message)
-        recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
+        recipient_list = [activity.user.email, activity.mel_lead.user.email, activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
+        
+        message = EmailMultiAlternatives(
+            subject = subject, 
+            body = plain_message,
+            from_email = None ,
+            to= recipient_list
+                )
+        
+        message.attach_alternative(html_message, "text/html")
+        message.send()
+
+def send_icn_notify(id, uid):
+    icn = get_object_or_404(Icn, id=id)
+    if uid == 12:
+        subject = 'Request for Intervention Approval'
+        initiator = icn.user.profile.full_name
+        user_role = 'Initiator'
+    elif uid == 11:
+        subject = 'Intervention Approval Request temporarily withdrawn'
+        initiator = icn.user.profile.full_name
+        user_role = 'Initiator'
+        
+    elif uid ==2:
+        subject = 'Intervention Approval Status changed'
+        initiator = icn.technical_lead.user.profile.full_name
+        user_role = 'Technical Lead'
+    elif uid ==3:
+        subject = 'Intervention Approval Status changed'
+        initiator = icn.mel_lead.user.profile.full_name
+        user_role = 'MEL Lead'
+    elif uid ==4:
+        subject = 'Intervention Approval Status changed'
+        initiator = icn.finance_lead.user.profile.full_name
+        user_role = 'Finance Lead'
+    elif uid ==5:
+        subject = 'Intervention Final Approval Status changed'
+        initiator = icn.program_lead.user.profile.full_name
+        user_role = 'Program Lead'
+        
+
+    subject = subject
+    context = {
+                "program": icn.program,
+                "title": icn.title,
+                "id": icn.id,
+                "cn_id": icn.icn_number,
+                "creator": icn.user.profile.full_name,
+                "initiator": initiator,
+                "user_role": user_role,
+            
+                
+                }
+    html_message = render_to_string("partial/intervention_mail.html", context=context)
+    plain_message = strip_tags(html_message)
+    recipient_list = [icn.user.email, icn.mel_lead.user.email, icn.technical_lead.user.email,  icn.finance_lead.user.email]
+        
+    message = EmailMultiAlternatives(
+        subject = subject, 
+        body = plain_message,
+        from_email = None ,
+        to= recipient_list
+            )
+        
+    message.attach_alternative(html_message, "text/html")
+    message.send()
+    
+    if uid !=5 and icn.approval_status == '75% Approved':
+        subject = 'Request for Intervention Final Approval'
+        html_message = render_to_string("partial/intervention_mail.html", context=context)
+        plain_message = strip_tags(html_message)
+        recipient_list = [icn.user.email, icn.technical_lead.user.email, icn.mel_lead.user.email ,icn.program_lead.user.email, icn.finance_lead.user.email]
         
         message = EmailMultiAlternatives(
             subject = subject, 

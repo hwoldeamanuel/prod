@@ -295,6 +295,7 @@ class IcnSubmitForm(forms.ModelForm):
 
         if icnsubmit and sid==1:
             icnsubmit = get_object_or_404(IcnSubmit,id=icnsubmit)
+            print(icnsubmit.document.id)
             self.fields['document'].choices = [
                 (document.pk, document) for document in Document.objects.filter(id=icnsubmit.document.id)
             ]
