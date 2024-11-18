@@ -12,7 +12,8 @@ from app_admin.models import Country , Region , Zone , Woreda , Approvalt_Status
 from django.contrib.auth.models import User
 from portfolio.models import Portfolio
 from django.forms import inlineformset_factory
-
+from django.db.models import Max
+from django.shortcuts import get_object_or_404
 
 
 
@@ -285,53 +286,54 @@ class IcnAreaFormE(forms.ModelForm):
 
 class IcnSubmitForm(forms.ModelForm):
      
-     def __init__(self, *args, **kwargs):
-         user = kwargs.pop('user', None)
-         icn = kwargs.pop('icn', None)
-         sid = kwargs.pop('sid', None)
-         super(IcnSubmitForm, self).__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        icn = kwargs.pop('icn', None)
+        icnsubmit = kwargs.pop('icnsubmit', None)
+        sid = kwargs.pop('sid', None)
+        super(IcnSubmitForm, self).__init__(*args, **kwargs)
 
-
-        
-         self.fields['submission_status'].choices = [
+        if icnsubmit and sid==1:
+            icnsubmit = get_object_or_404(IcnSubmit,id=icnsubmit)
+            self.fields['document'].choices = [
+                (document.pk, document) for document in Document.objects.filter(id=icnsubmit.document.id)
+            ]
+        elif icnsubmit and sid==2:
+            icnsubmit = get_object_or_404(IcnSubmit,id=icnsubmit)
+            self.fields['document'].choices = [
+                (document.pk, document) for document in Document.objects.filter(user = user,id__gt=icnsubmit.document.id)
+            ]    
+        self.fields['submission_status'].choices = [
             (submission_status.id, submission_status.name) for submission_status in Submission_Status.objects.filter(id=sid)
         ]
 
             
-         if sid==2:
-               self.fields['document'].choices = [
-                (document.pk, document) for document in Document.objects.none()
-            ] 
-               
-         else:
-               self.fields['document'].choices = [
-                (document.pk, document) for document in Document.objects.filter(user=user, icn=icn)
-            ]  
-               self.fields['document'].widget.attrs['readonly'] = True
+       
+        self.fields['document'].widget.attrs['readonly'] = True
               
       # invalid input from the client; ignore and fallback to empty City queryset
         
 
     
 
-         self.fields['submission_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
-         self.fields['submission_note'].required = True 
-         self.fields['submission_status'].widget.attrs['readonly'] = True
-         self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
+        self.fields['submission_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
+        self.fields['submission_note'].required = True 
+        self.fields['submission_status'].widget.attrs['readonly'] = True
+        self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
 
    
          
           
            
-     class Meta:
-            model = IcnSubmit
-            fields=['submission_status',
+    class Meta:
+        model = IcnSubmit
+        fields=['submission_status',
             'submission_note',
             'document',
            
            
             ]
-            exclude=  ['icn',]
+        exclude=  ['icn',]
             
           
 
@@ -363,7 +365,9 @@ class IcnApprovalTForm(forms.ModelForm):
        
     
      
-        
+          
+          document_id = self.instance.document.id
+
           self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'required'  }    )
           self.fields['approval_status'].choices = [
              (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalt_Status.objects.filter(id=did)
@@ -371,7 +375,7 @@ class IcnApprovalTForm(forms.ModelForm):
           self.fields['approval_status'].widget.attrs['readonly'] = True
           if did == 2:
                self.fields['document'].choices = [
-             (document.pk, document) for document in Document.objects.none()
+             (document.pk, document) for document in Document.objects.filter(user= self.instance.user,icn= self.instance.icn, id__gt=document_id)
          ]
        
           if did == 3 or did==4:
@@ -389,19 +393,28 @@ class IcnApprovalTForm(forms.ModelForm):
 class IcnApprovalMForm(forms.ModelForm):
      def __init__(self, *args, **kwargs):
           did = kwargs.pop('did', None)
+          sid = kwargs.pop('sid', None)
+          user = kwargs.pop('user', None)
           super(IcnApprovalMForm, self).__init__(*args, **kwargs)
        
     
      
+          document_id = self.instance.document.id
+          icnsubmit = get_object_or_404(IcnSubmit, id =self.instance.submit_id_id)
+          icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
+
+         
+         
         
           self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'required'  }    )
           self.fields['approval_status'].choices = [
              (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalt_Status.objects.filter(id=did)
          ]
           self.fields['approval_status'].widget.attrs['readonly'] = True
-          if did == 2:
+          if did == 2 or sid==2:
+          
                self.fields['document'].choices = [
-             (document.pk, document) for document in Document.objects.none()
+             (document.pk, document) for document in Document.objects.filter(user = self.instance.user.user,icn= icn,id__gt=document_id)
          ]
        
           if did == 3 or did==4:
@@ -420,6 +433,10 @@ class IcnApprovalFForm(forms.ModelForm):
      def __init__(self, *args, **kwargs):
           did = kwargs.pop('did', None)
           super(IcnApprovalFForm, self).__init__(*args, **kwargs)
+          
+          document_id = self.instance.document.id
+          icnsubmit = get_object_or_404(IcnSubmit, id =self.instance.submit_id_id)
+          icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
 
           self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
           self.fields['approval_status'].choices = [
@@ -428,7 +445,7 @@ class IcnApprovalFForm(forms.ModelForm):
           self.fields['approval_status'].widget.attrs['readonly'] = True
           if did == 2:
                self.fields['document'].choices = [
-             (document.pk, document) for document in Document.objects.none()
+             (document.pk, document) for document in Document.objects.filter(user = self.instance.user.user,icn= icn,id__gt=document_id)
             ]
 
           if did == 3:
@@ -448,6 +465,9 @@ class IcnApprovalPForm(forms.ModelForm):
            did = kwargs.pop('did', None)
            super(IcnApprovalPForm, self).__init__(*args, **kwargs)
 
+           document_id = self.instance.document.id
+           icnsubmit = get_object_or_404(IcnSubmit, id =self.instance.submit_id_id)
+           icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
            self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
            self.fields['approval_status'].choices = [
              (approvalf_status.id, approvalf_status.name) for approvalf_status in Approvalf_Status.objects.filter(id=did)
@@ -459,7 +479,7 @@ class IcnApprovalPForm(forms.ModelForm):
        
            if did == 2:
                self.fields['document'].choices = [
-             (document.pk, document) for document in Document.objects.none()
+             (document.pk, document) for document in Document.objects.filter(user = self.instance.user.user,icn= icn,id__gt=document_id)
             ]
 
            if did == 3 or did==4:
@@ -467,7 +487,7 @@ class IcnApprovalPForm(forms.ModelForm):
         
            self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
                 
-           
+              
     
                
      class Meta:
@@ -485,7 +505,7 @@ class ImpactForm(forms.ModelForm):
         program = kwargs.pop('program', None)
         super().__init__(*args, **kwargs)
     
-
+       
         self.fields['indicators'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'select2', 'class':'form-control form-control-sm', 'data-width': '100%'})
         if program:
              self.fields['indicators'].queryset = Indicator.objects.filter(program_id=program.id)
@@ -551,7 +571,7 @@ class ActivityForm(forms.ModelForm):
             ]
         for field in myfield:
             self.fields[field].required = True 
-
+ 
         
     
 
@@ -774,32 +794,38 @@ class ActivityImpactForm(forms.ModelForm):
         exclude=  ['activity']
 
 class ActivitySubmitForm(forms.ModelForm):
-     #document = forms.ChoiceField(
-         #choices=[(document.id, document.document) for document in Document.objects.all()]
-#)
-
      def __init__(self, *args, **kwargs):
          user = kwargs.pop('user', None)
          activity = kwargs.pop('activity', None)
          sid = kwargs.pop('sid', None)
          super(ActivitySubmitForm, self).__init__(*args, **kwargs)
-        
-       
-            
-         self.fields['submission_status'].choices = [
-            (submission_status.id, submission_status.name) for submission_status in Submission_Status.objects.filter(id=sid)
-        ]
+                
+         
+         if sid:
+              self.fields['submission_status'].choices = [
+                        (submission_status.id, submission_status.name) for submission_status in Submission_Status.objects.filter(id=sid)
+                    ]
+                 
 
             
-         if sid==2:
+         if sid== 2 and ActivitySubmit.objects.filter(id=activity).exists():
+             
+              activitysubmit = ActivitySubmit.objects.filter(activity=activity).latest('id')
+              print(activitysubmit.document)
               self.fields['document'].choices =  [
-                (document.pk, document) for document in ActivityDocument.objects.none()
-            ] 
+                    (document.pk, document) for document in ActivityDocument.objects.filter(user=user, activity=activity, id__gt=activitysubmit.document.id)
+                        ] 
+         elif sid == 1  and ActivitySubmit.objects.filter(id=activity).exists():
+              activitysubmit = ActivitySubmit.objects.filter(activity=activity).latest('id')
+              self.fields['document'].choices = [
+                (document.pk, document) for document in ActivityDocument.objects.filter(id=activitysubmit.document.id)
+                        ] 
          else:
               self.fields['document'].choices = [
                 (document.pk, document) for document in ActivityDocument.objects.filter(user=user, activity=activity)
-            ] 
-             
+                        ] 
+              
+            
       # invalid input from the client; ignore and fallback to empty City queryset
         
   
@@ -808,7 +834,10 @@ class ActivitySubmitForm(forms.ModelForm):
          self.fields['submission_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
          self.fields['submission_note'].required = True 
          self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
-    
+         self.fields['submission_status'].widget.attrs['readonly'] = True
+         self.fields['document'].widget.attrs['readonly'] = True
+
+
      class Meta:
             model = ActivitySubmit
             fields=['submission_status',
@@ -841,6 +870,7 @@ class ActivityDocumentForm(forms.ModelForm):
 class ActivityApprovalTForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         did = kwargs.pop('did', None)
+        activity = kwargs.pop('activity', None)
         super(ActivityApprovalTForm, self).__init__(*args, **kwargs)
 
         self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'  }    )
@@ -850,16 +880,22 @@ class ActivityApprovalTForm(forms.ModelForm):
           
         if did == 2:       
              self.fields['document'].choices = [
-             (document.pk, document) for document in ActivityDocument.objects.none()
+             (document.pk, document) for document in ActivityDocument.objects.filter(user= self.instance.user.user,activity=activity, id__gt=self.instance.document.id)
             
          ]
 
        
         if did == 3 or did == 4:
-               self.fields['document'].widget.attrs['readonly'] = True
+             self.fields['document'].widget.attrs['readonly'] = True
+             self.fields['document'].choices = [
+             (document.pk, document) for document in ActivityDocument.objects.filter(id=self.instance.document.id)
+             ]
+             
 
         self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
-        
+       
+        self.fields['approval_status'].widget.attrs['readonly'] = True
+
         
         
     class Meta:
@@ -871,6 +907,7 @@ class ActivityApprovalTForm(forms.ModelForm):
 class ActivityApprovalMForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         did = kwargs.pop('did', None)
+        activity = kwargs.pop('activity', None)
         super(ActivityApprovalMForm, self).__init__(*args, **kwargs)
 
         self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'  }    )
@@ -880,17 +917,20 @@ class ActivityApprovalMForm(forms.ModelForm):
           
         if did == 2:       
              self.fields['document'].choices = [
-             (document.pk, document) for document in ActivityDocument.objects.none()
+             (document.pk, document) for document in ActivityDocument.objects.filter(user= self.instance.user.user,activity=activity, id__gt=self.instance.document.id)
             
          ]
 
        
         if did == 3 or did == 4:
-               self.fields['document'].widget.attrs['readonly'] = True
-
+             self.fields['document'].widget.attrs['readonly'] = True
+             self.fields['document'].choices = [
+             (document.pk, document) for document in ActivityDocument.objects.filter(id=self.instance.document.id)
+             ]
+        
         self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
-        
-        
+       
+        self.fields['approval_status'].widget.attrs['readonly'] = True
         
     class Meta:
             model = ActivitySubmitApproval_M
@@ -903,26 +943,30 @@ class ActivityApprovalPForm(forms.ModelForm):
     #document.widget.attrs.update({'required':'True'})
     def __init__(self, *args, **kwargs):
         did = kwargs.pop('did', None)
+        activity = kwargs.pop('activity', None)
         super(ActivityApprovalPForm, self).__init__(*args, **kwargs)
        
-       
-     
-        
-        self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3','required': 'True' }    )
+        self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'  }    )
         self.fields['approval_status'].choices = [
              (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalf_Status.objects.filter(id=did)
-         ]
+          ]
           
-        if did == 2:
-               self.fields['document'].choices = [
-             (document.pk, document) for document in ActivityDocument.objects.none()
+        if did == 2:       
+             self.fields['document'].choices = [
+             (document.pk, document) for document in ActivityDocument.objects.filter(user= self.instance.user.user,activity=activity, id__gt=self.instance.document.id)
+            
          ]
+
        
         if did == 3 or did == 4:
-               self.fields['document'].widget.attrs['readonly'] = True
-
-        self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
+             self.fields['document'].widget.attrs['readonly'] = True
+             self.fields['document'].choices = [
+             (document.pk, document) for document in ActivityDocument.objects.filter(id=self.instance.document.id)
+             ]
         
+        self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
+       
+        self.fields['approval_status'].widget.attrs['readonly'] = True
         
     class Meta:
             model = ActivitySubmitApproval_P
@@ -935,25 +979,30 @@ class ActivityApprovalFForm(forms.ModelForm):
     #document.widget.attrs.update({'required':'True'})
     def __init__(self, *args, **kwargs):
          did = kwargs.pop('did', None)
-         super(ActivityApprovalFForm, self).__init__(*args, **kwargs)
-       
-    
-     
+         activity = kwargs.pop('activity', None)
+         super(ActivityApprovalFForm, self).__init__(*args, **kwargs)   
         
-         self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True' }    )
+         self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'  }    )
          self.fields['approval_status'].choices = [
              (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalt_Status.objects.filter(id=did)
-         ]
+          ]
           
-         if did == 2:
-               self.fields['document'].choices = [
-             (document.pk, document) for document in ActivityDocument.objects.none()
+         if did == 2:       
+             self.fields['document'].choices = [
+             (document.pk, document) for document in ActivityDocument.objects.filter(user= self.instance.user.user,activity=activity, id__gt=self.instance.document.id)
+            
          ]
+
        
          if did == 3 or did == 4:
-               self.fields['document'].widget.attrs['readonly'] = True
-
+             self.fields['document'].widget.attrs['readonly'] = True
+             self.fields['document'].choices = [
+             (document.pk, document) for document in ActivityDocument.objects.filter(id=self.instance.document.id)
+             ]
+        
          self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
+       
+         self.fields['approval_status'].widget.attrs['readonly'] = True
         
         
     class Meta:

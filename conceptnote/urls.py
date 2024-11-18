@@ -16,14 +16,14 @@ urlpatterns = [
     path('intervention/<int:id>/approval/', views.icn_step_approval, name='icn_step_approval'),
     path('intervention/<int:id>/report/', views.icn_step_report, name='icn_step_report'),
     path('intervention/<int:id>/submission/list/', views.current_submit_list, name='current_submit_list'),
-    path('activity/<int:id>/impact/', views.activity_step_impact, name='activity_step_impact'),
+    path('activity/<int:id>/impact/', views.activity_step_impact, name='activity_step_imbpact'),
     path('intervention/<int:id>/intervention_step/', views.intervention_step, name='intervention_step'),
     path('icn/add', views.icn_add, name='icn_add'),
     path('icn_detail_modal/<int:id>/', views.icn_detail_modal, name='icn_detail_modal'),
     path('activity/<int:id>/approval/', views.activity_step_approval, name='activity_step_approval'),
     path('intervention/<int:pk>/profile/', views.icn_detail, name='icn_detail'),
     path('intervention/<int:pk>/approval/', views.icn_submit_approval, name='icn_submit_approval'),
-    path('activity/<int:pk>/approval/', views.activity_submit_approval, name='activity_submit_approval'),
+    path('activity/<int:pk>/approval/', views.activity_submit_approval, name='activity_sumit_approval'),
     path('download/<int:id>/', views.download, name='download'),
     path('downloada/<int:id>/', views.downloada, name='downloadacnd'),
     path('delete_icn/<int:pk>/', views.icn_delete, name='icn_delete'),
@@ -33,6 +33,9 @@ urlpatterns = [
     
     path('download_env_att/<int:id>/', views.download_env_att, name='download_env_att'),
     path('icn_submit_form_partial/<int:id>/', views.icn_submit_form_partial, name='icn_submit_form_partial'),
+     
+    path('icn_submit_form_partialm/<int:id>/', views.icn_submit_form_partialm, name='icn_submit_form_partialm'),
+    
     path('icn_approvalp_form_partial/<int:id>/', views.icn_approvalp_form_partial, name='icn_approvalp_form_partial'),
     path('activity_submit_form_partial/<int:id>/', views.activity_submit_form_partial, name='activity_submit_form_partial'),
     path('activity/', views.activities, name='activities'),

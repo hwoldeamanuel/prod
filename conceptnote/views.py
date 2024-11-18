@@ -350,11 +350,19 @@ def icn_submit_form(request, id, sid):
     
     if sid== 1 and  IcnSubmit.objects.filter(icn_id=icn.id).exists():
         icnsubmit = IcnSubmit.objects.filter(icn_id=icn.id).latest('id')
-        form = IcnSubmitForm(sid=sid, icn=icn, user=request.user)
+       
+        form = IcnSubmitForm(sid=sid, icn=icn, user=request.user,icnsubmit=icnsubmit.id )
         form.fields['document'].choices = [
                 (document.pk, document) for document in Document.objects.filter(id=icnsubmit.document.id)
                 ]
-    elif (sid== 1 and IcnSubmit.objects.filter(icn_id=icn.id).exists()==False) or (sid == 2):
+    if sid== 2 and  IcnSubmit.objects.filter(icn_id=icn.id).exists():
+        icnsubmit = IcnSubmit.objects.filter(icn_id=icn.id).latest('id')
+       
+        form = IcnSubmitForm(sid=sid, icn=icn, user=request.user,icnsubmit=icnsubmit.id )
+        form.fields['document'].choices = [
+                (document.pk, document) for document in Document.objects.filter(id__gt=icnsubmit.document.id)
+                ]           
+    else:
     
         form = IcnSubmitForm(user=request.user,icn=icn, sid=sid)
         form.fields['document'].choices = [
@@ -444,14 +452,14 @@ def icn_submit_form(request, id, sid):
              
 
                
-            return HttpResponse(
-            status=204,
-            headers={
-                'HX-Trigger': json.dumps({
-                    "SubmitApprovalListChanged": None,
-                    "showMessage": f"{instance.id} added."
+                return HttpResponse(
+                status=204,
+                headers={
+                    'HX-Trigger': json.dumps({
+                        "SubmitApprovalListChanged": None,
+                        "showMessage": f"{instance.id} added."
+                    })
                 })
-            })
       
     context = {'form':form, 'icn':icn, 'sid':sid}
     return render(request, 'icn_submit_form copy.html', context)
@@ -486,7 +494,7 @@ def icn_approvalt(request, id, did):
     if request.method == "GET":
         icnsubmitApproval_t = get_object_or_404(IcnSubmitApproval_T, submit_id_id=id)
         if did != 2:
-            form = IcnApprovalTForm(instance=icnsubmitApproval_t, did=did)
+            form = IcnApprovalTForm(instance=icnsubmitApproval_t, did=did, user = request.user)
             form.fields['document'].choices = [
                 (document.pk, document) for document in Document.objects.filter(id=icnsubmitApproval_t.document.id)
                 ]
@@ -499,7 +507,7 @@ def icn_approvalt(request, id, did):
     elif request.method == "PUT":
         icnsubmitApproval_t = get_object_or_404(IcnSubmitApproval_T, submit_id_id=id)
         data = QueryDict(request.body).dict()
-        form = IcnApprovalTForm(data, instance=icnsubmitApproval_t, did=did)
+        form = IcnApprovalTForm(data, instance=icnsubmitApproval_t, did=did,user = request.user )
         if form.is_valid():
             instance = form.save()
             icnsubmit = get_object_or_404(IcnSubmit, pk=id)
@@ -587,12 +595,12 @@ def icn_approvalm(request, id, did):
     if request.method == "GET":
         icnsubmitApproval_m = get_object_or_404(IcnSubmitApproval_M, submit_id_id=id)
         if did != 2:
-            form = IcnApprovalMForm(instance=icnsubmitApproval_m, did=did)
+            form = IcnApprovalMForm(instance=icnsubmitApproval_m, did=did,user = request.user )
             form.fields['document'].choices = [
                 (document.pk, document) for document in Document.objects.filter(id=icnsubmitApproval_m.document.id)
                 ]
         else:
-            form = IcnApprovalMForm(instance=icnsubmitApproval_m, did=did)
+            form = IcnApprovalMForm(instance=icnsubmitApproval_m, did=did, user = request.user)
          
         context = {'icnsubmitapproval_m':icnsubmitApproval_m, 'form': form, 'icn':icn, 'did':did}
         return render(request, 'icn_approval_mform.html', context)
@@ -600,7 +608,7 @@ def icn_approvalm(request, id, did):
     elif request.method == "PUT":
         icnsubmitApproval_m = get_object_or_404(IcnSubmitApproval_M, submit_id_id=id)
         data = QueryDict(request.body).dict()
-        form = IcnApprovalMForm(data, instance=icnsubmitApproval_m, did=did)
+        form = IcnApprovalMForm(data, instance=icnsubmitApproval_m, did=did, user = request.user)
         if form.is_valid():
             instance = form.save()
             icnsubmit = get_object_or_404(IcnSubmit, pk=id)
@@ -1119,14 +1127,31 @@ def download_env_att(request, id):
 
 def icn_submit_form_partial(request, id): 
     icn = get_object_or_404(Icn, pk=id)
-    form = IcnSubmitForm(user=request.user,icn=icn)
+    if IcnSubmit.objects.filter(icn_id=icn.id).exists():
     
+        icnsubmit = IcnSubmit.objects.filter(icn_id=icn.id).latest('id')
     
+        form = IcnSubmitForm(user=request.user,icn=icn,icnsubmit=icnsubmit.id, sid=2)
+    else:
+        form = IcnSubmitForm(user=request.user,icn=icn,sid=2)
+        
     context = {'form':form, 'icn':icn}
     return render(request, 'partial/partial_doc_form.html', context)
-
+    
+def icn_submit_form_partialm(request, id): 
+    icn = get_object_or_404(Icn, pk=id)
+    
+    
+    form = IcnSubmitForm(user=request.user, did=2)
+   
+        
+        
+    context = {'form':form, 'icn':icn}
+    return render(request, 'partial/partial_doc_form.html', context)
+    
 def icn_approvalp_form_partial(request, id): 
     icn = get_object_or_404(Icn, pk=id)
+    
     form = IcnApprovalPForm(user=request.user,icn=icn)
     
     context = {'form':form, 'icn':icn}
@@ -1436,18 +1461,7 @@ def activity_submit_form(request, id, sid):
     activity = get_object_or_404(Activity, pk=id)
     
     
-    if sid== 1 and  ActivitySubmit.objects.filter(activity_id=activity.id).exists():
-        activitysubmit = ActivitySubmit.objects.filter(activity_id=activity.id).latest('id')
-        form = ActivitySubmitForm(sid=sid, activity=activity, user=request.user)
-       
-        
-    
-    elif (sid== 1 and ActivitySubmit.objects.filter(activity_id=activity.id).exists()==False) or (sid == 2):
-        form = ActivitySubmitForm(user=request.user,activity=activity, sid=sid)
-        form.fields['document'].choices = [
-                (document.pk, document) for document in ActivityDocument.objects.none()
-                ]
-   
+    form = ActivitySubmitForm(activity=activity.id, sid=sid, user=request.user)
     
     if request.method == "POST":
         form = ActivitySubmitForm(request.POST, request.FILES)
@@ -1470,83 +1484,34 @@ def activity_submit_form(request, id, sid):
                 ActivitySubmitApproval_P.objects.create(user = activity.program_lead,submit_id = instance,document = instance.document, approval_status=Approvalf_Status.objects.get(id=1))
                 ActivitySubmitApproval_F.objects.create(user = activity.finance_lead,submit_id = instance,document = instance.document, approval_status=Approvalt_Status.objects.get(id=1))
 
-                subject = 'Request for Approval'
-                context = {
-                            "program": activity.icn.program,
-                            "title": activity.title,
-                            "id": activity.id,
-                            "creator": activity.user.profile.full_name,
-                            "cn_id": activity.acn_number,
-                            "initiator": activity.user.profile.full_name,
-                            "user_role": "Concept Note Initiator",
-                        
-                        
-                            "date":activitysubmit.submission_date,
-                            }
-                
-                html_message = render_to_string("partial/activity_mail.html", context=context)
-                plain_message = strip_tags(html_message)
-                recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.finance_lead.user.email]
-                
-                message = EmailMultiAlternatives(
-                subject = subject, 
-                body = plain_message,
-                from_email = None ,
-                to= recipient_list
-                    )
-                
-                message.attach_alternative(html_message, "text/html")
-                message.send()
+                send_activity_notify(activity.id, 12)
+               
                 return HttpResponse(
-                status=204,
-                headers={
-                    'HX-Trigger': json.dumps({
-                        "SubmitApprovalListChanged": None,
-                        "showMessage": f"{instance.id} added."
-                    })
-                })
+                        status=204,
+                        headers={
+                            'HX-Trigger': json.dumps({
+                            "SubmitApprovalListChanged": None,
+                            "showMessage": f"{instance.id} added."
+                         })
+                         })
             
             elif activitysubmit.submission_status_id == 1:
                 Activity.objects.filter(pk=id).update(status=False)
                 Activity.objects.filter(pk=id).update(approval_status="Pending Submission")
-                subject = 'Approval Request temporarily withdrawn - Pending Re-submission'
-                context = {
-                            "program": activity.icn.program,
-                            "title": activity.title,
-                            "id": activity.id,
-                            "cn_id": activity.acn_number,
-                            "creator": activity.user.profile.full_name,
-                            "initiator": activity.user.profile.full_name,
-                            "user_role": "Concept Note Initiator",
-                        
-                        
-                            "date":activitysubmit.submission_date,
-                            }
-                html_message = render_to_string("partial/activity_mail.html", context=context)
-                plain_message = strip_tags(html_message)
-                recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.finance_lead.user.email]
-                
-                message = EmailMultiAlternatives(
-                subject = subject, 
-                body = plain_message,
-                from_email = None ,
-                to= recipient_list
-                    )
-                
-                message.attach_alternative(html_message, "text/html")
-                message.send()
-               
+                send_activity_notify(activity.id, 11)
+                              
                 return HttpResponse(
-                status=204,
-                headers={
-                    'HX-Trigger': json.dumps({
-                        "SubmitApprovalListChanged": None,
-                        "showMessage": f"{instance.id} added."
-                    })
-                })
-            
+                        status=204,
+                        headers={
+                            'HX-Trigger': json.dumps({
+                            "SubmitApprovalListChanged": None,
+                            "showMessage": f"{instance.id} added."
+                         })
+                         })
+                 
         form = ActivitySubmitForm(request.POST,user=request.user,activity=activity, sid=sid)
-
+        context = {'form':form, 'activity':activity, 'sid':sid}
+        return render(request, 'activity_submit_form.html', context)
       
     context = {'form':form, 'activity':activity, 'sid':sid}
     return render(request, 'activity_submit_form.html', context)
@@ -1604,7 +1569,9 @@ def activity_submit_document(request, id):
             
 def activity_submit_form_partial(request, id): 
     activity = get_object_or_404(Activity, pk=id)
-    form = ActivitySubmitForm(user=request.user,activity=activity)
+
+    
+    form = ActivitySubmitForm(user=request.user,activity=activity.id, sid=2)
     
     context = {'form':form, 'activity':activity}
     return render(request, 'partial/activity_partial_doc_form.html', context)
@@ -1632,15 +1599,8 @@ def activity_approvalt(request, id, did):
     activity =  get_object_or_404(Activity, id=activitysubmit.activity_id)
 
     if request.method == "GET":
-        activitysubmitApproval_t = get_object_or_404(ActivitySubmitApproval_T, submit_id_id=id)
-        if did != 2:
-            form = ActivityApprovalTForm(instance=activitysubmitApproval_t, did=did)
-            form.fields['document'].choices = [
-                (document.pk, document) for document in ActivityDocument.objects.filter(id=activitysubmitApproval_t.document.id)
-                ]
-        else:
-            form = ActivityApprovalTForm(instance=activitysubmitApproval_t, did=did)
-       
+        form = ActivityApprovalTForm(instance=activitysubmitApproval_t, activity=activity.id, did=did)
+           
         context = {'activitysubmitapproval_t':activitysubmitApproval_t, 'form': form, 'activity':activity, 'did':did }
         return render(request, 'activity_approval_tform.html', context)
     
@@ -1654,60 +1614,17 @@ def activity_approvalt(request, id, did):
             activitysubmit = get_object_or_404(ActivitySubmit, pk=id)
             activity =  get_object_or_404(Activity, id=activitysubmit.activity_id)
             update_activity_approval_status(activitysubmit.id)
-           
-            subject = 'Approval Status Changed'
-            context = {
-                            "program": activity.icn.program,
-                            "title": activity.title,
-                            "id": activity.id,
-                            "creator": activity.user.profile.full_name,
-                            "cn_id": activity.acn_number,
-                            "initiator": activitysubmitApproval_t.user.user.profile.full_name,
-                            "user_role": "Technical Lead",
-                        
-                        
-                            "date":activitysubmit.submission_date,
-                            }
-            html_message = render_to_string("partial/activity_mail.html", context=context)
-            plain_message = strip_tags(html_message)
-            recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.finance_lead.user.email]
-                
-            message = EmailMultiAlternatives(
-                subject = subject, 
-                body = plain_message,
-                from_email = None ,
-                to= recipient_list
-                    )
-                
-            message.attach_alternative(html_message, "text/html")
-            message.send()
-
-            if activity.approval_status == '75% Approved':
-                subject = 'Request for Final Approval'
-                
-                html_message = render_to_string("partial/activity_mail.html", context=context)
-                plain_message = strip_tags(html_message)
-                recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
-                
-                message = EmailMultiAlternatives(
-                subject = subject, 
-                body = plain_message,
-                from_email = None ,
-                to= recipient_list
-                    )
-                
-                message.attach_alternative(html_message, "text/html")
-                message.send()
-                
+            send_activity_notify(activity.id, 2)
+                            
                 
             return HttpResponse(
-                status=204,
-                headers={
-                    'HX-Trigger': json.dumps({
-                        "SubmitApprovalListChanged": None,
-                        "showMessage": f"{instance.id} added."
-                    })
-                })
+                        status=204,
+                        headers={
+                            'HX-Trigger': json.dumps({
+                            "SubmitApprovalListChanged": None,
+                            "showMessage": f"{instance.id} added."
+                         })
+                         })
         
         return render(request, 'activity_approval_tform.html', {'form':form, 'did':did})
 
@@ -1719,15 +1636,8 @@ def activity_approvalm(request, id, did):
     activity =  get_object_or_404(Activity, id=activitysubmit.activity_id)
 
     if request.method == "GET":
-        activitysubmitApproval_m = get_object_or_404(ActivitySubmitApproval_M, submit_id_id=id)
-        if did != 2:
-            form = ActivityApprovalMForm(instance=activitysubmitApproval_m, did=did)
-            form.fields['document'].choices = [
-                (document.pk, document) for document in ActivityDocument.objects.filter(id=activitysubmitApproval_m.document.id)
-                ]
-        else:
-            form = ActivityApprovalMForm(instance=activitysubmitApproval_m, did=did)
-       
+        form = ActivityApprovalMForm(instance=activitysubmitApproval_m, activity=activity.id, did=did)
+              
         context = {'activitysubmitapproval_m':activitysubmitApproval_m, 'form': form, 'activity':activity, 'did':did }
         return render(request, 'activity_approval_mform.html', context)
     
@@ -1741,58 +1651,16 @@ def activity_approvalm(request, id, did):
             activitysubmit = get_object_or_404(ActivitySubmit, pk=id)
             activity =  get_object_or_404(Activity, id=activitysubmit.activity_id)
             update_activity_approval_status(activitysubmit.id)
-           
-            subject = 'Approval Status Changed'
-            context = {
-                            "program": activity.icn.program,
-                            "title": activity.title,
-                            "id": activity.id,
-                            "cn_id": activity.acn_number,
-                            "creator": activity.user.profile.full_name,
-                            "initiator": activitysubmitApproval_m.user.user.profile.full_name,
-                            "user_role": "MEL Lead",
-                        
-                        
-                            "date":activitysubmit.submission_date,
-                            }
-            html_message = render_to_string("partial/activity_mail.html", context=context)
-            plain_message = strip_tags(html_message)
-            recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.finance_lead.user.email]
-                
-            message = EmailMultiAlternatives(
-                subject = subject, 
-                body = plain_message,
-                from_email = None ,
-                to= recipient_list
-                    )
-                
-            message.attach_alternative(html_message, "text/html")
-            message.send()
+            send_activity_notify(activity.id, 3)
             
-            if activity.approval_status == '75% Approved':
-                subject = 'Request for Final Approval'
-                recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.mel_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
-                html_message = render_to_string("partial/activity_mail.html", context=context)
-                plain_message = strip_tags(html_message)
-                
-                
-                message = EmailMultiAlternatives(
-                    subject = subject, 
-                    body = plain_message,
-                    from_email = None ,
-                    to= recipient_list
-                        )
-                
-                message.attach_alternative(html_message, "text/html")
-                message.send()
             return HttpResponse(
-                status=204,
-                headers={
-                    'HX-Trigger': json.dumps({
-                        "SubmitApprovalListChanged": None,
-                        "showMessage": f"{instance.id} added."
-                    })
-                })
+                        status=204,
+                        headers={
+                            'HX-Trigger': json.dumps({
+                            "SubmitApprovalListChanged": None,
+                            "showMessage": f"{instance.id} added."
+                         })
+                         })
         
         return render(request, 'activity_approval_mform.html', {'form':form, 'did':did})
 
@@ -1805,15 +1673,8 @@ def activity_approvalp(request, id, did):
     activity =  get_object_or_404(Activity, id=activitysubmit.activity_id)
 
     if request.method == "GET":
-        activitysubmitApproval_p = get_object_or_404(ActivitySubmitApproval_P, submit_id_id=id)
-        if did != 2:
-            form = ActivityApprovalPForm(instance=activitysubmitApproval_p, did=did)
-            form.fields['document'].choices = [
-                (document.pk, document) for document in ActivityDocument.objects.filter(id=activitysubmitApproval_p.document.id)
-                ]
-        else:
-            form = ActivityApprovalPForm(instance=activitysubmitApproval_p, did=did)
-       
+        form = ActivityApprovalPForm(instance=activitysubmitApproval_p, activity=activity.id, did=did)
+              
         context = {'activitysubmitapproval_p':activitysubmitApproval_p, 'form': form, 'activity':activity, 'did':did }
         return render(request, 'activity_approval_pform.html', context)
     
@@ -1827,43 +1688,16 @@ def activity_approvalp(request, id, did):
             activitysubmit = get_object_or_404(ActivitySubmit, pk=id)
             activity =  get_object_or_404(Activity, id=activitysubmit.activity_id)
             update_activity_approval_status_final(activitysubmit.id)
-           
-            subject = 'Final Approval Status Changed'
-            context = {
-                            "program": activity.icn.program,
-                            "title": activity.title,
-                            "id": activity.id,
-                            "cn_id": activity.acn_number,
-                            "creator": activity.user.profile.full_name,
-                            "initiator": activitysubmitApproval_p.user.user.profile.full_name,
-                            "user_role": "Program Lead",
-                        
-                        
-                            "date":activitysubmit.submission_date,
-                            }
-            html_message = render_to_string("partial/activity_mail.html", context=context)
-            plain_message = strip_tags(html_message)
-            recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
-                
-            message = EmailMultiAlternatives(
-                subject = subject, 
-                body = plain_message,
-                from_email = None ,
-                to= recipient_list
-                    )
-                
-            message.attach_alternative(html_message, "text/html")
-            message.send()
-           
+            send_activity_notify(activity.id, 5)         
           
             return HttpResponse(
-                status=204,
-                headers={
-                    'HX-Trigger': json.dumps({
-                        "SubmitApprovalListChanged": None,
-                        "showMessage": f"{instance.id} added."
-                    })
-                })
+                        status=204,
+                        headers={
+                            'HX-Trigger': json.dumps({
+                            "SubmitApprovalListChanged": None,
+                            "showMessage": f"{instance.id} added."
+                         })
+                         })
     activitysubmitApproval_p = get_object_or_404(ActivitySubmitApproval_P, submit_id_id=id)
     data = QueryDict(request.body).dict()
     form = ActivityApprovalPForm(data, instance=activitysubmitApproval_p, did=did)
@@ -1878,15 +1712,7 @@ def activity_approvalf(request, id, did):
     activity =  get_object_or_404(Activity, id=activitysubmit.activity_id)
 
     if request.method == "GET":
-        activitysubmitApproval_f = get_object_or_404(ActivitySubmitApproval_F, submit_id_id=id)
-        if did != 2:
-            form = ActivityApprovalFForm(instance=activitysubmitApproval_f, did=did)
-            form.fields['document'].choices = [
-                (document.pk, document) for document in ActivityDocument.objects.filter(id=activitysubmitApproval_f.document.id)
-                ]
-        else:
-            form = ActivityApprovalFForm(instance=activitysubmitApproval_f, did=did)
-     
+        form = ActivityApprovalFForm(instance=activitysubmitApproval_f, activity=activity.id, did=did)     
         context = {'activitysubmitapproval_f':activitysubmitApproval_f, 'form': form, 'activity':activity,'did':did }
         return render(request, 'activity_approval_fform.html', context)
     
@@ -1900,56 +1726,16 @@ def activity_approvalf(request, id, did):
             activitysubmit = get_object_or_404(ActivitySubmit, pk=id)
             activity =  get_object_or_404(Activity, id=activitysubmit.activity_id)
             update_activity_approval_status(activitysubmit.id)
-            subject = 'Approval Status Changed'
-            context = {
-                            "program": activity.icn.program,
-                            "title": activity.title,
-                            "id": activity.id,
-                            "cn_id": activity.acn_number,
-                            "creator": activity.user.profile.full_name,
-                            "initiator": activitysubmitApproval_f.user.user.profile.full_name,
-                            "user_role": "Finance Lead",
-                        
-                        
-                            "date":activitysubmit.submission_date,
-                            }
-            html_message = render_to_string("partial/activity_mail.html", context=context)
-            plain_message = strip_tags(html_message)
-            recipient_list = [activity.user.email, activity.technical_lead.user.email,  activity.finance_lead.user.email]
-                
-            message = EmailMultiAlternatives(
-                subject = subject, 
-                body = plain_message,
-                from_email = None ,
-                to= recipient_list
-                    )
-                
-            message.attach_alternative(html_message, "text/html")
-            message.send()
-          
-            if activity.approval_status == '75% Approved':
-                subject = 'Request for Final Approval'
-                html_message = render_to_string("partial/activity_mail.html", context=context)
-                plain_message = strip_tags(html_message)
-                recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
-                
-                message = EmailMultiAlternatives(
-                    subject = subject, 
-                    body = plain_message,
-                    from_email = None ,
-                    to= recipient_list
-                        )
-                
-                message.attach_alternative(html_message, "text/html")
-                message.send()
+            send_activity_notify(activity.id, 4)
+           
             return HttpResponse(
-                status=204,
-                headers={
-                    'HX-Trigger': json.dumps({
-                        "SubmitApprovalListChanged": None,
-                        "showMessage": f"{instance.id} added."
-                    })
-                })
+                        status=204,
+                        headers={
+                            'HX-Trigger': json.dumps({
+                            "SubmitApprovalListChanged": None,
+                            "showMessage": f"{instance.id} added."
+                         })
+                         })
         
         return render(request, 'activity_approval_fform.html', {'form':form, 'did':did, 'activity':activity })
 
@@ -1969,7 +1755,7 @@ def update_activity_approval_status(id):
  
     
     if approval_t == 4 or approval_m== 4 or approval_f== 4:
-        Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="100% Rejected")
+        Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="Rejected")
     elif approval_t == 2 or approval_m == 2 or approval_m == 2:
         Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="Revision Required")
     elif approval_t == 1 and approval_m == 1 and approval_m == 1:
@@ -2100,3 +1886,74 @@ def iworedas(request):
     
     form = IcnForm(request.GET)
     return HttpResponse(form['iworeda'])
+
+def send_activity_notify(id, uid):
+    activity = get_object_or_404(Activity, id=id)
+    if uid == 12:
+        subject = 'Request for Activity Approval'
+        initiator = activity.user.full_name
+        user_role = 'Initiator'
+    elif uid == 11:
+        subject = 'Activity Approval Request temporarily withdrawn'
+        initiator = activity.user.full_name
+        user_role = 'Initiator'
+        
+    elif uid ==2:
+        subject = 'Activity Approval Status changed'
+        initiator = activity.technical_lead.user.profile.full_name
+        user_role = 'Technical Lead'
+    elif uid ==3:
+        subject = 'Activity Approval Status changed'
+        initiator = activity.mel_lead.user.profile.full_name
+        user_role = 'MEL Lead'
+    elif uid ==4:
+        subject = 'Activity Approval Status changed'
+        initiator = activity.finance_lead.user.profile.full_name
+        user_role = 'Finance Lead'
+    elif uid ==5:
+        subject = 'Activity Final Approval Status changed'
+        initiator = activity.program_lead.user.profile.full_name
+        user_role = 'Program Lead'
+        
+
+    subject = subject
+    context = {
+                "program": activity.icn.program,
+                "title": activity.title,
+                "id": activity.id,
+                "cn_id": activity.acn_number,
+                "creator": activity.user.profile.full_name,
+                "initiator": initiator,
+                "user_role": user_role,
+            
+                
+                }
+    html_message = render_to_string("partial/activity_mail.html", context=context)
+    plain_message = strip_tags(html_message)
+    recipient_list = [activity.user.email, activity.technical_lead.user.email,  activity.finance_lead.user.email]
+        
+    message = EmailMultiAlternatives(
+        subject = subject, 
+        body = plain_message,
+        from_email = None ,
+        to= recipient_list
+            )
+        
+    message.attach_alternative(html_message, "text/html")
+    message.send()
+    
+    if uid !=5 and activity.approval_status == '75% Approved':
+        subject = 'Request for Final Approval'
+        html_message = render_to_string("partial/activity_mail.html", context=context)
+        plain_message = strip_tags(html_message)
+        recipient_list = [activity.user.email, activity.technical_lead.user.email, activity.program_lead.user.email, activity.finance_lead.user.email]
+        
+        message = EmailMultiAlternatives(
+            subject = subject, 
+            body = plain_message,
+            from_email = None ,
+            to= recipient_list
+                )
+        
+        message.attach_alternative(html_message, "text/html")
+        message.send()

@@ -507,14 +507,7 @@ class ActivityDocument(models.Model):
         return "%s %s %s" % ("Version", self.ver, self.user.username)
 
 class ActivitySubmit(models.Model):
-    Draft = 1
-    Submit = 2
     
-    SSTATUS = (
-        (Draft, 'Draft'),
-        (Submit, 'Request Submitted'),
-     
-        )
     id = models.AutoField(primary_key=True)
     activity =  models.ForeignKey(
         Activity, on_delete=models.CASCADE, null=True, blank=True)
