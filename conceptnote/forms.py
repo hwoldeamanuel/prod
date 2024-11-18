@@ -362,24 +362,26 @@ class IcnDocumentForm(forms.ModelForm):
 class IcnApprovalTForm(forms.ModelForm):
      def __init__(self, *args, **kwargs):
           did = kwargs.pop('did', None)
-          super(IcnApprovalTForm, self).__init__(*args, **kwargs)
-       
-    
-     
+          user = kwargs.pop('user', None)
+          icn = kwargs.pop('icn', None)
+          super(IcnApprovalTForm, self).__init__(*args, **kwargs)    
           
           document_id = self.instance.document.id
 
           self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'required'  }    )
           self.fields['approval_status'].choices = [
              (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalt_Status.objects.filter(id=did)
-         ]
+                 ]
           self.fields['approval_status'].widget.attrs['readonly'] = True
           if did == 2:
                self.fields['document'].choices = [
-             (document.pk, document) for document in Document.objects.filter(user= self.instance.user,icn= self.instance.icn, id__gt=document_id)
+             (document.pk, document) for document in Document.objects.filter(user= user,icn= icn, id__gt=document_id)
          ]
        
           if did == 3 or did==4:
+               self.fields['document'].choices = [
+             (document.pk, document) for document in Document.objects.filter(id=document_id)
+                 ]
                self.fields['document'].widget.attrs['readonly'] = True
         
           self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
@@ -394,31 +396,26 @@ class IcnApprovalTForm(forms.ModelForm):
 class IcnApprovalMForm(forms.ModelForm):
      def __init__(self, *args, **kwargs):
           did = kwargs.pop('did', None)
-          sid = kwargs.pop('sid', None)
+          icn = kwargs.pop('icn', None)
           user = kwargs.pop('user', None)
           super(IcnApprovalMForm, self).__init__(*args, **kwargs)
        
-    
      
           document_id = self.instance.document.id
-          icnsubmit = get_object_or_404(IcnSubmit, id =self.instance.submit_id_id)
-          icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
-
-         
-         
-        
           self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'required'  }    )
           self.fields['approval_status'].choices = [
              (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalt_Status.objects.filter(id=did)
-         ]
+                 ]
           self.fields['approval_status'].widget.attrs['readonly'] = True
-          if did == 2 or sid==2:
-          
+          if did == 2:
                self.fields['document'].choices = [
-             (document.pk, document) for document in Document.objects.filter(user = self.instance.user.user,icn= icn,id__gt=document_id)
+             (document.pk, document) for document in Document.objects.filter(user= user,icn= icn, id__gt=document_id)
          ]
        
           if did == 3 or did==4:
+               self.fields['document'].choices = [
+             (document.pk, document) for document in Document.objects.filter(id=document_id)
+                 ]
                self.fields['document'].widget.attrs['readonly'] = True
         
           self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
@@ -433,26 +430,28 @@ class IcnApprovalMForm(forms.ModelForm):
 class IcnApprovalFForm(forms.ModelForm):
      def __init__(self, *args, **kwargs):
           did = kwargs.pop('did', None)
+          icn = kwargs.pop('icn', None)
+          user = kwargs.pop('user', None)
           super(IcnApprovalFForm, self).__init__(*args, **kwargs)
           
           document_id = self.instance.document.id
-          icnsubmit = get_object_or_404(IcnSubmit, id =self.instance.submit_id_id)
-          icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
-
-          self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
+          self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'required'  }    )
           self.fields['approval_status'].choices = [
              (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalt_Status.objects.filter(id=did)
-             ]
+                 ]
           self.fields['approval_status'].widget.attrs['readonly'] = True
           if did == 2:
                self.fields['document'].choices = [
-             (document.pk, document) for document in Document.objects.filter(user = self.instance.user.user,icn= icn,id__gt=document_id)
-            ]
-
-          if did == 3:
-               self.fields['document'].widget.attrs['readonly'] = True   
-          
-          self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'}) 
+             (document.pk, document) for document in Document.objects.filter(user= user,icn= icn, id__gt=document_id)
+         ]
+       
+          if did == 3 or did==4:
+               self.fields['document'].choices = [
+             (document.pk, document) for document in Document.objects.filter(id=document_id)
+                 ]
+               self.fields['document'].widget.attrs['readonly'] = True
+        
+          self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
         
      class Meta:
             model = IcnSubmitApproval_F
@@ -462,29 +461,27 @@ class IcnApprovalFForm(forms.ModelForm):
 
 class IcnApprovalPForm(forms.ModelForm):
      def __init__(self, *args, **kwargs):
-          
            did = kwargs.pop('did', None)
+           icn = kwargs.pop('icn', None)
+           user = kwargs.pop('user', None)
            super(IcnApprovalPForm, self).__init__(*args, **kwargs)
 
            document_id = self.instance.document.id
-           icnsubmit = get_object_or_404(IcnSubmit, id =self.instance.submit_id_id)
-           icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
-           self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
+           self.fields['approval_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'required'  }    )
            self.fields['approval_status'].choices = [
-             (approvalf_status.id, approvalf_status.name) for approvalf_status in Approvalf_Status.objects.filter(id=did)
-            ]
-             
-      
-
+             (approvalt_status.id, approvalt_status.name) for approvalt_status in Approvalf_Status.objects.filter(id=did)
+                 ]
            self.fields['approval_status'].widget.attrs['readonly'] = True
-       
            if did == 2:
-               self.fields['document'].choices = [
-             (document.pk, document) for document in Document.objects.filter(user = self.instance.user.user,icn= icn,id__gt=document_id)
+                self.fields['document'].choices = [
+             (document.pk, document) for document in Document.objects.filter(user= user,icn= icn, id__gt=document_id)
             ]
-
+       
            if did == 3 or did==4:
-               self.fields['document'].widget.attrs['readonly'] = True  
+                self.fields['document'].choices = [
+                (document.pk, document) for document in Document.objects.filter(id=document_id)
+                 ]
+                self.fields['document'].widget.attrs['readonly'] = True
         
            self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
                 

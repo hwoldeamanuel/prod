@@ -394,14 +394,14 @@ def icn_submit_form(request, id, sid):
                 send_icn_notify(icn.id, 11)
                 
                
-                return HttpResponse(
-                status=204,
-                headers={
-                    'HX-Trigger': json.dumps({
-                        "SubmitApprovalListChanged": None,
-                        "showMessage": f"{instance.id} added."
-                    })
+            return HttpResponse(
+            status=204,
+            headers={
+                'HX-Trigger': json.dumps({
+                    "SubmitApprovalListChanged": None,
+                    "showMessage": f"{instance.id} added."
                 })
+            })
       
     context = {'form':form, 'icn':icn, 'sid':sid}
     return render(request, 'icn_submit_form copy.html', context)
@@ -430,19 +430,10 @@ def icn_approvalt(request, id, did):
     icnsubmit = get_object_or_404(IcnSubmit, pk=id)
     did=did
     icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
-
-   
-      
+    
     if request.method == "GET":
-        icnsubmitApproval_t = get_object_or_404(IcnSubmitApproval_T, submit_id_id=id)
-        if did != 2:
-            form = IcnApprovalTForm(instance=icnsubmitApproval_t, did=did, user = request.user)
-            form.fields['document'].choices = [
-                (document.pk, document) for document in Document.objects.filter(id=icnsubmitApproval_t.document.id)
-                ]
-        else:
-            form = IcnApprovalTForm(instance=icnsubmitApproval_t, did=did)
-         
+        form = IcnApprovalTForm(instance=icnsubmitApproval_t, did=did, icn = icn.id, user = request.user)
+                    
         context = {'icnsubmitapproval_t':icnsubmitApproval_t, 'form': form, 'icn':icn, 'did':did}
         return render(request, 'icn_approval_tform.html', context)
     
@@ -476,19 +467,9 @@ def icn_approvalm(request, id, did):
     icnsubmit = get_object_or_404(IcnSubmit, pk=id)
     did=did
     icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
-
-   
-      
+     
     if request.method == "GET":
-        icnsubmitApproval_m = get_object_or_404(IcnSubmitApproval_M, submit_id_id=id)
-        if did != 2:
-            form = IcnApprovalMForm(instance=icnsubmitApproval_m, did=did,user = request.user )
-            form.fields['document'].choices = [
-                (document.pk, document) for document in Document.objects.filter(id=icnsubmitApproval_m.document.id)
-                ]
-        else:
-            form = IcnApprovalMForm(instance=icnsubmitApproval_m, did=did, user = request.user)
-         
+        form = IcnApprovalMForm(instance=icnsubmitApproval_m, did=did, icn=icn.id, user= request.user )
         context = {'icnsubmitapproval_m':icnsubmitApproval_m, 'form': form, 'icn':icn, 'did':did}
         return render(request, 'icn_approval_mform.html', context)
     
@@ -521,21 +502,9 @@ def icn_approvalp(request, id, did):
     icnsubmit = get_object_or_404(IcnSubmit, pk=id)
     did = did
     icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
-    subject = 'Approval Status changed'
-    message = 'Reviewed & status has been updated'
-    email_from = None 
-    recipient_list = [icn.user.email ,icn.technical_lead.user.email, icn.program_lead.user.email, icn.finance_lead.user.email]
-       
+          
     if request.method == "GET":
-        icnsubmitApproval_p = get_object_or_404(IcnSubmitApproval_P, submit_id_id=id)
-        if did != 2:
-            form = IcnApprovalPForm(instance=icnsubmitApproval_p, did=did)
-            form.fields['document'].choices = [
-                (document.pk, document) for document in Document.objects.filter(id=icnsubmitApproval_p.document.id)
-                ]
-        else:
-            form = IcnApprovalPForm(instance=icnsubmitApproval_p, did=did)
-
+        form = IcnApprovalPForm(instance=icnsubmitApproval_p, icn=icn.id, user=request.user, did=did)
         context = {'icnsubmitapproval_p':icnsubmitApproval_p, 'form': form, 'icn':icn, 'did':did }
         return render(request, 'icn_approval_pform.html', context)
     
@@ -571,14 +540,8 @@ def icn_approvalf(request, id, did):
     icn =  get_object_or_404(Icn, id=icnsubmit.icn_id)
            
     if request.method == "GET":
-        icnsubmitApproval_f = get_object_or_404(IcnSubmitApproval_F, submit_id_id=id)
-        if did != 2:
-            form = IcnApprovalFForm(instance=icnsubmitApproval_f, did=did)
-            form.fields['document'].choices = [
-                (document.pk, document) for document in Document.objects.filter(id=icnsubmitApproval_f.document.id)
-                ]
-        else:
-            form = IcnApprovalFForm(instance=icnsubmitApproval_f, did=did)
+        form = IcnApprovalFForm(instance=icnsubmitApproval_f, did=did, icn=icn.id, user=request.user)
+            
         context = {'icnsubmitapproval_f':icnsubmitApproval_f, 'form': form, 'icn':icn, 'did':did }
         return render(request, 'icn_approval_fform.html', context)
     
