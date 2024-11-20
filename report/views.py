@@ -612,7 +612,8 @@ def update_approval_status(id):
         IcnReport.objects.filter(pk=icnreportsubmit.icnreport_id).update(approval_status="50% Approved")
     elif (approval_t == 3 and approval_m !=3 and approval_f !=3) or (approval_t != 3 and approval_m ==3 and approval_f !=3) or (approval_t != 3 and approval_m !=3 and approval_f ==3):
         IcnReport.objects.filter(pk=icnreportsubmit.icnreport_id).update(approval_status="25% Approved") 
-        
+
+      
 def update_approval_status_final(id):
     icnreportsubmit = get_object_or_404(IcnReportSubmit, pk=id)
     icnsubmitapproval_p = get_object_or_404(IcnReportSubmitApproval_P, submit_id_id=id)
@@ -762,7 +763,7 @@ def activityreport_detail(request, id):
 
     return redirect('activityreport_add',id=id) 
 
- 
+@login_required(login_url='login')  
 def activityreport_add(request, id): 
     activity = Activity.objects.get(id=id)
     activitympacts =  ActivityImpact.objects.filter(activity_id=id)
@@ -800,7 +801,7 @@ def activityreport_add(request, id):
     
     return redirect('activity_step_approval',activity.id) 
 
- 
+@login_required(login_url='login')  
 def activityreport_edit(request, id): 
     activity = Activity.objects.get(id=id)
     activityreport =  ActivityReport.objects.get(activity_id=id)
@@ -833,7 +834,7 @@ def activityreport_edit(request, id):
     return redirect('activityreport_detail',id) 
     
  
-
+@login_required(login_url='login') 
 def add_activityreport_impact(request, id):
     activityimpact = ActivityImpact.objects.get(pk=id)
     activity = Activity.objects.get(id=activityimpact.activity_id)
@@ -869,7 +870,7 @@ def add_activityreport_impact(request, id):
         'activityimpact': activityimpact,
     })
 
-   
+@login_required(login_url='login')    
 def activityreport_impact_list(request, id):
     #impacts = Impact.objects.filter(icn_id=id)
     impacts=ActivityImpact.objects.filter(activity_id=id)
@@ -877,6 +878,7 @@ def activityreport_impact_list(request, id):
     return render(request, 'report/partial/activityreport_impact_list.html', context)
 
 
+@login_required(login_url='login') 
 def edit_activityreport_impact(request, pk):
     impact = get_object_or_404(ActivityReportImpact, pk=pk)
     activityreport = get_object_or_404(ActivityReport, pk=impact.activityreport_id)
@@ -902,6 +904,7 @@ def edit_activityreport_impact(request, pk):
         'impact': impact,
     })
 
+@login_required(login_url='login') 
 def remove_activityreport_impact(request, pk):
     activityreport_impact = get_object_or_404(ActivityReportImpact, pk=pk)
     activityreport_impact.delete()
@@ -915,6 +918,7 @@ def remove_activityreport_impact(request, pk):
         })
 
 
+@login_required(login_url='login') 
 def search_results_view2(request):
     query = request.GET.get('search', '')
     
@@ -933,6 +937,7 @@ def search_results_view2(request):
     context = {'activitiesreport': activitiesreport, 'count': activitiesreport.count()}
     return render(request, 'partial/activityreport_list.html', context)
 
+@login_required(login_url='login') 
 def activityreport_submit_approval(request, id):
     activity = Activity.objects.get(id=id)
     
@@ -948,7 +953,8 @@ def activityreport_submit_approval(request, id):
 
     return render(request, 'report/activityreport_step_approval.html', context)
 
- 
+
+@login_required(login_url='login')  
 def current_activityreport_submit_approval_list(request, id):
     context ={}
  
@@ -966,7 +972,7 @@ def current_activityreport_submit_approval_list(request, id):
 
     return render(request, 'report/partial/activityreport_submit_list.html', context)
 
-
+@login_required(login_url='login') 
 def activityreport_submit_form(request, id, sid): 
     activity = Activity.objects.get(id=id)
     activityreport = ActivityReport.objects.get(activity_id=activity.id)
@@ -1021,7 +1027,7 @@ def activityreport_submit_form(request, id, sid):
     return render(request, 'report/activityreport_submit_form.html', context)
 
 
- 
+@login_required(login_url='login') 
 def activityreport_submit_document(request, id):
     context ={}
     activityreport = get_object_or_404(ActivityReport, pk=id)
@@ -1068,7 +1074,7 @@ def activityreport_submit_document(request, id):
        context = {'dform':dform}
        return render(request, 'report/partial/activityreport_document_form.html', context)
            
-            
+@login_required(login_url='login')             
 def activityreport_submit_form_partial(request, id): 
     activityreport = get_object_or_404(ActivityReport, pk=id)
     
@@ -1077,6 +1083,7 @@ def activityreport_submit_form_partial(request, id):
     context = {'form':form, 'activityreport':activityreport}
     return render(request, 'report/partial/activityreport_partial_doc_form.html', context)
 
+@login_required(login_url='login') 
 def activityreport_document_list(request, id):
     documents = ActivityReportDocument.objects.filter(activityreport_id=id)
     context = {'documents':documents}
@@ -1085,13 +1092,15 @@ def activityreport_document_list(request, id):
     
     return render(request,'report/partial/activityreport_document_list.html', context)
 
+@login_required(login_url='login') 
 def activityreport_submit_approval_list(request, id):
     activityreport_submit_list = ActivityReportSubmit.objects.filter(activityreport_id = id, submission_status=2)
     
     context = {'activityreport_submit_list': activityreport_submit_list }
     return render(request, 'report/partial/activityreport_submit_approval_list.html', context )
 
- 
+
+@login_required(login_url='login') 
 def activityreport_approvalt(request, id, did):
      
     activityreportsubmitApproval_t = get_object_or_404(ActivityReportSubmitApproval_T, submit_id_id=id)
@@ -1129,6 +1138,7 @@ def activityreport_approvalt(request, id, did):
         
         return render(request, 'report/activityreport_approval_tform.html', {'form':form})
 
+@login_required(login_url='login') 
 def activityreport_approvalm(request, id, did):
      
     activityreportsubmitApproval_m = get_object_or_404(ActivityReportSubmitApproval_M , submit_id_id=id)
@@ -1167,6 +1177,7 @@ def activityreport_approvalm(request, id, did):
         
         return render(request, 'report/activityreport_approval_mform.html', {'form':form})
 
+@login_required(login_url='login') 
 def activityreport_approvalp(request, id, did):
      
     activityreportsubmitApproval_p = get_object_or_404(ActivityReportSubmitApproval_P, submit_id_id=id)
@@ -1204,7 +1215,7 @@ def activityreport_approvalp(request, id, did):
         
         return render(request, 'report/activityreport_approval_pform.html', {'form':form, 'did':did})
 
- 
+@login_required(login_url='login') 
 def activityreport_approvalf(request, id, did):
      
     activityreportsubmitApproval_f = get_object_or_404(ActivityReportSubmitApproval_F, submit_id_id=id)
@@ -1269,6 +1280,7 @@ def update_activityreport_approval_status(id):
     elif (approval_t == 3 and approval_m !=3 and approval_f !=3) or (approval_t != 3 and approval_m ==3 and approval_f !=3) or (approval_t != 3 and approval_m!=3 and approval_f ==3):
         ActivityReport.objects.filter(pk=activityreportsubmit.activityreport_id).update(approval_status="25% Approved") 
 
+
 def update_activityreport_approval_status_final(id):
     activityreportsubmit = get_object_or_404(ActivityReportSubmit, pk=id)
     activityreportsubmitapproval_p = get_object_or_404(ActivityReportSubmitApproval_P, submit_id_id=id)
@@ -1284,12 +1296,14 @@ def update_activityreport_approval_status_final(id):
     elif approval_p == 3:
         ActivityReport.objects.filter(pk=activityreportsubmit.activityreport_id).update(approval_status="100% Approved")
 
+@login_required(login_url='login') 
 def downloada(request, id):
     document = get_object_or_404(ActivityReportDocument, id=id)
     response = HttpResponse(document.document, content_type='application/docx')
     response['Content-Disposition'] = f'attachment; filename="{document.document}"'
     return response
 
+@login_required(login_url='login') 
 def latest_submit_approval_list(request, id):
     if IcnReportSubmit.objects.filter(icn_id=id).exists():
          list = IcnReportSubmit.objects.filter(icn_id = id, submission_status=2).latest('id')
@@ -1299,6 +1313,7 @@ def latest_submit_approval_list(request, id):
     
     return render(request, 'partial/recent_submit_approval_list.html', context)
 
+@login_required(login_url='login') 
 def latest_submit_approval_list_activity(request, id):
     if ActivityReportSubmit.objects.filter(activity_id = id).exists():
         list = ActivityReportSubmit.objects.filter(activity_id = id, submission_status=2).latest('id')
@@ -1306,6 +1321,7 @@ def latest_submit_approval_list_activity(request, id):
     else: 
         context = {}
     return render(request, 'report/partial/recent_submit_approval_list_activity.html', context)
+
 
 def send_icnreport_notify(id, uid):
     icnreport = get_object_or_404(IcnReport, id=id)

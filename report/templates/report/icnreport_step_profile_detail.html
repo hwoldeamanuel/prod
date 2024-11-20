@@ -93,15 +93,18 @@
             {% endfor %}
             )
        </li>
-    {% endfor %} 
-                          
- <p>Proposed Mercy Corps budget:<strong> {{ icnreport.icn.mc_budget|floatformat:"2g" }}</strong>{{icnreport.icn.get_mc_currency_display }}</p>
-                              <p>Actual Mercy Corps budget:<strong> {{ icnreport.actual_mc_budget|floatformat:"2g" }}</strong>{{icnreport.get_mc_currency_display }}</p>
-                               <p>Proposed Cost-share budget:<strong> {{ icnreport.icn.cost_sharing_budget|floatformat:"2g" }}</strong>{{icnreport.icn.get_cs_currency_display }}</p>
-                              <p>Actual Cost-share budget:<strong> {{ icnreport.actual_cost_sharing_budget|floatformat:"2g" }}</strong>{{icnreport.get_cs_currency_display }}</p>
-                               <p>Proposed Total budget:<strong> {{ icnreport.icn.mc_budget|add:icnreport.icn.cost_sharing_budget|floatformat:"2g"}}</strong>{{icnreport.icn.get_mc_currency_display }}</p>
-                               <p>Actual Total budget:<strong> {{ icnreport.actual_mc_budget|add:icnreport.actual_cost_sharing_budget|floatformat:"2g"}}</strong>{{icnreport.get_mc_currency_display }}</p>
-                              </br>
+    {% endfor %}   </p>
+
+            Proposed Total budget:<strong> {{ icnreport.icn.mc_budget|add:icnreport.icn.cost_sharing_budget|floatformat:"2g"}}</strong>{{icnreport.icn.get_mc_currency_display }}
+          
+ <li> Mercy Corps budget: {{ icnreport.icn.mc_budget|floatformat:"2g" }}{{icnreport.icn.get_mc_currency_display }}</li>
+ <li> Cost-share budget: {{ icnreport.icn.cost_sharing_budget|floatformat:"2g" }}{{icnreport.icn.get_cs_currency_display }}</li></p>
+                                Actual Total budget:<strong> {{ icnreport.actual_mc_budget|add:icnreport.actual_cost_sharing_budget|floatformat:"2g"}}</strong>{{icnreport.get_mc_currency_display }}            
+                              <li>Mercy Corps budget:<strong> {{ icnreport.actual_mc_budget|floatformat:"2g" }}</strong>{{icnreport.get_mc_currency_display }}</li>
+                               
+                              <li>Cost-share budget:<strong> {{ icnreport.actual_cost_sharing_budget|floatformat:"2g" }}</strong>{{icnreport.get_cs_currency_display }}</li>
+                               
+                            
 
                        </div>
                          

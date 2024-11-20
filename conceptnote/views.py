@@ -131,6 +131,7 @@ def icn_step_submission(request, id):
         context = {'icn':icn}
     return render(request, 'intervention_step_submission.html', context)
 
+@login_required(login_url='login')
 def current_submit_list(request, id):
     
     icn = Icn.objects.get(pk=id)
@@ -222,7 +223,7 @@ def iworedas(request):
     form = IcnForm(request.GET)
     return HttpResponse(form['iworeda'])
 
- 
+@login_required(login_url='login')
 def iregion(request, id):
     #icn = get_object_or_404(IcnImplementationArea, pk=id)
     if request.method == "POST":
@@ -485,6 +486,7 @@ def icn_approvalm(request, id, did):
         
         return render(request, 'icn_approval_mform.html', {'form':form, 'did':did})
 
+@login_required(login_url='login')
 def icn_approvalp(request, id, did):
     
     icnsubmitApproval_p = get_object_or_404(IcnSubmitApproval_P, submit_id_id=id)
@@ -521,7 +523,7 @@ def icn_approvalp(request, id, did):
         return render(request, 'icn_approval_pform.html', {'form':form, 'did':did})
 
 
- 
+@login_required(login_url='login') 
 def icn_approvalf(request, id, did):
     icnsubmitApproval_f = get_object_or_404(IcnSubmitApproval_F, submit_id_id=id)
     icnsubmit = get_object_or_404(IcnSubmit, pk=id)
@@ -556,7 +558,8 @@ def icn_approvalf(request, id, did):
                 })
         
         return render(request, 'icn_approval_fform.html', {'form':form, 'did':did})
-
+    
+@login_required(login_url='login')
 def icn_submit_approval(request, pk):
     icn = get_object_or_404(Icn, pk=pk)
     context ={}
@@ -572,7 +575,7 @@ def icn_submit_approval(request, pk):
 
     return render(request, 'submit_approval.html', context)
 
- 
+@login_required(login_url='login') 
 def icn_submit_list(request, id):
     context ={}
  
@@ -588,7 +591,7 @@ def icn_submit_list(request, id):
     return render(request, 'partial/submit_list.html', context)
 
 
- 
+@login_required(login_url='login') 
 def icn_submit_document(request, id):
     context ={}
     icn = get_object_or_404(Icn, pk=id)
@@ -638,7 +641,7 @@ def icn_submit_document(request, id):
             
        
    
-       
+@login_required(login_url='login')       
 def document_list(request, id):
     documents = Document.objects.filter(icn_id=id)
     context = {'documents':documents}
@@ -648,14 +651,14 @@ def document_list(request, id):
     return render(request,'partial/icn_document_list.html', context)
        
 
-
+@login_required(login_url='login')
 def download(request, id):
     document = get_object_or_404(Document, id=id)
     response = HttpResponse(document.document, content_type='application/docx')
     response['Content-Disposition'] = f'attachment; filename="{document.document}"'
     return response
 
-
+@login_required(login_url='login')
 def search_results_view(request):
     user = request.user
     program = Program.objects.filter(users_role=user)
@@ -687,12 +690,13 @@ def search_results_view(request):
 
 
 
-
+@login_required(login_url='login')
 def iarea_list(request, id):
     return render(request, 'partial/iarea_list.html', {
         'iareas': IcnImplementationArea.objects.filter(icn_id=id),
     })
 
+@login_required(login_url='login')
 def icn_submit_approval_list(request, id):
    
 
@@ -702,6 +706,7 @@ def icn_submit_approval_list(request, id):
   
     return render(request, 'partial/submit_approval_list.html', context )
 
+@login_required(login_url='login')
 def current_submit_approval_list(request, id):
     
     icn = Icn.objects.get(pk=id)
@@ -766,7 +771,7 @@ def update_approval_status_final(id):
    
     
 
-    
+@login_required(login_url='login')   
 def add_impact(request, id):
     icn = get_object_or_404(Icn, pk=id)
     
@@ -799,7 +804,7 @@ def add_impact(request, id):
         'iform': iform,
     })
 
-
+@login_required(login_url='login')
 def impact_list(request, id):
        
     impacts = Impact.objects.filter(icn_id=id)
@@ -808,6 +813,7 @@ def impact_list(request, id):
 
     return render(request, 'partial/impact_list.html', context)
 
+@login_required(login_url='login')
 def icn_edit_impact(request, pk):
     impact = get_object_or_404(Impact, pk=pk)
     icn = get_object_or_404(Icn, pk=impact.icn_id)
@@ -833,6 +839,7 @@ def icn_edit_impact(request, pk):
         'impact': impact,
     })
 
+@login_required(login_url='login')
 def remove_impact(request, pk):
     
     impact = get_object_or_404(Impact, pk=pk)
@@ -852,13 +859,14 @@ def remove_impact(request, pk):
     else:
         return HttpResponseClientRedirect('/conceptnote/intervention/'+str(icn.id)+'/impact/')
        
-
+@login_required(login_url='login')
 def download_env_att(request, id):
     document = get_object_or_404(Icn, id=id)
     response = HttpResponse(document.environmental_assessment_att, content_type='application/docx')
     response['Content-Disposition'] = f'attachment; filename="{document.environmental_assessment_att}"'
     return response
 
+@login_required(login_url='login')
 def icn_submit_form_partial(request, id): 
     icn = get_object_or_404(Icn, pk=id)
     if IcnSubmit.objects.filter(icn_id=icn.id).exists():
@@ -871,7 +879,8 @@ def icn_submit_form_partial(request, id):
         
     context = {'form':form, 'icn':icn}
     return render(request, 'partial/partial_doc_form.html', context)
-    
+
+@login_required(login_url='login')    
 def icn_submit_form_partialm(request, id): 
     icn = get_object_or_404(Icn, pk=id)
     
@@ -882,7 +891,8 @@ def icn_submit_form_partialm(request, id):
         
     context = {'form':form, 'icn':icn}
     return render(request, 'partial/partial_doc_form.html', context)
-    
+
+@login_required(login_url='login')    
 def icn_approvalp_form_partial(request, id): 
     icn = get_object_or_404(Icn, pk=id)
     
@@ -902,7 +912,7 @@ def activities(request):
     
     return render(request, 'activities.html', context)
 
- 
+@login_required(login_url='login') 
 def activity_detail(request, pk):
     
     context ={}
@@ -945,7 +955,7 @@ def activity_add(request):
     context = {'form':form}
     return render(request, 'activity_step_profile_add.html', context)
 
- 
+@login_required(login_url='login')
 def activity_edit(request, id): 
     activity = Activity.objects.get(pk=id)
     
@@ -967,7 +977,7 @@ def activity_edit(request, id):
         return render(request, 'activity_step_profile_edit.html', context)
     return HttpResponseRedirect(request.path_info)
     
- 
+@login_required(login_url='login')
 def aregion(request, id):
     #icn = get_object_or_404(IcnImplementationArea, pk=id)
     if request.method == "POST":
@@ -995,6 +1005,7 @@ def aregion(request, id):
     
     return render(request, 'aarea_form.html', context)
 
+@login_required(login_url='login')
 def aarea_list(request, id):
     return render(request, 'partial/aarea_list.html', {
         'aareas': ActivityImplementationArea.objects.filter(activity_id=id),
@@ -1008,6 +1019,7 @@ def activity_step_impact(request, id):
      context = {'activity':activity, 'impacts': impacts}
      return render(request, 'activity_step_impact.html', context) 
 
+@login_required(login_url='login')
 def aarea_edit_form(request, pk):
     aarea = get_object_or_404(ActivityImplementationArea, pk=pk)
     activity = aarea.activity
@@ -1034,7 +1046,7 @@ def aarea_edit_form(request, pk):
                     })
                 }
             )
-        
+@login_required(login_url='login')        
 def add_activity_impact(request, id):
     activity = get_object_or_404(Activity, pk=id)
     icn = get_object_or_404(Icn, pk=activity.icn_id)
@@ -1069,12 +1081,13 @@ def add_activity_impact(request, id):
         'form': form,
     })
 
-   
+@login_required(login_url='login')   
 def activity_impact_list(request, id):
     return render(request, 'partial/activity_impact_list.html', {
         'activity_impacts': ActivityImpact.objects.filter(activity_id=id),
     })
 
+@login_required(login_url='login')
 def edit_activity_impact(request, pk):
     activity_impact = get_object_or_404(ActivityImpact, pk=pk)
     activity = get_object_or_404(Activity, pk=activity_impact.activity_id)
@@ -1100,6 +1113,7 @@ def edit_activity_impact(request, pk):
         'activity_impact': activity_impact,
     })
 
+@login_required(login_url='login')
 def remove_activity_impact(request, pk):
     activity_impact = get_object_or_404(ActivityImpact, pk=pk)
     activity_id = activity_impact.activity_id
@@ -1119,7 +1133,7 @@ def remove_activity_impact(request, pk):
         return HttpResponseClientRedirect('/conceptnote/activity/'+str(activity.id)+'/impact/')
        
    
-
+@login_required(login_url='login')
 def adelete_area(request, pk):
     area = get_object_or_404(ActivityImplementationArea, pk=pk)
     activity = area.activity_id
@@ -1132,7 +1146,7 @@ def adelete_area(request, pk):
                 "showMessage": f"{area.woreda} deleted."
             })
         })
-
+@login_required(login_url='login')
 def search_results_view2(request):
     user = request.user
     if user.is_superuser:
@@ -1160,6 +1174,7 @@ def search_results_view2(request):
     context = {'activities': activities, 'count': activities.count()}
     return render(request, 'partial/activity_list.html', context)
 
+@login_required(login_url='login')
 def activity_submit_approval(request, pk):
     activity = get_object_or_404(Activity, pk=pk)
     context ={}
@@ -1175,7 +1190,7 @@ def activity_submit_approval(request, pk):
 
     return render(request, 'activity_submit_approval.html', context)
 
- 
+@login_required(login_url='login') 
 def current_activity_submit_approval_list(request, id):
     context ={}
  
@@ -1190,7 +1205,7 @@ def current_activity_submit_approval_list(request, id):
 
     return render(request, 'partial/activity_submit_list.html', context)
 
-
+@login_required(login_url='login')
 def activity_submit_form(request, id, sid): 
     activity = get_object_or_404(Activity, pk=id)
     
@@ -1251,7 +1266,7 @@ def activity_submit_form(request, id, sid):
     return render(request, 'activity_submit_form.html', context)
 
 
- 
+@login_required(login_url='login') 
 def activity_submit_document(request, id):
     context ={}
     activity = get_object_or_404(Activity, pk=id)
@@ -1300,7 +1315,7 @@ def activity_submit_document(request, id):
        context = {'dform':dform}
        return render(request, 'partial/activity_document_form.html', context)
            
-            
+@login_required(login_url='login')            
 def activity_submit_form_partial(request, id): 
     activity = get_object_or_404(Activity, pk=id)
 
@@ -1310,6 +1325,7 @@ def activity_submit_form_partial(request, id):
     context = {'form':form, 'activity':activity}
     return render(request, 'partial/activity_partial_doc_form.html', context)
 
+@login_required(login_url='login')
 def activity_document_list(request, id):
     documents = ActivityDocument.objects.filter(activity_id=id)
     context = {'documents':documents}
@@ -1318,13 +1334,14 @@ def activity_document_list(request, id):
     
     return render(request,'partial/activity_document_list.html', context)
 
+@login_required(login_url='login')
 def activity_submit_approval_list(request, id):
     activity_submit_list = ActivitySubmit.objects.filter(activity_id = id, submission_status=2)
     
     context = {'activity_submit_list': activity_submit_list }
     return render(request, 'partial/activity_submit_approval_list.html', context )
 
- 
+@login_required(login_url='login')
 def activity_approvalt(request, id, did):
      
     activitysubmitApproval_t = get_object_or_404(ActivitySubmitApproval_T, submit_id_id=id)
@@ -1362,6 +1379,7 @@ def activity_approvalt(request, id, did):
         
         return render(request, 'activity_approval_tform.html', {'form':form, 'did':did})
 
+@login_required(login_url='login')
 def activity_approvalm(request, id, did):
      
     activitysubmitApproval_m = get_object_or_404(ActivitySubmitApproval_M, submit_id_id=id)
@@ -1399,6 +1417,7 @@ def activity_approvalm(request, id, did):
         return render(request, 'activity_approval_mform.html', {'form':form, 'did':did})
 
 
+@login_required(login_url='login')
 def activity_approvalp(request, id, did):
      
     activitysubmitApproval_p = get_object_or_404(ActivitySubmitApproval_P, submit_id_id=id)
@@ -1437,7 +1456,7 @@ def activity_approvalp(request, id, did):
     form = ActivityApprovalPForm(data, instance=activitysubmitApproval_p, did=did)
     return render(request, 'activity_approval_pform.html',  context = {'activitysubmitapproval_p':activitysubmitApproval_p, 'form': form, 'activity':activity, 'did':did })
 
- 
+@login_required(login_url='login') 
 def activity_approvalf(request, id, did):
      
     activitysubmitApproval_f = get_object_or_404(ActivitySubmitApproval_F, submit_id_id=id)
@@ -1520,7 +1539,7 @@ def update_activity_approval_status_final(id):
         Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="100% Approved")
         
     
-
+@login_required(login_url='login')
 def downloada(request, id):
     document = get_object_or_404(ActivityDocument, id=id)
     response = HttpResponse(document.document, content_type='application/docx')
@@ -1537,14 +1556,14 @@ def downloada(request, id):
 
 # Helper to build the needed formset
 
-
+@login_required(login_url='login')
 def add_impact_form(request):
     impact_form = ImpactForm()
     return render(request, 'partial/impact_form.html', {
         'impact_form': impact_form,
     })
 
-
+@login_required(login_url='login')
 def icn_approval_invoice(request, id):
     context ={}
  
@@ -1559,6 +1578,7 @@ def icn_approval_invoice(request, id):
 
     return render(request, 'icn_approval_invoice.html', context)
 
+@login_required(login_url='login')
 def activity_approval_invoice(request, id):
     context ={}
  
@@ -1589,7 +1609,7 @@ def program_changes(request):
                        
                     })
                 })
-
+@login_required(login_url='login')
 def intervention_step(request, id):
    
  
@@ -1599,11 +1619,13 @@ def intervention_step(request, id):
     context = {'icn':icn}
     return render(request, 'intervention_step.html', context)
 
+@login_required(login_url='login')
 def icn_detail_modal(request, id):
     icn = Icn.objects.get(id=id)
     context = {'icn':icn}
     return render(request, 'partial/icn_detail_modal.html', context)
 
+@login_required(login_url='login')
 def icn_info(request):
     
     

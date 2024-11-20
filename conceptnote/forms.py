@@ -198,6 +198,7 @@ class IcnForm(forms.ModelForm):
          budget_limit_max = budget_limit_max.approval_budget_max_usd
 
          ilead_co_agency = self.cleaned_data.get('ilead_co_agency')
+         cost_sharing_budget = self.cleaned_data.get('cost_sharing_budget')
         
          if program_lead not in UserRoles.objects.filter(program=program) or technical_lead not in UserRoles.objects.filter(program=program) or finance_lead not in UserRoles.objects.filter(program=program):
                self._errors['program'] = self.error_class(['At least 1 of the Leads not belong this program'])
@@ -221,8 +222,9 @@ class IcnForm(forms.ModelForm):
              self._errors['ilead_agency'] = self.error_class(['Lead Agency & Co-Lead Agency should be different'])
          elif (mc_currency != None and cs_currency != None and mc_currency != cs_currency):
              self._errors['mc_currency'] = self.error_class(['Different Currency for MC & Cost Sharing'])
-         elif (total_budget_usd > budget_limit_max or total_budget_usd <budget_limit_min):
-             self._errors['program_lead'] = self.error_class(['Program Lead not aligh with total budget '])
+         elif (total_budget_usd > budget_limit_max or total_budget_usd < budget_limit_min):
+             self._errors['program_lead'] = self.error_class(['Check Program Lead budget limit'])
+        
          return cleaned_data
 
 
@@ -694,9 +696,10 @@ class ActivityForm(forms.ModelForm):
             
         tactbud = mc_budget + cs_budget
         rembud = icn.get_remaining_budget()
+        
          
         alead_co_agency = self.cleaned_data.get('alead_co_agency')
-         
+        cost_sharing_budget= self.cleaned_data.get('cost_sharing_budget')
         program_lead = self.cleaned_data.get('program_lead')
         finance_lead = self.cleaned_data.get('finance_lead')
         technical_lead = self.cleaned_data.get('technical_lead')
@@ -739,7 +742,7 @@ class ActivityForm(forms.ModelForm):
         elif ((mc_budget != None and cs_budget != None) and tactbud > rembud  ):
               self._errors['mc_budget'] = self.error_class(['Please check Intervention & Activity Budget '])
         elif (tactbud < budget_limit_min or tactbud > budget_limit_max  ):
-              self._errors['program_lead'] = self.error_class(['Program Lead not aligh with total budget'])
+              self._errors['program_lead'] = self.error_class(['Program Lead not aligh with total budget'])            
         return cleaned_data
 
 class ActivityAreaFormE(forms.ModelForm):

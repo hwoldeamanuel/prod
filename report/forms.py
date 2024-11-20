@@ -39,16 +39,22 @@ class IcnReportForm(forms.ModelForm):
             self.fields['icn'].initial = Icn.objects.filter(id=icn.id).first()
             self.fields['icn'].widget.attrs['readonly'] = True
             self.fields['program_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user)
-            self.fields['program_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user).first()
+            self.fields['program_lead'].initial=UserRoles.objects.filter(id=icn.program_lead.id).exclude(user=user).first()
+            self.fields['icn'].widget.attrs['readonly'] = True
             self.fields['technical_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_technical_approver=True).exclude(user=user)
-            self.fields['technical_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_technical_approver=True).exclude(user=user).first()
+            self.fields['technical_lead'].initial=UserRoles.objects.filter(id=icn.technical_lead.id).exclude(user=user).first()
             self.fields['mel_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_mel_approver=True).exclude(user=user)
-            self.fields['mel_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_mel_approver=True).exclude(user=user).first()
+            self.fields['mel_lead'].initial=UserRoles.objects.filter(id=icn.mel_lead.id).exclude(user=user).first()
             self.fields['finance_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user)
-            self.fields['finance_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user).first()
+            self.fields['finance_lead'].initial=UserRoles.objects.filter(id=icn.finance_lead.id).exclude(user=user).first()
             self.fields['actual_report_date'].initial= timezone.now()
           
             self.fields['iworeda'].queryset = ImplementationArea.objects.filter(program__in=program)
+
+            self.fields['program_lead'].widget.attrs['readonly'] = True
+            self.fields['technical_lead'].widget.attrs['readonly'] = True
+            self.fields['mel_lead'].widget.attrs['readonly'] = True
+            self.fields['finance_lead'].widget.attrs['readonly'] = True
        
         myfield = [
             'icn',
@@ -767,8 +773,9 @@ class ActivityReportSubmitForm(forms.ModelForm):
             ] 
               
          elif sid==1 and ActivityReportSubmit.objects.filter(activityreport_id=activityreport).exists():
+              activityreportsubmit = ActivityReportSubmit.objects.filter(activityreport_id=activityreport).latest('id')
               self.fields['document'].choices = [
-                (document.pk, document) for document in ActivityReportDocument.objects.filter(id=self.instance.document.id)
+                (document.pk, document) for document in ActivityReportDocument.objects.filter(id=activityreportsubmit.document.id)
             ] 
               self.fields['document'].widget.attrs['readonly'] = True
              
