@@ -48,11 +48,13 @@
                       {% for colead in activity.alead_co_agency.all %}
                       <strong>{{colead}},</strong>
                       {% endfor %}</p>
-                      {% else %} None {% endif %}</p></br>
-                             <p class="">Proposed Start Date<strong>
+                      {% else %} None {% endif %}</p>
+                             <p class="">Proposed Start Date:<strong>
                       {{activity.proposed_start_date}}</strong></p>
-                      <p class="">Proposed End Date<strong>
+                      <p class="">Proposed End Date:<strong>
                       {{activity.proposed_end_date}}</strong></p>
+                      <p class="">Duration:<strong>
+                      {{ activity.proposed_start_date|timesince:activity.proposed_end_date }}</strong></p>
                       <p>Final Report due date: <strong>  {{ activity.final_report_due_date}}</strong></p>
                             
                           </div>
