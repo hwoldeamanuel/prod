@@ -48,10 +48,11 @@
                           <div class="col-md-4 col-sm-4 project_detail">
 
                            <p>Lead Agency:<strong> {{ activityreport.activity.alead_agency }}</strong></p>
-                              <p>Co-Lead Agency:
+                              <p>Co-Lead Agency:  {% if activityreport.alead_co_agency.all|length > 0 %}
                       {% for colead in activityreport.activity.alead_co_agency.all %}
                       <strong>{{colead}},</strong>
-                      {% endfor %}</p>
+                      {% endfor %}{% else %}None{% endif %}</p>
+                      </br>
                        <p class="">Proposed Start Date:
                       {{activityreport.activity.proposed_start_date}}</p>
                              <p class="">Actual Start Date<strong>
@@ -64,27 +65,46 @@
                               <p>Actual Report Date: <strong>  {{ activityreport.actual_reporting_date}}</strong></p>
                           </div>
   <div class="col-md-4 col-sm-4 project_detail">
-  <p>Proposed Implementation Woredas:
-                      {% for woreda in activityreport.activity.aworeda.all %}
-                      <strong>{{woreda}},</strong>
-                      {% endfor %}</p>
-                  
-  <p>Actual Implementation Woredas:
-                      {% for woreda in activityreport.aworeda.all %}
-                      <strong>{{woreda}},</strong>
-                      {% endfor %}</p>
+   Proposed Implementation Woredas:
+                     <strong>{{ activityreport.activity.aworeda.all|length }}</strong>
+  {% regroup activityreport.activity.aworeda.all  by region as region_list %}
+                 
+    {% for region in region_list %}
+       <li>    <strong>{{ region.grouper }}</strong>
+            (
+            {% for woreda in region.list %}
+                {{ woreda }},
+            {% endfor %}
+            )
+       </li>
+    {% endfor %} 
+                             
+   Actual Implementation Woredas: <strong>{{ activityreport.aworeda.all|length }}</strong>
+  {% regroup activityreport.aworeda.all  by region as region_list %}
+                 
+    {% for region in region_list %}
+       <li>    <strong>{{ region.grouper }}</strong>
+            (
+            {% for woreda in region.list %}
+                {{ woreda }},
+            {% endfor %}
+            )
+       </li>
+    {% endfor %} 
                              
  <p>Proposed Mercy Corps budget:<strong> {{ activityreport.activity.mc_budget|floatformat:"2g"}}</strong>{{activityreport.activity.get_mc_currency_display }}</p>
                               <p>Actual Mercy Corps budget:<strong> {{ activityreport.actual_mc_budget|floatformat:"2g" }}</strong>{{activityreport.get_mc_currency_display }}</p>
                               <p>Proposed Cost-share budget:<strong> {{ activityreport.activity.cost_sharing_budget|floatformat:"2g"}}</strong>{{activityreport.get_cs_currency_display }}</p>
           
                               <p>Actual Cost-share budget:<strong> {{ activityreport.actual_cost_sharing_budget|floatformat:"2g" }}</strong>{{activityreport.get_cs_currency_display }}</p>
+                               <p>Proposed Total budget:<strong> {{ activityreport.activity.mc_budget|add:activityreport.activity.cost_sharing_budget|floatformat:"2g"}}</strong>{{activityreport.activity.get_mc_currency_display }}</p>
+                               <p>Actual Total budget:<strong> {{ activityreport.actual_mc_budget|add:activityreport.actual_cost_sharing_budget|floatformat:"2g"}}</strong>{{activityreport.get_mc_currency_display }}</p>
                               </br>
  </div>
                          
                       <div class="col-md-4 col-sm-4 project_detail">
                             <p>Initited By:<strong> {{ activityreport.user.profile.full_name }}</strong>
-                            </p>
+                            </p></br>
                              <p>Technical Lead:<strong> {{ activityreport.technical_lead.user.profile.full_name }}</strong>
                             </p>
                             </p>
@@ -95,6 +115,7 @@
                             </p>
                              <p>Program Lead:<strong> {{ activityreport.program_lead.user.profile.full_name }}</strong>
                             </p>
+                            </br>
                             <p >Submission Status: <strong>{{ activityreport.get_status_display }}</strong>
                             <p >Approval Status: <strong>{% if activityreport.approval_status %}{{ activityreport.approval_status}}{% else %}NA{% endif %}</strong>
                             </p>

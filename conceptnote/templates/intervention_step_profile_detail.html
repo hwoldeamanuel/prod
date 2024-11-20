@@ -47,8 +47,8 @@
                               <p>Co-Lead Agency: {% if icn.ilead_co_agency.all|length > 0 %}
                       {% for colead in icn.ilead_co_agency.all %}
                       <strong>{{colead}},</strong>
-                      {% endfor %}</p>
-                      {% else %} None {% endif %}
+                      {% endfor %}
+                      {% else %} None {% endif %}</p>
                       </br>
                              <p class="">Proposed Start Date<strong>
                       {{icn.proposed_start_date}}</strong></p>

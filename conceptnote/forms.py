@@ -289,21 +289,25 @@ class IcnSubmitForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         icn = kwargs.pop('icn', None)
-        icnsubmit = kwargs.pop('icnsubmit', None)
         sid = kwargs.pop('sid', None)
         super(IcnSubmitForm, self).__init__(*args, **kwargs)
 
-        if icnsubmit and sid==1:
-            icnsubmit = get_object_or_404(IcnSubmit,id=icnsubmit)
-            print(icnsubmit.document.id)
+        if sid==1 and IcnSubmit.objects.filter(icn_id=icn).exists():
+            icnsubmit = IcnSubmit.objects.filter(icn_id=icn).latest('id')
             self.fields['document'].choices = [
                 (document.pk, document) for document in Document.objects.filter(id=icnsubmit.document.id)
             ]
-        elif icnsubmit and sid==2:
-            icnsubmit = get_object_or_404(IcnSubmit,id=icnsubmit)
+        elif sid==2 and IcnSubmit.objects.filter(icn_id=icn).exists():
+            icnsubmit = IcnSubmit.objects.filter(icn_id=icn).latest('id')
             self.fields['document'].choices = [
-                (document.pk, document) for document in Document.objects.filter(user = user,id__gt=icnsubmit.document.id)
-            ]    
+                (document.pk, document) for document in Document.objects.filter(user = user, icn=icn, id__gt=icnsubmit.document.id)
+            ]  
+        else:
+            self.fields['document'].choices = [
+                (document.pk, document) for document in Document.objects.filter(user = user, icn=icn)
+            ]  
+             
+               
         self.fields['submission_status'].choices = [
             (submission_status.id, submission_status.name) for submission_status in Submission_Status.objects.filter(id=sid)
         ]
@@ -616,6 +620,17 @@ class ActivityForm(forms.ModelForm):
         self.fields['aworeda'].required = True 
         self.fields['mc_budget'].required = True 
         self.fields['cost_sharing_budget'].required = True 
+        self.fields['aworeda'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
+         
+        pia = ImplementationArea.objects.filter(program__in=program).values_list('region').distinct()
+        all_woreda = Region.objects.filter(id__in=pia)
+        self.fields['aworeda'].choices = [
+             
+             
+             (name, [(ia.id, ia) for ia in ImplementationArea.objects.filter(region=name, program__in=program)])
+                        for name in all_woreda
+                
+            ]
         
          
     class Meta:
@@ -809,7 +824,7 @@ class ActivitySubmitForm(forms.ModelForm):
          if sid== 2 and ActivitySubmit.objects.filter(id=activity).exists():
              
               activitysubmit = ActivitySubmit.objects.filter(activity=activity).latest('id')
-              print(activitysubmit.document)
+              
               self.fields['document'].choices =  [
                     (document.pk, document) for document in ActivityDocument.objects.filter(user=user, activity=activity, id__gt=activitysubmit.document.id)
                         ] 

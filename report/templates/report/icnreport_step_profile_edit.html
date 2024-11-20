@@ -34,7 +34,7 @@
                          <div class="form-group row">
                             <label class="col-form-label col-md-2 col-sm-2 label-align" for="{{ form.title.id_for_label }}">Title: <span class="required"></span>
                             </label>
-                            <div class="col-md-8 col-sm-8">
+                            <div class="col-md-8 col-sm-8 text-truncate">
                               {%  render_field form.title class+="form-control form-control-sm required" %}
                               <div class="invalid-feedback">{{ form.title.errors|first }}</div>
                               

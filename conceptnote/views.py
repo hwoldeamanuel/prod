@@ -348,19 +348,8 @@ def activity_delete(request, pk):
 def icn_submit_form(request, id, sid): 
     icn = get_object_or_404(Icn, pk=id)
     
-    if sid== 1 and  IcnSubmit.objects.filter(icn_id=icn.id).exists():
-        icnsubmit = IcnSubmit.objects.filter(icn_id=icn.id).latest('id')
-       
-        form = IcnSubmitForm(sid=sid, icn=icn, user=request.user,icnsubmit=icnsubmit.id )
-        
-    elif sid== 2 and  IcnSubmit.objects.filter(icn_id=icn.id).exists():
-        icnsubmit = IcnSubmit.objects.filter(icn_id=icn.id).latest('id')
-       
-        form = IcnSubmitForm(sid=sid, icn=icn, user=request.user,icnsubmit=icnsubmit.id )         
-    else:
-        form = IcnSubmitForm(user=request.user,icn=icn, sid=sid)
-       
-
+    form = IcnSubmitForm(user=request.user,icn=icn.id, sid=sid)
+    
     if request.method == "POST":
         form = IcnSubmitForm(request.POST, request.FILES)
         if form.is_valid():
@@ -740,8 +729,7 @@ def update_approval_status(id):
    
     approval_f = icnsubmitapproval_f.approval_status
     approval_f = int(approval_f)
-    approval_p = icnsubmitapproval_p.approval_status
-    approval_p = int(approval_p)
+    
     
     if approval_t == 4 or  approval_m== 4  or approval_f== 4:
         Icn.objects.filter(pk=icnsubmit.icn_id).update(approval_status="Rejected")
@@ -1502,9 +1490,9 @@ def update_activity_approval_status(id):
     
     if approval_t == 4 or approval_m== 4 or approval_f== 4:
         Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="Rejected")
-    elif approval_t == 2 or approval_m == 2 or approval_m == 2:
+    elif approval_t == 2 or approval_m == 2 or approval_f == 2:
         Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="Revision Required")
-    elif approval_t == 1 and approval_m == 1 and approval_m == 1:
+    elif approval_t == 1 and approval_m == 1 and approval_f == 1:
         Activity.objects.filter(pk=activitysubmit.activity_id).update(approval_status="Pending Approval")
     
     elif approval_t == 3 and approval_m ==3 and approval_f==3:
