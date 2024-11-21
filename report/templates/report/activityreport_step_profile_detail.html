@@ -31,12 +31,13 @@
                          
                          
                                                       
-                       <div class="col-md-9 col-sm-9 project_detail">
-                          
+                       <div class="col-md-9 col-sm-9 project_detail text-truncate">
+                           <p>Intervention Title:<strong> {{ activityreport.activity.icn.title }}</strong></p>
                           <p>Title:<strong> {{ activityreport.activity.title }}</strong></p>
                          
                          </div>
                          <div class="col-md-3 col-sm-3 project_detail">
+                           <p>ID:<strong> {{ activityreport.activity.icn.icn_number }}</strong> </p>
                         <p>ID:<strong> {{ activityreport.activity.acn_number }}</strong> </p>
                         
                           
@@ -45,7 +46,7 @@
 
                          
 
-                          <div class="col-md-4 col-sm-4 project_detail">
+                          <div class="col-md-4 col-sm-4 project_detail ">
 
                            <p>Lead Agency:<strong> {{ activityreport.activity.alead_agency }}</strong></p>
                               <p>Co-Lead Agency:  {% if activityreport.alead_co_agency.all|length > 0 %}
@@ -71,7 +72,7 @@
                           </div>
   <div class="col-md-4 col-sm-4 project_detail">
    Proposed Implementation Woredas:
-                     <strong>{{ activityreport.activity.aworeda.all|length }}</strong>
+                     {{ activityreport.activity.aworeda.all|length }}
   {% regroup activityreport.activity.aworeda.all  by region as region_list %}
                 <li>  
     {% for region in region_list %}

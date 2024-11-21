@@ -46,6 +46,8 @@ class ImplementationArea(models.Model):
     class Meta:
         unique_together = ('program', 'woreda')
         
+        ordering = ('-region',)
+        
     def __str__(self):
         return str(self.woreda)
     

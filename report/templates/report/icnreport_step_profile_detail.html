@@ -71,15 +71,14 @@
                           </div>
   <div class="col-md-4 col-sm-4 project_detail">
 
-  Proposed Implementation Woredas:
-                     {{ icn.iworeda.all|length }}
+  Proposed Implementation Woredas: {{ icnreport.icn.iworeda.all|length }}
   {% regroup icnreport.icn.iworeda.all  by region as region_list %}
            <li>        
     {% for region in region_list %}
-         {{ region.grouper }}
-            :
-            {% for woreda in region.list %}<i>
-            {% if not forloop.last%}
+         <strong>{{ region.grouper }}</strong>
+            :<i>
+            {% for woreda in region.list %}
+             {% if not forloop.last %}
                 {{ woreda }},
                 {% else %} {{ woreda }}{% endif %}
             {% endfor %}</i>
@@ -92,15 +91,15 @@
            <li>        
     {% for region in region_list %}
          <strong>{{ region.grouper }}</strong>
-            :
-            {% for woreda in region.list %}<i>
+            :<i>
+            {% for woreda in region.list %}
              {% if not forloop.last %}
                 {{ woreda }},
                 {% else %} {{ woreda }}{% endif %}
             {% endfor %}</i>
             
       
-    {% endfor %}  </li>  </p>
+    {% endfor %}  </li>  
 
             Proposed Total Budget: {{ icnreport.icn.mc_budget|add:icnreport.icn.cost_sharing_budget|floatformat:"2g"}}{{icnreport.icn.get_mc_currency_display }}
           
