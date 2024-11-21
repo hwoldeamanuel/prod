@@ -54,33 +54,38 @@
                       {{icn.proposed_start_date}}</strong></p>
                       <p class="">Proposed End Date:<strong>
                       {{icn.proposed_end_date}}</strong></p>
-                    <p class="">Duration:<strong>
+                    <p class="">Proposed Duration:<strong>
                       {{ icn.proposed_start_date|timesince:icn.proposed_end_date }}</strong></p>
                       <p>Final Report due date: <strong>  {{ icn.final_report_due_date}}</strong></p>
                             
                           </div>
   <div class="col-md-4 col-sm-4 project_detail">
-  Implementation Woredas: <strong>{{ icn.iworeda.all|length }}</strong>
+  Proposed Implementation Woredas: <strong>{{ icn.iworeda.all|length }}</strong>
   {% regroup icn.iworeda.all  by region as region_list %}
-                 
+        <li>            
     {% for region in region_list %}
-       <li>    <strong>{{ region.grouper }}</strong>
-            (
+        <strong>{{ region.grouper }}</strong>
+            :<i>
             {% for woreda in region.list %}
-                {{ woreda }},
-            {% endfor %}
-            )
-       </li>
-    {% endfor %} 
+            {% if not forloop.last %}
+            {{ woreda }},
+            {% else %}
+             {{ woreda }}
+             {% endif %}
+                            
+            {% endfor %}</i>
+            
+      
+    {% endfor %}  </li>
 
                               <p>Environmnetal Impact: {% if icn.eniromental_impact == '3' %}<strong>High</strong>{% elif icn.eniromental_impact == '2' %}<strong>Medium</strong>{% elif icn.eniromental_impact == '1' %}<strong>Low</strong>{% endif %}
                             &nbsp;  Attachment <i class="fa fa-paperclip"></i>:<strong>{% if icn.environmental_assessment_att %}<a href="{% url 'download_env_att' icn.id %}"> download </a> {% else %}NA{% endif%} </strong></p>
                         
 
-  
+   <p>Proposed Total budget:<strong> {{ icn.mc_budget|add:icn.cost_sharing_budget|floatformat:"2g"}}</strong>{{icn.get_mc_currency_display }}</p>
                               <p>Mercy Corps budget:<strong> {{ icn.mc_budget|floatformat:"2g" }}</strong>{{icn.get_mc_currency_display }}</p>
                               <p>Cost-share budget:<strong> {{ icn.cost_sharing_budget|floatformat:"2g"}}</strong>{{icn.get_cs_currency_display }}</p>
-                              <p>Total budget:<strong> {{ icn.mc_budget|add:icn.cost_sharing_budget|floatformat:"2g"}}</strong>{{icn.get_mc_currency_display }}</p>
+                             
  </div>
                          
                          
