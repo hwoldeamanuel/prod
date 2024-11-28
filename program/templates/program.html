@@ -2,6 +2,7 @@
 
 {% block content %}
 {% load static %}
+ 
  <!-- page content -->
  <div class="right_col" role="main">
  <div class="">
@@ -61,13 +62,14 @@
                       
                     <p class="title">Duration</p>
                      {{program.start_date}} -  {{program.end_date}}
-                  </br><small>{{ program.get_date_diff }}</small>
-
-                  <div class="progress progress_sm">
-                        <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="{{ program.get_date_diff }}"></div>
+                
+ 
+                  <div class="progress">
+                  <div class="progress-bar bg-green" style="width:{{ program.get_date_diff }}">
+                        {{ program.get_date_diff }}
                       
-                      </div>
-                  <p class="title">Desciption</p>
+                      </div></div>
+                  </br> <p class="title">Desciption</p>
                           <p>{{ program.description}}</p>
                     </div>
                   
@@ -79,7 +81,7 @@
                      
                           <div class="text-left mtop20">
                             <a class="btn btn-sm btn-success" hx-get="{% url 'edit_program_profile' program.id %}" hx-target="#dialog" ><i class="fa fa-edit m-right-xs"></i>Edit Profile</a>
-                      <br />
+                      <br /> 
                             
                           </div>
 
@@ -260,104 +262,82 @@
   {% endblock %}
 
   {% block content_page_js %}
-   <script>
+  {% load static %}
 
+<!-- NProgress -->
+<script src="{% static 'vendors/nprogress/nprogress.js' %}"></script>
+<script>
 
-var ctx = document.getElementById("canvas").getContext("2d");
-var myChart = new Chart(ctx, {
-    type: 'bar',
-    
-    
-     data: {
-        labels: [{% for cn in all_request %} "{{ cn.m|date:'M-Y' }}", {% endfor %}],
+    var MONTHS =  [{%  for m in all_request.created_at_month %} "{{ m|date:'M-Y' }}", {% endfor %}];
+
+    var randomScalingFactor = function() {
+      return Math.round(Math.random() * 100 * (Math.random() > 0.5 ? -1 : 1));
+    };
+    var randomColorFactor = function() {
+      return Math.round(Math.random() * 255);
+    };
+    var randomColor = function(opacity) {
+      return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',' + (opacity || '1') + ')';
+    };
+
+    var config = {
+      type: 'line',
+      data: {
+        labels: [{%  for m in all_request.created_at_month %} "{{ m|date:'M-Y' }}", {% endfor %}],
         datasets: [{
-          label: "Intervention",
-          data: [{% for cn in all_request %} {{ cn.icn_count }}, {% endfor %}],
-           backgroundColor: "rgba(79, 153, 185, 1)",
-                
-            
-            borderColor: "rgba(38, 185, 154, 1)",
-                
-            
-            borderWidth: 1
-        },
-        {
-          label: "Activity",
-          data: [{% for cn in all_request %} {{ cn.activity_count }}, {% endfor %}],
-           backgroundColor:  "rgba(73, 106, 159, 1)",
-                
-                       borderColor: "rgba(73, 106, 159, 1)",
-                
-            
-            borderWidth: 1
-        }, 
-        ]
+          label: "# of Intervention",
+          data: [{% for cn in all_request.icn_count %} {{ cn }}, {% endfor %}],
+        }, {
+          label: "# of Activity",
+          data: [{% for cn in all_request.acn_count %} {{ cn }}, {% endfor %}],
+        }]
       },
-    options: {
-             
-         
-                    title:{
-                        display:false,
-                        text:'Chart.js Bar Chart - Skip Points'
-                    },
-                    tooltips: {
-                        mode: 'label',
-                    },
-                    hover: {
-                        mode: 'label'
-                    },
-            scales: {
-               
-            yAxes: [{
+      options: {
+        responsive: true,
+       
+        title:{
+          display:false,
+          text:"Intervention and Activity Concept Note - Trend"
+        },
+       
+        tooltips: {
+          mode: 'label',
+        },
+        hover: {
+          mode: 'label'
+        },
+        scales: {
+          xAxes: [{
             scaleLabel: {
-                            display: false,
-                            labelString: '# conceptnote'
-                        },
-                ticks: {
-                    beginAtZero:true
-                }
-            }],
-     
-                xAxes: [{
-                        display: true,
-                        scaleLabel: {
-                            display: false,
-                            labelString: 'Month'
-                        }
-                    }],
+              display: false,
+              labelString: 'Month'
             }
-    },
-  
+          }],
+          yAxes: [{
+            stacked: true,
+            scaleLabel: {
+              display: false,
+              labelString: 'Value'
+            }
+          }]
+        }
+      }
+    };
+      $.each(config.data.datasets, function(i, dataset) {
+      var color = randomColor(1);
+      dataset.borderColor = color;
+      dataset.backgroundColor = color;
+      dataset.pointBorderColor = color;
+      dataset.pointBackgroundColor = color;
+      dataset.pointBorderWidth = 1;
+    });
 
-});
+    window.onload = function() {
+      var ctx = document.getElementById("canvas").getContext("2d");
+      window.myLine = new Chart(ctx, config);
+    };
 
-  window.onload = function() {
-   var ctx = document.getElementById("canvas").getContext("2d");
-var myChart = new Chart(ctx, {
-    type: 'bar',
     
-    
-     data:data,
-          options: {
-              // Elements options apply to all of the options unless overridden in a dataset
-              // In this case, we are setting the border of each bar to be 2px wide and green
-              elements: {
-                  rectangle: {
-                      borderWidth: 2,
-                      borderColor: 'rgb(0, 255, 0)',
-                      borderSkipped: 'bottom'
-                  }
-              },
-              responsive: true,
-              legend: {
-                  position: 'top',
-              },
-              title: {
-                  display: true,
-                  text: 'Chart.js Bar Chart'
-              }
-          }
-      });
-     };
 </script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   {% endblock %}

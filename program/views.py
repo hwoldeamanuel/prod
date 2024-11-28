@@ -6,7 +6,7 @@ from django.db.models import F
 from django.db.models import Count
 from django.shortcuts import render, redirect
 from django.http import QueryDict
-
+import pandas as pd
 from django.contrib.auth.decorators import login_required
 from portfolio.models import Portfolio
 from django.shortcuts import get_object_or_404
@@ -62,20 +62,26 @@ def program_add(request):
 @login_required(login_url='login')
 def program_detail(request, pk):
     program = Program.objects.filter(pk=pk)
-    qs1 = Icn.objects.filter(program_id = pk).annotate(m=TruncMonth('created')).values("m").annotate(icn_count=Count('id', distinct=True))
-    qs2 = Activity.objects.filter(icn__program_id = pk).annotate(m=TruncMonth('created')).values("m").annotate(activity_count=Count('id', distinct=True))
+    x = Icn.objects.filter(program = pk).annotate(created_at_month=TruncMonth('created')).values('created_at_month').annotate(icn_count=Count('id')).order_by('created_at_month')
+    y = Activity.objects.filter(icn__program = pk).annotate(created_at_month=TruncMonth('created')).values('created_at_month').annotate(acn_count=Count('id')).order_by('created_at_month')
+  
+    #pia = ImplementationArea.objects.filter(program__in=program).values_list('region').distinct('region')
+    
+    #print(pia
+    ydf = pd.DataFrame.from_dict(y)
+    xdf = pd.DataFrame.from_dict(x)
+    all_request = xdf.merge(ydf, how='outer')
+    all_request['acn_count'] = all_request['acn_count'].fillna(0)
+
+    all_request['acn_count'] = all_request['acn_count'].astype(int)
+
+    #all_request = all_request1.to_dict('list')
  
     total_icn  =  Icn.objects.filter(program_id = pk).count
     total_acn  =  Activity.objects.filter(icn__program_id = pk).count
     total_report = IcnReport.objects.filter(Q(activityreport__activity__icn__program__in=program), Q(icn__program__in=program)).count 
    
    
-    collector = defaultdict(dict)
-
-    for collectible in chain(qs1, qs2):
-        collector[collectible['m']].update(collectible.items())
-
-    all_request = list(collector.values())
    
     qsi = Icn.objects.filter(program_id = pk).only("title", "id","user","program_lead","technical_lead","finance_lead","status","approval_status","created","final_report_due_date","icnreport__approval_status").annotate(report = F('icnreport__approval_status'))
     qsa = Activity.objects.filter(icn__program_id = pk).only("title", "id", "user","program_lead","technical_lead","finance_lead","status","approval_status","created","final_report_due_date", "activityreport__approval_status").annotate(report = F('activityreport__approval_status'))
