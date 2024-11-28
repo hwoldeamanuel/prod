@@ -68,12 +68,18 @@ def program_detail(request, pk):
     #pia = ImplementationArea.objects.filter(program__in=program).values_list('region').distinct('region')
     
     #print(pia
+    
     ydf = pd.DataFrame.from_dict(y)
     xdf = pd.DataFrame.from_dict(x)
-    all_request = xdf.merge(ydf, how='outer')
-    all_request['acn_count'] = all_request['acn_count'].fillna(0)
+    if not ydf.empty and not xdf.empty:
+        all_request = xdf.merge(ydf, how='outer')
+        all_request['acn_count'] = all_request['acn_count'].fillna(0)
 
-    all_request['acn_count'] = all_request['acn_count'].astype(int)
+        all_request['acn_count'] = all_request['acn_count'].astype(int)
+    else:
+        all_request = xdf
+    
+   
 
     #all_request = all_request1.to_dict('list')
  
