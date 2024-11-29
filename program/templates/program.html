@@ -143,12 +143,12 @@
                       <table class="table table-sm table-striped projects">
     <thead>
       <tr>
-       <th>Program </th>
-        <th>Type</th>
+     
+        <th style="width:15%">Concept Note</th>
   <th>Title</th>
         
-        <th >Concept Note</th>
-        <th>CN Report</th>
+        <th >Status<small>(Concept N.)</small></th>
+        <th>Status<small>(Report)</small></th>
       
        
       </tr>
@@ -157,7 +157,7 @@
     {% if conceptnotes %}   
      {% for cn in conceptnotes %}
      <tr>
-        <td>{% if cn.get_name == "Activity" %}{{ cn.icn.program }} {% else %} {{cn.program}}{% endif %}</td>
+        
       
        <td>{{ cn.get_name }}</td>
        <td>{% if cn.get_name == "Intervention" %} <a href="{% url 'icn_detail' cn.id %}">{{ cn.title }}{% elif cn.get_name == "Activity" %}<a href="{% url 'activity_detail' cn.id %}">{{cn.title}} {% endif %} </a></td>
@@ -265,10 +265,11 @@
   {% load static %}
 
 <!-- NProgress -->
-<script src="{% static 'vendors/nprogress/nprogress.js' %}"></script>
+
 <script>
 
-    var MONTHS =  [{%  for m in all_request.created_at_month %} "{{ m|date:'M-Y' }}", {% endfor %}];
+    var MONTHS =   [{%  for m in all_request.created_at_month %} "{{ m|date:'M-Y' }}", {% endfor %}];
+   
 
     var randomScalingFactor = function() {
       return Math.round(Math.random() * 100 * (Math.random() > 0.5 ? -1 : 1));
@@ -279,27 +280,39 @@
     var randomColor = function(opacity) {
       return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',' + (opacity || '1') + ')';
     };
-
-    var config = {
+ 
+    var ctx = document.getElementById("canvas").getContext("2d");
+    var myChart = new Chart(ctx, {
       type: 'line',
       data: {
         labels: [{%  for m in all_request.created_at_month %} "{{ m|date:'M-Y' }}", {% endfor %}],
+
         datasets: [{
-          label: "# of Intervention",
+          label: "Intervention",
           data: [{% for cn in all_request.icn_count %} {{ cn }}, {% endfor %}],
-        }, {
-          label: "# of Activity",
-          data: [{% for cn in all_request.acn_count %} {{ cn }}, {% endfor %}],
-        }]
+          borderColor:'rgba(51, 137, 173, .6)',
+          backgroundColor:'rgba(51, 137, 173, .6)',
+          pointBorderColor :'rgba(51, 137, 173, .4)',
+          pointBackgroundColor : 'rgba(51, 137, 173, .4)',
+          pointBorderWidth : .5,
+
+        },  {
+          label: "Activity",
+         data: [{% for cn in all_request.icn_count %} {{ cn }}, {% endfor %}],
+         borderColor:'rgba(51, 137, 173, .6)',
+         backgroundColor:'rgba(51, 137, 173, .4)',
+         pointBorderColor :'rgba(51, 137, 173, .4)',
+         pointBackgroundColor : 'rgba(51, 137, 173, .4)',
+         pointBorderWidth : .5,
+
+        },]
       },
       options: {
         responsive: true,
-       
         title:{
           display:false,
-          text:"Intervention and Activity Concept Note - Trend"
+          text:"Chart.js Line Chart - Stacked Area"
         },
-       
         tooltips: {
           mode: 'label',
         },
@@ -316,28 +329,23 @@
           yAxes: [{
             stacked: true,
             scaleLabel: {
-              display: false,
-              labelString: 'Value'
+              display: true,
+              labelString: '# of conceptnote'
             }
           }]
         }
       }
-    };
-      $.each(config.data.datasets, function(i, dataset) {
-      var color = randomColor(1);
-      dataset.borderColor = color;
-      dataset.backgroundColor = color;
-      dataset.pointBorderColor = color;
-      dataset.pointBackgroundColor = color;
-      dataset.pointBorderWidth = 1;
     });
+      
 
-    window.onload = function() {
-      var ctx = document.getElementById("canvas").getContext("2d");
-      window.myLine = new Chart(ctx, config);
-    };
+   
 
-    
+  
+
+
+      
+
 </script>
+    
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   {% endblock %}

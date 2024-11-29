@@ -12,13 +12,23 @@
                           </button>
 </div>
 <div class="modal-body">
-        <div class="form-group row">
+ <div class="form-group row">
            
                 <label class="col-form-label col-md-2 col-sm-2 label-align">Title:</label>
                    <div class="col-8 col-sm-8">
                     {% render_field form.title class="form-control form-control-sm"  %}
               
                 <div class="invalid-feedback">{{ form.title.errors|first }}</div>
+        </div>
+        </div>
+    
+        <div class="form-group row">
+           
+                <label class="col-form-label col-md-2 col-sm-2 label-align">Title (Short):</label>
+                   <div class="col-8 col-sm-8">
+                    {% render_field form.title_short class="form-control form-control-sm"  %}
+              
+                <div class="invalid-feedback">{{ form.title_short.errors|first }}</div>
         </div>
         </div>
     
@@ -39,7 +49,7 @@
         
         <div class="form-group row">
            
-                <label class="col-form-label col-md-2 col-sm-2 label-align">Start Date:</label>
+                <label class="col-form-label col-md-2 col-sm-2 label-align">S.Date<small><i>(Partnership)</i></small>:</label>
                    <div class="col-3 col-sm-3">
                     {% render_field form.start_date class="form-control form-control-sm"  %}
               

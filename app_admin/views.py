@@ -187,8 +187,8 @@ def admin_boundary(request):
 
 @login_required(login_url='login') 
 def project_type(request):
-    type = Portfolio_Type.objects.all().order_by('-id')
-    category = Portfolio_Category.objects.all().order_by('-id')
+    type = Portfolio_Type.objects.all().order_by('id')
+    category = Portfolio_Category.objects.all().order_by('id')
    
     
     context = {'type': type, 'category': category }
@@ -513,9 +513,10 @@ def add_zone(request):
   
 def type_list(request):
     
-    type = Portfolio_Category.objects.all().order_by('id')
+    type = Portfolio_Category.objects.all().order_by('type_id')
+    type2 = Portfolio_Type.objects.exclude(pk__in=[x.type.pk for x in Portfolio_Category.objects.all()])
     
-    context = {'type':type}
+    context = {'type':type, 'type2':type2}
     return render(request, 'partial/type_list.html', context)
 
   

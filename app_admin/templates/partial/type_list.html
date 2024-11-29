@@ -31,6 +31,27 @@
                     </td>
                   </tr>
                   {% endfor %}
+                  {% if type2 %}
+                   {% for type2 in type2 %}
+                  <tr>
+                    <td>{{forloop.counter|add:type.count }}</td>
+                    <td>{{ type2.id }}</td>
                   
+                    <td> {{ type2.name }}</td>
+                    <td></td>
+                  
+                    <td> </td>
+                    
+                      
+                  
+                    <td>
+                         
+
+                    <button class="btn btn-info btn-sm" hx-get="{% url 'edit_type' type2.id %}" hx-target="#dialog"><i class="fa fa-edit"></i></button>
+
+                    </td>
+                  </tr>
+                  {% endfor %}
+                  {% endif %}
                 </tbody>
               </table>

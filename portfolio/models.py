@@ -7,7 +7,7 @@ from app_admin.models import Portfolio_Type, Portfolio_Category, Region, Zone, W
 class Portfolio(models.Model):  
    
     title = models.CharField(max_length=250)
-    
+    title_short = models.CharField( max_length=100)
     type =  models.ForeignKey(Portfolio_Type, on_delete=models.CASCADE)
     category =  models.ForeignKey(Portfolio_Category, on_delete=models.CASCADE)
     start_date = models.DateField(null=True, blank=True)
@@ -16,7 +16,7 @@ class Portfolio(models.Model):
     address_url = models.URLField(max_length = 200, null=True, blank=True) 
     
     def __str__(self):
-        return self.title
+        return self.title_short
 
 
 class FieldOffice(models.Model):
