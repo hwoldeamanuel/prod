@@ -3,7 +3,7 @@
                   <tr class="text-center" >
                     <th style="width: 1%">#</th>
                     
-                    <th style="width: 35%" class="text-left">Partner Full Name<small><i>(Address/URL)</i></small></th>
+                    <th style="width: 35%" class="text-left">Partners' Name<small><i> (Address/URL)</i></small></th>
                     <th style="width: 23%" class="text-left">Type</th>
                     <th style="width: 16%" class="text-left">Category</th>
                     <th style="width: 13%">S.Date<small><i>(Partnership)</i></small></th>
@@ -18,7 +18,8 @@
                     <td>{{forloop.counter}}</td>
                     
                   
-                    <td> {{ portfolio.title }}</br>
+                    <td> {{ portfolio.title_short }}</br>
+                    <small>{{portfolio.title}}</small></br>
                     <small><a href="{{ portfolio.address_url }}" target="_blank">{{ portfolio.address_url }}</a>
                     </small>
                     </td>

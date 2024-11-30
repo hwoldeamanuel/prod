@@ -35,12 +35,13 @@
                           
                           <p class="title">Start Date<small><i>(Partnership)</i></small></p>
                             <p>{{portfolio.start_date}}</p>
-                          <p class="title">Address</p>
+                          <p class="title">Address/URL</p>
                             <a href="{{ portfolio.address_url }}" target="_blank">{{ portfolio.address_url }}</a>
-                          </div>
-                          <br />
-                         </div>
- <p>{{portfolio.description}}</p>
+                          
+                          </p>
+                        
+                          <p class="title">Desciption</p>
+ <p>{{portfolio.description}}</p></div> </div>
                           <div class="text-left mtop20">
                          
                             <a class="btn btn-success" hx-get="{% url 'edit_portfolio' portfolio.id %}" hx-target = "#dialog"><i class="fa fa-edit m-right-xs"></i>Edit Profile</a>

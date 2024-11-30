@@ -19,6 +19,16 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields =  ("username","email",)
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get('email')
+
+        if User.objects.filter(email=email).exists():
+            msg = 'A user with that email already exists.'
+            self.add_error('email', msg)           
+    
+        return self.cleaned_data
 
 
 
@@ -45,7 +55,14 @@ class UserForm(forms.ModelForm):
         if user:
             self.fields['reports_to'].queryset = User.objects.all().exclude(id=user.id)
             self.fields['reports_to'].initial=User.objects.all().exclude(id=user.id).first()
-    
+        
+        
+        self.fields['first_name'].required = True 
+        self.fields['last_name'].required = True
+        self.fields['portfolio'].required = True
+        self.fields['contact_number'].required = True
+        self.fields['job_title'].required = True
+        
         
     
     class Meta:

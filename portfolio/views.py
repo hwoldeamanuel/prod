@@ -28,6 +28,7 @@ from django.db.models.functions import TruncMonth
 from django.db.models import Q
 from collections import defaultdict
 from django.contrib.auth.decorators import permission_required
+import pandas as pd
 
 def convertmonth(created):
     #template = '%(function)s(MONTH from %(expressions)s)'
@@ -45,9 +46,30 @@ def portfolios(request):
 def mercycorps(request):
     portfolio = Portfolio.objects.filter(id=1)
    
-        
+    x = Icn.objects.filter(Q(ilead_agency__in=portfolio) | Q(ilead_co_agency__in=portfolio)).annotate(created_at_month=TruncMonth('created')).values('created_at_month').annotate(icn_count=Count('id')).order_by('created_at_month')
+    y = Activity.objects.filter(Q(alead_agency__in=portfolio) | Q(alead_co_agency__in=portfolio)).annotate(created_at_month=TruncMonth('created')).values('created_at_month').annotate(acn_count=Count('id')).order_by('created_at_month')
+  
+    #pia = ImplementationArea.objects.filter(program__in=program).values_list('region').distinct('region')
+    
+    #print(pia
+    ydf = pd.DataFrame.from_dict(y)
+    xdf = pd.DataFrame.from_dict(x)
+    if not ydf.empty and not xdf.empty:
+        all_request = xdf.merge(ydf, how='outer')
+        all_request['acn_count'] = all_request['acn_count'].fillna(0)
+        all_request['acn_count'] = all_request['acn_count'].astype(int)
+        all_request['icn_count'] = all_request['icn_count'].fillna(0)
+        all_request['icn_count'] = all_request['icn_count'].astype(int)
 
-    all_request =  Icn.objects.filter(Q(ilead_agency__in=portfolio) | Q(ilead_co_agency__in=portfolio)).annotate(m=TruncMonth('created')).values("m").annotate(icn_count=Count('id', distinct=True)).annotate(activity_count=Count('activity', distinct=True))
+    elif ydf.empty and not xdf.empty:
+        all_request = xdf
+        all_request['icn_count'] = all_request['icn_count'].fillna(0)
+        all_request['icn_count'] = all_request['icn_count'].astype(int)
+
+    elif ydf.empty and xdf.empty:
+        all_request = pd.DataFrame(columns=['created_at_month', 'icn_count', 'acn_count'])
+
+    #all_request =  Icn.objects.filter(Q(ilead_agency__in=portfolio) | Q(ilead_co_agency__in=portfolio)).annotate(m=TruncMonth('created')).values("m").annotate(icn_count=Count('id', distinct=True)).annotate(activity_count=Count('activity', distinct=True))
     
     portfolio = Portfolio.objects.get(id=1)
     total_icn  =  Icn.objects.filter(Q(ilead_agency=portfolio.id) | Q(ilead_co_agency=portfolio.id)).count
@@ -163,18 +185,32 @@ def categories(request):
 @login_required(login_url='login')
 def portfolio_detail(request, pk):
     portfolio = Portfolio.objects.filter(id=pk)
-    qs1 = Icn.objects.filter(Q(ilead_agency__in=portfolio) | Q(ilead_co_agency__in=portfolio)).annotate(m=TruncMonth('created')).values("m").annotate(icn_count=Count('id', distinct=True))
-    qs2 = Activity.objects.filter(Q(alead_agency__in=portfolio) | Q(alead_co_agency__in=portfolio)).annotate(m=TruncMonth('created')).values("m").annotate(activity_count=Count('id', distinct=True))
- 
+    x = Icn.objects.filter(Q(ilead_agency__in=portfolio) | Q(ilead_co_agency__in=portfolio)).annotate(created_at_month=TruncMonth('created')).values('created_at_month').annotate(icn_count=Count('id')).order_by('created_at_month')
+    y = Activity.objects.filter(Q(alead_agency__in=portfolio) | Q(alead_co_agency__in=portfolio)).annotate(created_at_month=TruncMonth('created')).values('created_at_month').annotate(acn_count=Count('id')).order_by('created_at_month')
+  
+    #pia = ImplementationArea.objects.filter(program__in=program).values_list('region').distinct('region')
+    
+    #print(pia
+    ydf = pd.DataFrame.from_dict(y)
+    xdf = pd.DataFrame.from_dict(x)
+    if not ydf.empty and not xdf.empty:
+        all_request = xdf.merge(ydf, how='outer')
+        all_request['acn_count'] = all_request['acn_count'].fillna(0)
+        all_request['acn_count'] = all_request['acn_count'].astype(int)
+        all_request['icn_count'] = all_request['icn_count'].fillna(0)
+        all_request['icn_count'] = all_request['icn_count'].astype(int)
 
+    elif ydf.empty and not xdf.empty:
+        all_request = xdf
+        all_request['icn_count'] = all_request['icn_count'].fillna(0)
+        all_request['icn_count'] = all_request['icn_count'].astype(int)
 
+    elif ydf.empty and xdf.empty:
+        all_request = pd.DataFrame(columns=['created_at_month', 'icn_count', 'acn_count'])
+        
+    
+        
 
-    collector = defaultdict(dict)
-
-    for collectible in chain(qs1, qs2):
-        collector[collectible['m']].update(collectible.items())
-
-    all_request = list(collector.values())
     portfolio = Portfolio.objects.get(id=pk)
     total_icn  =  Icn.objects.filter(Q(ilead_agency=portfolio.id) | Q(ilead_co_agency=portfolio.id)).count
     total_acn  =  Activity.objects.filter(Q(alead_agency=portfolio.id) | Q(alead_co_agency=portfolio.id)).count

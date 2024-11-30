@@ -35,13 +35,14 @@ from itertools import chain
 from django import template
 from easyaudit.models import RequestEvent, CRUDEvent, LoginEvent
 from conceptnote.models import Icn, Activity
+from app_admin.models import Woreda
 
 
 @login_required(login_url='login')
 def home(request):
   total_program  =  Program.objects.count
   total_portfolio  =  Portfolio.objects.count
-  total_user  =  User.objects.count
+  total_user  =  User.objects.filter(is_active=True).count
   total_icn = Icn.objects.count
   total_activity = Activity.objects.count
   total_cn=0
@@ -51,7 +52,7 @@ def home(request):
   for program in program_cn:
      total_cn = program.num_cn + total_cn
 
-  total_woreda = ImplementationArea.objects.count
+  total_woreda =  ImplementationArea.objects.values('woreda_id').distinct().count()
   icn_status =  Icn.objects.values('approval_status').annotate(icn_count=Count('id', distinct=True))
   acn_status = Activity.objects.values('approval_status').annotate(acn_count=Count('id', distinct=True))
   icn_report_status =  IcnReport.objects.values('approval_status').annotate(icn_count=Count('id', distinct=True))
@@ -66,7 +67,7 @@ def home(request):
 def dashboard(request):
   total_program  =  Program.objects.count
   total_portfolio  =  Portfolio.objects.count
-  total_user  =  User.objects.count
+  total_user  =  User.objects.filter(is_active=True).count
   total_icn = Icn.objects.count
   total_cn=0
   total_activity = Activity.objects.count
@@ -76,7 +77,7 @@ def dashboard(request):
      total_cn = program.num_cn + total_cn
 
 
-  total_woreda = ImplementationArea.objects.count
+  total_woreda =ImplementationArea.objects.values('woreda_id').distinct().count()
   icn_status =  Icn.objects.values('approval_status').annotate(icn_count=Count('id', distinct=True))
   acn_status = Activity.objects.values('approval_status').annotate(acn_count=Count('id', distinct=True))
   icn_report_status =  IcnReport.objects.values('approval_status').annotate(icn_count=Count('id', distinct=True))

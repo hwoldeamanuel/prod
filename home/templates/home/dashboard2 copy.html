@@ -84,7 +84,7 @@
             <div class="col-md-4 col-sm-4 ">
               <div class="x_panel tile fixed_height_320">
                 <div class="x_title">
-                  <h2>Top Concept None</h2>
+                  <h2>Top Program Users</h2>
                   <ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                     </li>
@@ -102,12 +102,12 @@
                 </div>
                 <div class="x_content">
                  
-                     {% for program in program_cn %}
+                     {% for program in program_users %}
                     <div>
-                    <p>{{program.title}} - {% widthratio program.num_cn total_cn 100 %}%</p>
+                    <p>{{program.title}} - {% widthratio program.num_user total_user 100 %}%</p>
                       <div class="">
                         <div class="progress progress_sm" style="width: 76%;">
-                          <div class="progress-bar bg-blue" role="progressbar" data-transitiongoal="{% widthratio program.num_cn total_cn 100 %}"></div>
+                          <div class="progress-bar bg-blue" role="progressbar" data-transitiongoal="{% widthratio program.num_user total_user 100 %}"></div>
                         </div>
                       </div>
                     </div>

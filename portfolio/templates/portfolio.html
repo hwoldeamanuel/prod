@@ -119,104 +119,77 @@
 
 {% endblock%}
 {% block content_page_js %}
-   <script>
+<script>
 
 
-var ctx = document.getElementById("canvas").getContext("2d");
-var myChart = new Chart(ctx, {
-    type: 'bar',
-    
-    
-     data: {
-        labels: [{% for cn in all_request %} "{{ cn.m|date:'M-Y' }}", {% endfor %}],
+    var MONTHS =   [{%  for m in all_request.created_at_month %} "{{ m|date:'M-Y' }}", {% endfor %}];
+   
+
+    var randomScalingFactor = function() {
+      return Math.round(Math.random() * 100 * (Math.random() > 0.5 ? -1 : 1));
+    };
+    var randomColorFactor = function() {
+      return Math.round(Math.random() * 255);
+    };
+    var randomColor = function(opacity) {
+      return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',' + (opacity || '1') + ')';
+    };
+ 
+    var ctx = document.getElementById("canvas").getContext("2d");
+    var myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [{%  for m in all_request.created_at_month %} "{{ m|date:'M-Y' }}", {% endfor %}],
+
         datasets: [{
           label: "Intervention",
-          data: [{% for cn in all_request %} {{ cn.icn_count }}, {% endfor %}],
-           backgroundColor: "rgba(79, 153, 185, 1)",
-                
-            
-            borderColor: "rgba(38, 185, 154, 1)",
-                
-            
-            borderWidth: 1
-        },
-        {
+          data: [{% for cn in all_request.icn_count %} {{ cn }}, {% endfor %}],
+          borderColor:'rgba(51, 137, 173, .6)',
+          backgroundColor:'rgba(51, 137, 173, .6)',
+          pointBorderColor :'rgba(51, 137, 173, .4)',
+          pointBackgroundColor : 'rgba(51, 137, 173, .4)',
+          pointBorderWidth : .5,
+
+        },  {
           label: "Activity",
-          data: [{% for cn in all_request %} {{ cn.activity_count }}, {% endfor %}],
-           backgroundColor:  "rgba(73, 106, 159, 1)",
-                
-                       borderColor: "rgba(35, 57, 93, 1)",
-                
-            
-            borderWidth: 1
-        }, 
-        ]
+         data: [{% for cn in all_request.icn_count %} {{ cn }}, {% endfor %}],
+         borderColor:'rgba(51, 137, 173, .6)',
+         backgroundColor:'rgba(51, 137, 173, .4)',
+         pointBorderColor :'rgba(51, 137, 173, .4)',
+         pointBackgroundColor : 'rgba(51, 137, 173, .4)',
+         pointBorderWidth : .5,
+
+        },]
       },
-    options: {
-             
-         
-                    title:{
-                        display:false,
-                        text:'Chart.js Bar Chart - Skip Points'
-                    },
-                    tooltips: {
-                        mode: 'label',
-                    },
-                    hover: {
-                        mode: 'label'
-                    },
-            scales: {
-               
-            yAxes: [{
+      options: {
+        responsive: true,
+        title:{
+          display:false,
+          text:"Chart.js Line Chart - Stacked Area"
+        },
+        tooltips: {
+          mode: 'label',
+        },
+        hover: {
+          mode: 'label'
+        },
+        scales: {
+          xAxes: [{
             scaleLabel: {
-                            display: false,
-                            labelString: '# conceptnote'
-                        },
-                ticks: {
-                    beginAtZero:true
-                }
-            }],
-     
-                xAxes: [{
-                        display: true,
-                        scaleLabel: {
-                            display: false,
-                            labelString: 'Month'
-                        }
-                    }],
+              display: false,
+              labelString: 'Month'
             }
-    },
-  
-
-});
-
-  window.onload = function() {
-   var ctx = document.getElementById("canvas").getContext("2d");
-var myChart = new Chart(ctx, {
-    type: 'bar',
+          }],
+          yAxes: [{
+            stacked: true,
+            scaleLabel: {
+              display: true,
+              labelString: '# of conceptnote'
+            }
+          }]
+        }
+      }
+    });
     
-    
-     data:data,
-          options: {
-              // Elements options apply to all of the options unless overridden in a dataset
-              // In this case, we are setting the border of each bar to be 2px wide and green
-              elements: {
-                  rectangle: {
-                      borderWidth: 2,
-                      borderColor: 'rgb(0, 255, 0)',
-                      borderSkipped: 'bottom'
-                  }
-              },
-              responsive: true,
-              legend: {
-                  position: 'top',
-              },
-              title: {
-                  display: false,
-                  text: 'Chart.js Bar Chart'
-              }
-          }
-      });
-     };
 </script>
   {% endblock %}

@@ -36,7 +36,13 @@ class PortfolioForm(forms.ModelForm):
        
         
         self.fields['description'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'placeholder':'description'   }    )    
-     
+        myfield = ['title_short',
+            'title','type',    
+            'category',     
+
+            ]
+        for field in myfield:
+            self.fields[field].required = True 
     class Meta:
             model = Portfolio
             fields = "__all__"

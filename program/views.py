@@ -74,10 +74,17 @@ def program_detail(request, pk):
     if not ydf.empty and not xdf.empty:
         all_request = xdf.merge(ydf, how='outer')
         all_request['acn_count'] = all_request['acn_count'].fillna(0)
-
         all_request['acn_count'] = all_request['acn_count'].astype(int)
-    else:
+        all_request['icn_count'] = all_request['icn_count'].fillna(0)
+        all_request['icn_count'] = all_request['icn_count'].astype(int)
+
+    elif ydf.empty and not xdf.empty:
         all_request = xdf
+        all_request['icn_count'] = all_request['icn_count'].fillna(0)
+        all_request['icn_count'] = all_request['icn_count'].astype(int)
+
+    elif ydf.empty and xdf.empty:
+        all_request = pd.DataFrame(columns=['created_at_month', 'icn_count', 'acn_count'])
     
    
 
@@ -85,6 +92,8 @@ def program_detail(request, pk):
  
     total_icn  =  Icn.objects.filter(program_id = pk).count
     total_acn  =  Activity.objects.filter(icn__program_id = pk).count
+    total_icn_app  =  Icn.objects.filter(program_id = pk, approval_status='100% Approved').count
+    total_acn_app  =  Activity.objects.filter(icn__program_id = pk,approval_status='100% Approved').count
     total_report = IcnReport.objects.filter(Q(activityreport__activity__icn__program__in=program), Q(icn__program__in=program)).count 
    
    
@@ -103,7 +112,7 @@ def program_detail(request, pk):
   
     program = Program.objects.get(pk=pk)
     
-    context = {'program':program, 'all_request':all_request, 'total_report':total_report,  'total_icn':total_icn, 'total_acn':total_acn, 'conceptnotes': conceptnotes  }
+    context = {'program':program, 'all_request':all_request, 'total_report':total_report,  'total_icn':total_icn, 'total_acn':total_acn, 'total_icn_app':total_icn_app, 'total_acn_app':total_acn_app,'conceptnotes': conceptnotes  }
     return render(request, 'program.html', context)
 
 

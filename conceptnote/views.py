@@ -871,9 +871,9 @@ def icn_submit_form_partial(request, id):
     icn = get_object_or_404(Icn, pk=id)
     if IcnSubmit.objects.filter(icn_id=icn.id).exists():
     
-        icnsubmit = IcnSubmit.objects.filter(icn_id=icn.id).latest('id')
+        
     
-        form = IcnSubmitForm(user=request.user,icn=icn,icnsubmit=icnsubmit.id, sid=2)
+        form = IcnSubmitForm(user=request.user,icn=icn, sid=2)
     else:
         form = IcnSubmitForm(user=request.user,icn=icn,sid=2)
         

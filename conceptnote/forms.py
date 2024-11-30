@@ -14,6 +14,7 @@ from portfolio.models import Portfolio
 from django.forms import inlineformset_factory
 from django.db.models import Max
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 
 
 
@@ -53,7 +54,9 @@ class IcnForm(forms.ModelForm):
             self.fields['finance_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_finance_approver=True).exclude(user=user).first()
             self.fields['program_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True, approval_budget_min_usd__isnull=False, approval_budget_max_usd__isnull=False).exclude(user=user)
             self.fields['program_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True, approval_budget_min_usd__isnull=False, approval_budget_max_usd__isnull=False).exclude(user=user).first()
-
+            self.fields['ilead_agency'].queryset = Portfolio.objects.filter(id=user.profile.portfolio_id).order_by('id')
+            self.fields['ilead_co_agency'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
+            self.fields['ilead_co_agency'].queryset = Portfolio.objects.exclude(Q(id=user.profile.portfolio_id)).order_by('id')
 
         myfield = ['title',
             'program',
@@ -124,8 +127,8 @@ class IcnForm(forms.ModelForm):
             )
         self.fields['description'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-contro-sm', 'rows':'3', 'required':'required'  }    )
         self.fields['eniromental_impact'].widget = forms.widgets.Select(choices = CHOICE1,attrs={'type': 'choice', 'class': 'form-control form-control-sm', 'rows':'1', 'placeholder':''   }    )
-        self.fields['ilead_co_agency'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
-        self.fields['ilead_co_agency'].queryset = Portfolio.objects.all()
+        
+        
 
        
        
@@ -184,6 +187,9 @@ class IcnForm(forms.ModelForm):
          mc_budget = self.cleaned_data.get('mc_budget')
          mc_currency = self.cleaned_data.get('mc_currency')
          cs_currency = self.cleaned_data.get('cs_currency')
+         ilead_co_agency = self.cleaned_data.get('ilead_co_agency')
+         cost_sharing_budget = self.cleaned_data.get('cost_sharing_budget')
+       
          if mc_currency == 2:
             mc_budget = mc_budget/120
     
@@ -197,8 +203,7 @@ class IcnForm(forms.ModelForm):
          budget_limit_min = budget_limit_min.approval_budget_min_usd
          budget_limit_max = budget_limit_max.approval_budget_max_usd
 
-         ilead_co_agency = self.cleaned_data.get('ilead_co_agency')
-         cost_sharing_budget = self.cleaned_data.get('cost_sharing_budget')
+         
         
          if program_lead not in UserRoles.objects.filter(program=program) or technical_lead not in UserRoles.objects.filter(program=program) or finance_lead not in UserRoles.objects.filter(program=program):
                self._errors['program'] = self.error_class(['At least 1 of the Leads not belong this program'])
@@ -220,6 +225,7 @@ class IcnForm(forms.ModelForm):
              self._errors['final_report_due_date'] = self.error_class(['Reporting Date should always be after end date'])
          elif (ilead_agency != None and ilead_co_agency != None and ilead_co_agency.contains(ilead_agency)):
              self._errors['ilead_agency'] = self.error_class(['Lead Agency & Co-Lead Agency should be different'])
+                 
          elif (mc_currency != None and cs_currency != None and mc_currency != cs_currency):
              self._errors['mc_currency'] = self.error_class(['Different Currency for MC & Cost Sharing'])
          elif (total_budget_usd > budget_limit_max or total_budget_usd < budget_limit_min):

@@ -15,6 +15,7 @@ from django.shortcuts import render
 from django.contrib.auth.views import LoginView
 from django.views.generic import FormView
 from .forms import CustomUserChangeForm, CustomUserCreationForm, RegionFormE,UserRoleFormE, UserProgramRoleForm, ZoneFormE
+
 from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.views import PasswordResetView
@@ -278,13 +279,15 @@ class RegisterView(FormView):
     
 
     def form_valid(self, form):
-        instance = form.save()  # save the user
+        instance = form.save(commit=False)
+        instance.is_active = False
+        instance.save()  # save the user
         return HttpResponse(
                 status=204,
                 headers={
                     'HX-Trigger': json.dumps({
                         "UserListChanged": None,
-                        "showMessage": f"{instance.first_name} added."
+                        "showMessage": f"{instance.username} added."
                     })
                 }
             )
@@ -648,35 +651,35 @@ def user_detail(request, id):
         
         query = request.GET.get('reservation', '')
         query = query.split("-")
-        for q in query:
-            start_date = query[0].strip()
-            end_date = query[1].strip()
+        #for q in query:
+        start_date = query[0].strip()
+        end_date = query[1].strip()
        
         start_date = datetime.strptime(start_date, '%m/%d/%Y')
         end_date = datetime.strptime(end_date, '%m/%d/%Y')
         
       
        
-        qs1 = RequestEvent.objects.filter(user_id=id, datetime__date__gte=start_date, datetime__date__lte=end_date).order_by("-datetime__date").values('datetime__date').annotate(id_count=Count('id', distinct=True))
-        qs2 = LoginEvent.objects.filter(user_id=id,  datetime__date__gte=start_date, datetime__date__lte=end_date).order_by("-datetime__date").values('datetime__date').annotate(count_login=Count('id', distinct=True))
+       
+        qs2 = LoginEvent.objects.filter(user_id=user.id,  datetime__date__gte=start_date, datetime__date__lte=end_date).order_by("datetime__date").values('datetime__date').annotate(count_login=Count('id', distinct=True))
     else:
         current_date = date.today()
         last_month_filter =  current_date - relativedelta(months=1)
     
        
-        qs1 = CRUDEvent.objects.filter(user_id=id,  datetime__gte=last_month_filter).order_by("-datetime__date").values('datetime__date').annotate(id_count=Count('id',distinct=True))
-        qs2 = LoginEvent.objects.filter(user_id=id, datetime__gte=last_month_filter).order_by("-datetime__date").values('datetime__date').annotate(count_login=Count('id',distinct=True))
+      
+        qs2 = LoginEvent.objects.filter(user_id=user.id, datetime__gte=last_month_filter).order_by("datetime__date").values('datetime__date').annotate(count_login=Count('id',distinct=True))
     
 
 
-    collector = defaultdict(dict)
-
-    for collectible in chain(qs1, qs2):
-        collector[collectible['datetime__date']].update(collectible.items())
+    
     
 
+    all_request = qs2
+
+   
     
-    all_request = list(collector.values())
+   
 
     context = {'user': user, 'all_request':all_request,  'last_month_filter':last_month_filter}
     return render(request, 'user_setting_accounts.html', context)

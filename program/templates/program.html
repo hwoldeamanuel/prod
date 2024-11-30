@@ -101,8 +101,10 @@
                           <span class="value text-success"> {{total_acn}} </span>
                         </li>
                         <li class="hidden-phone">
-                          <span class="name"> Total Report </span>
-                          <span class="value text-success"> {{total_report}} </span>
+                          <span class="name"> Approved<small>(Intervention, Activity)</small></span>
+                         
+                          <span class="value text-success">{% if total_icn == 0 %}<small>NA</small>{% else %}{% widthratio total_icn_app total_icn 100 %}% {% endif%} ,
+                          {% if total_acn == 0 %}<small>NA</small>{% else%} {% widthratio total_acn_app total_acn 100 %}%</span>{% endif %}
                         </li>
                         
                       </ul>
@@ -147,7 +149,7 @@
         <th style="width:15%">Concept Note</th>
   <th>Title</th>
         
-        <th >Status<small>(Concept N.)</small></th>
+        <th>Status<small>(Concept N.)</small></th>
         <th>Status<small>(Report)</small></th>
       
        
