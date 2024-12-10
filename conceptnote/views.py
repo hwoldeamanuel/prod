@@ -1153,8 +1153,9 @@ def search_results_view2(request):
         all_activities = Activity.objects.all()
     else:
         program = Program.objects.filter(users_role=user)
-   
-        all_activities = Activity.objects.filter(program__in=program).order_by('-id')
+        icns = Icn.objects.filter(program__in=program).order_by('-id')
+        all_activities = Activity.objects.filter(icn__in=icns).order_by('-id')
+      
 
     query = request.GET.get('search', '')
     

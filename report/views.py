@@ -58,7 +58,7 @@ def icnreport_add(request, id):
     icn = Icn.objects.get(pk=id)
    
     if request.method == "POST":
-        form = IcnReportForm(request.POST,request.FILES, user=request.user, icn=icn)
+        form = IcnReportForm(request.POST,request.FILES, user=request.user, icn=icn.id)
         if form.is_valid():
             instance = form.save(commit=False)
             instance.user = request.user
@@ -73,7 +73,7 @@ def icnreport_add(request, id):
                      
             return redirect('icnreport_detail',instance.icn_id) 
         
-        form = IcnReportForm(request.POST,request.FILES, user=request.user, icn=icn)   
+        form = IcnReportForm(request.POST,request.FILES, user=request.user, icn=icn.id)   
         context = {'form':form, 'icn':icn}
         return render(request, 'report/icnreport_step_profile_new.html', context)
     
@@ -83,7 +83,7 @@ def icnreport_add(request, id):
     current_user = request.user
     program_users = UserRoles.objects.filter(program__in=program, is_pcn_initiator=True)
     if User.objects.filter(id=current_user.id,userroles__in=program_users).exists():
-        form = IcnReportForm(user=request.user, icn=icn)   
+        form = IcnReportForm(user=request.user, icn=icn.id)   
         context = {'form':form, 'icn':icn}
         return render(request, 'report/icnreport_step_profile_new.html', context)
     return redirect('icn_step_approval',icn.id) 
@@ -106,18 +106,18 @@ def icnreport_edit(request, id):
     
     if request.method == "POST":
        
-        form = IcnReportForm(request.POST,request.FILES, instance=icnreport, icn=icn,user=request.user)
+        form = IcnReportForm(request.POST,request.FILES, instance=icnreport, icn=icn.id,user=request.user)
         if form.is_valid():
             instance = form.save(commit=False)
             instance.user = request.user
                        
             selected_woredas = request.POST.getlist("iworeda")
-            selected_co_agency = request.POST.getlist("ilead_co_agency")
+            
             items_woreda = ImplementationArea.objects.filter(id__in=selected_woredas)
-            items_co_agency = Portfolio.objects.filter(id__in=selected_co_agency)
+           
             instance.save()
             instance.iworeda.add(*items_woreda)
-            instance.ilead_co_agency.add(*items_co_agency)
+           
                      
             return redirect('icnreport_detail',instance.icn_id)
             
@@ -133,7 +133,7 @@ def icnreport_edit(request, id):
     current_user = request.user
     program_users = UserRoles.objects.filter(program__in=program, is_pcn_initiator=True)
     if User.objects.filter(id=current_user.id,userroles__in=program_users).exists():
-        form = IcnReportForm(instance=icnreport, user=current_user, icn=icn)   
+        form = IcnReportForm(instance=icnreport, user=current_user, icn=icn.id)   
         context = {'form':form, 'icn':icn, 'user':current_user}
         return render(request, 'report/icnreport_step_profile_new.html', context)
     return redirect('icn_step_approval',icn.id) 
@@ -768,7 +768,7 @@ def activityreport_add(request, id):
     activity = Activity.objects.get(id=id)
     activitympacts =  ActivityImpact.objects.filter(activity_id=id)
     if request.method == "POST":
-        form = ActivityReportForm(request.POST,request.FILES, user=request.user, activity=activity)
+        form = ActivityReportForm(request.POST,request.FILES, user=request.user, activity=activity.id)
         if form.is_valid():
             instance = form.save(commit=False)
             instance.user = request.user
@@ -782,7 +782,7 @@ def activityreport_add(request, id):
             instance.alead_co_agency.add(*items_co_agency)
             return redirect('activityreport_detail',id) 
               
-        form = ActivityReportForm(request.POST,request.FILES, user=request.user, activity=activity)   
+        form = ActivityReportForm(request.POST,request.FILES, user=request.user, activity=activity.id)   
         context = {'form':form, 'activity':activity}
         return render(request, 'report/activityreport_step_profile_add.html', context)
     
@@ -795,7 +795,7 @@ def activityreport_add(request, id):
 
     if User.objects.filter(id=current_user.id,userroles__in=program_users).exists():
         
-        form = ActivityReportForm(user=current_user, activity=activity)   
+        form = ActivityReportForm(user=current_user, activity=activity.id)   
         context = {'form':form, 'activity':activity, 'user':current_user}
         return render(request, 'report/activityreport_step_profile_add.html', context)
     
@@ -821,13 +821,13 @@ def activityreport_edit(request, id):
             return redirect('activityreport_detail',id) 
             
         
-        form = ActivityReportForm(request.POST,  instance=activityreport, user=request.user, activity=activity) 
+        form = ActivityReportForm(request.POST,  instance=activityreport, user=request.user, activity=activity.id) 
         context = {'form':form, 'activity':activity, 'activityreport':activityreport}
         return render(request, 'report/activityreport_step_profile_add.html', context)
             
     current_user = request.user
     if current_user == activityreport.user and activityreport.status ==False:
-        form = ActivityReportForm(instance=activityreport, user=current_user, activity=activity)   
+        form = ActivityReportForm(instance=activityreport, user=current_user, activity=activity.id)   
         context = {'form':form, 'activity':activity, 'user':current_user}
         return render(request, 'report/activityreport_step_profile_add.html', context)
     

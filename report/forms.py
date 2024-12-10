@@ -33,9 +33,10 @@ class IcnReportForm(forms.ModelForm):
         
         if user and icn:
             program = Program.objects.filter(users_role=user)
-            icnreport = IcnReport.objects.filter(user=user)
-
-            self.fields['icn'].queryset =  Icn.objects.filter(id=icn.id)
+           
+            icn = Icn.objects.get(id=icn)
+            self.fields['icn'].choices = [(icn.pk, icn) for icn in Icn.objects.filter(id=icn.id)]
+           
             self.fields['icn'].initial = Icn.objects.filter(id=icn.id).first()
             self.fields['icn'].widget.attrs['readonly'] = True
             self.fields['program_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True).exclude(user=user)
@@ -531,15 +532,16 @@ class ActivityReportForm(forms.ModelForm):
         activity = kwargs.pop('activity', None)
         super().__init__(*args, **kwargs)    
         
-        program = Program.objects.filter(users_role=user)
+       
         if user and activity:
-             print(activity,user)
+            
              program = Program.objects.filter(users_role=user)
-             print(program)
-             self.fields['activity'].queryset =  Activity.objects.filter(id=activity.id)
+             activity = Activity.objects.get(id=activity)
+             self.fields['activity'].choices = [(activity.pk, activity) for activity in Activity.objects.filter(id=activity.id)]
+             
              self.fields['activity'].initial = Activity.objects.filter(id=activity.id).first()
                 
-             program = Program.objects.filter(users_role=user)
+          
              self.fields['program_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pacn_program_approver=True).exclude(user=user)
              self.fields['program_lead'].initial=UserRoles.objects.filter(program__in=program, is_pacn_program_approver=True).exclude(user=user).first()
              self.fields['technical_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pacn_technical_approver=True).exclude(user=user)

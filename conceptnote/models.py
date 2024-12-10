@@ -71,7 +71,7 @@ class Icn(models.Model):
 
     def get_remaining_budget(self):
         
-        if Activity.objects.filter(icn_id=self).exists():
+        if Activity.objects.filter(icn_id=self.id).exists():
             qs = Activity.objects.filter(icn_id=self, status = True)
             mcbt = 0
                 
@@ -88,7 +88,7 @@ class Icn(models.Model):
 
                 mcbt= mcbt + mcb + csb
 
-            icn = Icn.objects.get(title=self)    
+            icn = Icn.objects.get(id=self.id)    
             if icn.cs_currency == 2:
                 imcb = icn.mc_budget/120
             else:
@@ -449,6 +449,21 @@ class Activity(models.Model):
         else:
             num = 0
         return num
+    
+    def activity_total_budget(self):
+        if self.mc_currency == 2:
+            mcb = self.mc_budget/120
+        else:
+            mcb = self.mc_budget
+        if self.cs_currency == 2:
+            csb = self.cost_sharing_budget/120
+        else:
+            csb = self.cost_sharing_budget
+
+        activity_tb = mcb + csb
+        return activity_tb
+
+            
     
     def get_name(self):
         return "Activity"

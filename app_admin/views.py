@@ -279,9 +279,7 @@ class RegisterView(FormView):
     
 
     def form_valid(self, form):
-        instance = form.save(commit=False)
-        instance.is_active = False
-        instance.save()  # save the user
+        instance = form.save()
         return HttpResponse(
                 status=204,
                 headers={

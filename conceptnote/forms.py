@@ -679,7 +679,8 @@ class ActivityForm(forms.ModelForm):
         cleaned_data = super().clean()
         if self.cleaned_data.get('icn'):
             icn = self.cleaned_data.get('icn')
-            icn = Icn.objects.get(title=icn)
+            icn = Icn.objects.get(id=icn.id)
+            
         
         alead_agency = self.cleaned_data.get('alead_agency')
         mc_currency = self.cleaned_data.get('mc_currency')
@@ -817,33 +818,32 @@ class ActivityImpactForm(forms.ModelForm):
 
 class ActivitySubmitForm(forms.ModelForm):
      def __init__(self, *args, **kwargs):
-         user = kwargs.pop('user', None)
-         activity = kwargs.pop('activity', None)
-         sid = kwargs.pop('sid', None)
-         super(ActivitySubmitForm, self).__init__(*args, **kwargs)
+          user = kwargs.pop('user', None)
+          activity = kwargs.pop('activity', None)
+          sid = kwargs.pop('sid', None)
+          super(ActivitySubmitForm, self).__init__(*args, **kwargs)
                 
          
-         if sid:
-              self.fields['submission_status'].choices = [
+          if sid:
+               self.fields['submission_status'].choices = [
                         (submission_status.id, submission_status.name) for submission_status in Submission_Status.objects.filter(id=sid)
                     ]
                  
 
             
-         if sid== 2 and ActivitySubmit.objects.filter(id=activity).exists():
-             
-              activitysubmit = ActivitySubmit.objects.filter(activity=activity).latest('id')
+          if sid == 2 and ActivitySubmit.objects.filter(activity_id=activity).exists():
+               activitysubmit = ActivitySubmit.objects.filter(activity_id=activity).latest('id')
               
-              self.fields['document'].choices =  [
+               self.fields['document'].choices =  [
                     (document.pk, document) for document in ActivityDocument.objects.filter(user=user, activity=activity, id__gt=activitysubmit.document.id)
                         ] 
-         elif sid == 1  and ActivitySubmit.objects.filter(id=activity).exists():
-              activitysubmit = ActivitySubmit.objects.filter(activity=activity).latest('id')
-              self.fields['document'].choices = [
+          elif sid == 1  and ActivitySubmit.objects.filter(activity_id=activity).exists():
+               activitysubmit = ActivitySubmit.objects.filter(activity_id=activity).latest('id')
+               self.fields['document'].choices = [
                 (document.pk, document) for document in ActivityDocument.objects.filter(id=activitysubmit.document.id)
                         ] 
-         else:
-              self.fields['document'].choices = [
+          else:
+               self.fields['document'].choices = [
                 (document.pk, document) for document in ActivityDocument.objects.filter(user=user, activity=activity)
                         ] 
               
@@ -853,22 +853,22 @@ class ActivitySubmitForm(forms.ModelForm):
   
     
 
-         self.fields['submission_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
-         self.fields['submission_note'].required = True 
-         self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
-         self.fields['submission_status'].widget.attrs['readonly'] = True
-         self.fields['document'].widget.attrs['readonly'] = True
+          self.fields['submission_note'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'3', 'required':'True'   }    )
+          self.fields['submission_note'].required = True 
+          self.fields['document'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
+          self.fields['submission_status'].widget.attrs['readonly'] = True
+          self.fields['document'].widget.attrs['readonly'] = True
 
 
      class Meta:
-            model = ActivitySubmit
-            fields=['submission_status',
+          model = ActivitySubmit
+          fields=['submission_status',
             'submission_note',
             'document',
            
            
             ]
-            exclude=  ['activity',]
+          exclude=  ['activity',]
             
           
 
