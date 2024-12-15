@@ -55,6 +55,7 @@ class IcnForm(forms.ModelForm):
             self.fields['program_lead'].queryset =  UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True, approval_budget_min_usd__isnull=False, approval_budget_max_usd__isnull=False).exclude(user=user)
             self.fields['program_lead'].initial=UserRoles.objects.filter(program__in=program, is_pcn_program_approver=True, approval_budget_min_usd__isnull=False, approval_budget_max_usd__isnull=False).exclude(user=user).first()
             self.fields['ilead_agency'].queryset = Portfolio.objects.filter(id=user.profile.portfolio_id).order_by('id')
+            self.fields['ilead_agency'].initial = Portfolio.objects.filter(id=user.profile.portfolio_id).first()
             self.fields['ilead_co_agency'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
             self.fields['ilead_co_agency'].queryset = Portfolio.objects.exclude(Q(id=user.profile.portfolio_id)).order_by('id')
 
@@ -550,7 +551,10 @@ class ActivityForm(forms.ModelForm):
             self.fields['finance_lead'].queryset = UserRoles.objects.filter(program__in=program, is_pacn_finance_approver=True).exclude(user=user)
             self.fields['finance_lead'].initial=UserRoles.objects.filter(program__in=program, is_pacn_finance_approver=True).exclude(user=user).first()
             self.fields['icn'].queryset = Icn.objects.filter(program__in=program, approval_status="100% Approved")
-           
+            self.fields['alead_agency'].queryset = Portfolio.objects.filter(id=user.profile.portfolio_id).order_by('id')
+            self.fields['alead_agency'].initial = Portfolio.objects.filter(id=user.profile.portfolio_id).first()
+            self.fields['alead_co_agency'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
+            self.fields['alead_co_agency'].queryset = Portfolio.objects.exclude(Q(id=user.profile.portfolio_id)).order_by('id')
         myfield = ['title',
             'icn',
             'description',
@@ -621,8 +625,7 @@ class ActivityForm(forms.ModelForm):
             )
         self.fields['description'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-contro-sm', 'rows':'3', 'required':'required'  }    )
         
-        self.fields['alead_co_agency'].widget =  s2forms.Select2MultipleWidget(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
-        self.fields['alead_co_agency'].queryset = Portfolio.objects.all()
+        
        
        
         self.fields['aworeda'].required = True 
@@ -704,7 +707,10 @@ class ActivityForm(forms.ModelForm):
         tactbud = mc_budget + cs_budget
         rembud = icn.get_remaining_budget()
         
-         
+        
+        if self.instance is not None and self.instance.pk is not None:
+             rembud = rembud + self.instance.activity_total_budget()
+        
         alead_co_agency = self.cleaned_data.get('alead_co_agency')
         cost_sharing_budget= self.cleaned_data.get('cost_sharing_budget')
         program_lead = self.cleaned_data.get('program_lead')

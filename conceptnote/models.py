@@ -72,7 +72,7 @@ class Icn(models.Model):
     def get_remaining_budget(self):
         
         if Activity.objects.filter(icn_id=self.id).exists():
-            qs = Activity.objects.filter(icn_id=self, status = True)
+            qs = Activity.objects.filter(icn_id=self.id)
             mcbt = 0
                 
             for qs in qs:
@@ -390,7 +390,7 @@ class Impact(models.Model):
     indicators = models.ManyToManyField(Indicator, related_name='impacts')
 
     def __str__(self):
-        return str(self.title)
+        return f"{self.title} {self.description}"
 
 class Activity(models.Model):
     title = models.CharField(max_length=255)
@@ -505,7 +505,7 @@ class ActivityImpact(models.Model):
     impact = models.ManyToManyField(Impact, related_name='activityimpacts')
 
     def __str__(self):
-        return str(self.pk)
+        return f"{self.title} {self.description}"
 
 class ActivityDocument(models.Model):
     user = models.ForeignKey(User, on_delete= models.DO_NOTHING, null=True,  blank=True, related_name='auploaded_by')

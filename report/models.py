@@ -16,7 +16,7 @@ from conceptnote.models import Icn, Activity, Impact, ActivityImpact
 from program.models import ImplementationArea
 
 class IcnReport(models.Model):
-    icn = models.OneToOneField(Icn, on_delete=models.DO_NOTHING)
+    icn = models.OneToOneField(Icn, on_delete=models.DO_NOTHING, related_name='icnreport')
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True)
     
     actual_start_date = models.DateField()

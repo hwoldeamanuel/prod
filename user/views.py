@@ -249,19 +249,13 @@ def user_conceptnotes(request):
     user = User.objects.filter(username=request.user)
    
     userroles = UserRoles.objects.filter(user__in=user)
-    qsi = Icn.objects.filter(Q(user__in=user) | Q(program_lead__in=userroles) | Q(technical_lead__in=userroles)| Q(finance_lead__in=userroles)).exclude(approval_status='100% Approved').only("title", "id","user","program_lead","technical_lead","finance_lead","status","approval_status")
-    qsa = Activity.objects.filter(Q(user__in=user) | Q(program_lead__in=userroles) | Q(technical_lead__in=userroles)| Q(finance_lead__in=userroles)).exclude(approval_status='100% Approved').only("title", "id", "user","program_lead","technical_lead","finance_lead","status","approval_status")
-    qsir = IcnReport.objects.filter(Q(user__in=user) | Q(program_lead__in=userroles) | Q(technical_lead__in=userroles)| Q(finance_lead__in=userroles)).exclude(approval_status='100% Approved').only( "id","user","program_lead","technical_lead","finance_lead","status","approval_status")
-    qsar = Activity.objects.filter(Q(user__in=user) | Q(program_lead__in=userroles) | Q(technical_lead__in=userroles)| Q(finance_lead__in=userroles)).exclude(approval_status='100% Approved').only( "id", "user","program_lead","technical_lead","finance_lead","status","approval_status")
+    qsi =  Icn.objects.filter(Q(user__in=user) | Q(program_lead__in=userroles) | Q(technical_lead__in=userroles)| Q(finance_lead__in=userroles)|Q(mel_lead__in=userroles)|Q(icnreport__user__in=user) | Q(icnreport__program_lead__in=userroles) | Q(icnreport__technical_lead__in=userroles)| Q(icnreport__finance_lead__in=userroles)|Q(icnreport__mel_lead__in=userroles)).exclude(approval_status='100% Approved', icnreport__approval_status='100% Approved')
+    qsa = Activity.objects.filter(Q(user__in=user) | Q(program_lead__in=userroles) | Q(technical_lead__in=userroles)| Q(finance_lead__in=userroles)|Q(mel_lead__in=userroles)|Q(activityreport__user__in=user) | Q(activityreport__program_lead__in=userroles) | Q(activityreport__technical_lead__in=userroles)| Q(activityreport__finance_lead__in=userroles)|Q(activityreport__mel_lead__in=userroles)).exclude(approval_status='100% Approved', activityreport__approval_status='100% Approved')
+    
        
-    conceptnotes = list(chain(qsi, qsa, qsir, qsar))
-    for obj in conceptnotes:
-        
-        types = type(obj).__name__
-        obj.types = types
-
+    
     return render(request, 'user/partial/conceptnotes.html', {
-        'conceptnotes': conceptnotes,
+        'qsi': qsi,'qsa':qsa
     })
 
 
