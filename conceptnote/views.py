@@ -182,8 +182,10 @@ def icn_detail(request, pk):
    
    
     # add the dictionary during initialization
-    
-    icn = get_object_or_404(Icn, pk=pk,program__in=program)
+    if user.is_superuser:
+        icn = get_object_or_404(Icn, pk=pk)
+    else:
+        icn = get_object_or_404(Icn, pk=pk,program__in=program)
     
     form = IcnForm(instance=icn,  user=request.user) 
     for fieldname in form.fields:

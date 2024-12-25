@@ -53,8 +53,8 @@ def home(request):
      total_cn = program.num_cn + total_cn
 
   total_woreda =  ImplementationArea.objects.values('woreda_id').distinct().count()
-  icn_status =  Icn.objects.values('approval_status').annotate(icn_count=Count('id', distinct=True))
-  acn_status = Activity.objects.values('approval_status').annotate(acn_count=Count('id', distinct=True))
+  icn_status =  Icn.objects.filter(status=True).values('approval_status').annotate(icn_count=Count('id', distinct=True)).order_by('-icn_count')
+  acn_status = Activity.objects.filter(status=True).values('approval_status').annotate(acn_count=Count('id', distinct=True)).order_by('-acn_count')
   icn_report_status =  IcnReport.objects.values('approval_status').annotate(icn_count=Count('id', distinct=True))
   acn_report_status = ActivityReport.objects.values('approval_status').annotate(acn_count=Count('id', distinct=True))
   
@@ -78,8 +78,8 @@ def dashboard(request):
 
 
   total_woreda =ImplementationArea.objects.values('woreda_id').distinct().count()
-  icn_status =  Icn.objects.values('approval_status').annotate(icn_count=Count('id', distinct=True))
-  acn_status = Activity.objects.values('approval_status').annotate(acn_count=Count('id', distinct=True))
+  icn_status =  Icn.objects.filter(status=True).values('approval_status').annotate(icn_count=Count('id', distinct=True)).order_by('-icn_count')
+  acn_status = Activity.objects.filter(status=True).values('approval_status').annotate(acn_count=Count('id', distinct=True)).order_by('-acn_count')
   icn_report_status =  IcnReport.objects.values('approval_status').annotate(icn_count=Count('id', distinct=True))
   acn_report_status = ActivityReport.objects.values('approval_status').annotate(acn_count=Count('id', distinct=True))
 
@@ -100,3 +100,7 @@ def error_404(request, exception):
 def error_500(request):
     return render(request, '505.html', status=500)
 
+def get_date(request):
+    if request.method == 'POST':
+       month = request.POST.get("somedate")
+       print(month)

@@ -245,8 +245,8 @@ class IcnReportImpact(models.Model):
         IcnReport, on_delete=models.CASCADE, null=True, blank=True)
     impact = models.OneToOneField(Impact, on_delete=models.CASCADE, null=True, blank=True)
     
-    actual_impact_pilot  = models.IntegerField(null=True, blank=True)
-    actual_impact_scaleup  = models.IntegerField(null=True, blank=True)
+    actual_impact_pilot  = models.FloatField(null=True, blank=True)
+    actual_impact_scaleup  = models.FloatField(null=True, blank=True)
    
 
     def __str__(self):
@@ -319,8 +319,8 @@ class ActivityReportImpact(models.Model):
         ActivityImpact, on_delete=models.CASCADE, null=True, blank=True)
    
     
-    actual_impact_pilot  = models.IntegerField(null=True, blank=True)
-    actual_impact_scaleup  = models.IntegerField(null=True, blank=True)
+    actual_impact_pilot  = models.FloatField(null=True, blank=True)
+    actual_impact_scaleup  = models.FloatField(null=True, blank=True)
     
 
     def __str__(self):

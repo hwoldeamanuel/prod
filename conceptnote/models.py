@@ -370,14 +370,16 @@ class IcnSubmitApproval_F(models.Model):
   
 
 class Impact(models.Model):
-    Numeric = 1
+    Numeric_Integer = 1
     Percentage = 2
     Other = 3
+    Numeric_Decimal = 4
     
     UNIT = (
-        (Numeric, 'Numeric'),
+        (Numeric_Integer, 'Numeric-Int'),
         (Percentage, 'Percentage'),
         (Other, 'Other'),
+        (Numeric_Decimal, 'Numeric_Decimal'),
        
         )
     icn =  models.ForeignKey(
@@ -385,8 +387,8 @@ class Impact(models.Model):
     title = models.CharField(max_length=255, null=True, blank=True)
     description = models.CharField(max_length=255, null=True, blank=True)
     unit = models.PositiveSmallIntegerField(choices=UNIT, blank=True, null=True)
-    impact_pilot  = models.IntegerField(null=True, blank=True)
-    impact_scaleup  = models.IntegerField(null=True, blank=True)
+    impact_pilot  = models.FloatField(null=True, blank=True)
+    impact_scaleup  = models.FloatField(null=True, blank=True)
     indicators = models.ManyToManyField(Indicator, related_name='impacts')
 
     def __str__(self):
@@ -485,14 +487,16 @@ class ActivityImplementationArea(models.Model):
         return str(self.pk)
     
 class ActivityImpact(models.Model):
-    Numeric = 1
+    Numeric_Integer = 1
     Percentage = 2
     Other = 3
+    Numeric_Decimal = 4
     
     UNIT = (
-        (Numeric, 'Numeric'),
+        (Numeric_Integer, 'Numeric-Int'),
         (Percentage, 'Percentage'),
         (Other, 'Other'),
+        (Numeric_Decimal, 'Numeric_Decimal'),
        
         )
     activity =  models.ForeignKey(
@@ -500,8 +504,8 @@ class ActivityImpact(models.Model):
     title = models.CharField(max_length=255, null=True, blank=True)
     description = models.CharField(max_length=255, null=True, blank=True)
     unit = models.PositiveSmallIntegerField(choices=UNIT, blank=True, null=True)
-    impact_pilot  = models.IntegerField(null=True, blank=True)
-    impact_scaleup  = models.IntegerField(null=True, blank=True)
+    impact_pilot  = models.FloatField(null=True, blank=True)
+    impact_scaleup  = models.FloatField(null=True, blank=True)
     impact = models.ManyToManyField(Impact, related_name='activityimpacts')
 
     def __str__(self):

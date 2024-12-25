@@ -534,6 +534,22 @@ class ImpactForm(forms.ModelForm):
                     'indicators']
         exclude=  ['icn']
 
+    def clean(self):
+         cleaned_data = super().clean()
+         unit = self.cleaned_data.get('unit')
+         impact_pilot = self.cleaned_data.get('impact_pilot')
+         impact_scaleup = self.cleaned_data.get('impact_scaleup')
+         diff1 = (impact_pilot - int(impact_pilot) )
+         diff2 = (impact_scaleup - int(impact_scaleup) )
+         
+         if (unit == 2 and ( impact_pilot > 100 or impact_scaleup > 100 )):
+              self._errors['unit'] = self.error_class(['Target with percentage unit exceeds 100%'])
+         elif (unit == 1 and diff1 != 0.0):
+              self._errors['impact_pilot'] = self.error_class(['value should match int or ends with .0'])
+         elif (unit == 1 and diff2 != 0.0):
+              self._errors['impact_scaleup'] = self.error_class(['value should match int or ends with .0'])
+         return cleaned_data
+
 class ActivityForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
@@ -821,6 +837,21 @@ class ActivityImpactForm(forms.ModelForm):
         fields = ['title','description','unit', 'impact_pilot' ,'impact_scaleup',
                     'impact']
         exclude=  ['activity']
+    
+    def clean(self):
+         cleaned_data = super().clean()
+         unit = self.cleaned_data.get('unit')
+         impact_pilot = self.cleaned_data.get('impact_pilot')
+         impact_scaleup = self.cleaned_data.get('impact_scaleup')
+         diff1 = (impact_pilot - int(impact_pilot) )
+         diff2 = (impact_scaleup - int(impact_scaleup) )
+         if (unit == 2 and ( impact_pilot > 100 or impact_scaleup > 100 )):
+              self._errors['unit'] = self.error_class(['Target with percentage unit exceeds 100%'])
+         elif (unit == 1 and diff1 != 0.0):
+              self._errors['impact_pilot'] = self.error_class(['value should match int or ends with .0'])
+         elif (unit == 1 and diff2 != 0.0):
+              self._errors['impact_scaleup'] = self.error_class(['value should match int or ends with .0'])
+         return cleaned_data
 
 class ActivitySubmitForm(forms.ModelForm):
      def __init__(self, *args, **kwargs):

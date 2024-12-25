@@ -82,6 +82,7 @@ class ProfileFormAdd(forms.ModelForm):
             'portfolio',
             'reports_to',
             ]
+        
 class LoginForm(AuthenticationForm):
     error_messages = {
         "invalid_login": "Ah, ah, ah. You didn't say the magic word!",

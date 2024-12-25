@@ -111,7 +111,6 @@ def activity_filter(request):
 
   
 class Login(LoginView):
-    
     template_name = 'user/registration/login.html'
     
 
