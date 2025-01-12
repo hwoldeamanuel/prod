@@ -58,6 +58,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_select2',
     'django.contrib.humanize',
+    'travel',
+    'django_migrate_or_rollback',
     
     
     'easyaudit',

@@ -11,9 +11,9 @@ from django.contrib.auth.decorators import login_required
 from portfolio.models import Portfolio
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from .forms import ProgramForm, AddProgramAreaForm,EditProgramAreaForm, IndicatorForm, UserRoleForm, UserRoleFormE,UserRoleFormP, UserForm
+from .forms import ProgramForm, AddProgramAreaForm,EditProgramAreaForm, IndicatorForm, UserRoleForm, UserRoleFormE,UserRoleFormP, UserForm, TravelUserRoleForm, TravelUserRoleFormE
 
-from .models import Program, ImplementationArea, Indicator, UserRoles
+from .models import Program, ImplementationArea, Indicator, UserRoles, TravelUserRoles
 from django.contrib.auth.models import User
 from conceptnote.models import Icn, Activity
 from django.db.models.functions import TruncMonth
@@ -22,6 +22,7 @@ from collections import defaultdict
 from itertools import chain
 from report.models import IcnReport, ActivityReport
 from django.contrib.auth.decorators import permission_required
+from user.models import Profile
 
 
 @login_required(login_url='login')
@@ -498,3 +499,80 @@ def newportfolio(request):
    
     return HttpResponse(form['portfolio'])
 
+@login_required(login_url='login')
+@permission_required("program.can_add_userroles", raise_exception=True)
+def add_travel_user(request, id):
+    program = Program.objects.get(pk=id)
+    if request.method == "POST":
+        program = Program.objects.get(pk=id)
+        form = TravelUserRoleForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.program = program
+            instance.save()
+            return HttpResponse(
+                status=204,
+                headers={
+                    'HX-Trigger': json.dumps({
+                        "TravelUserListChanged": None,
+                        "showMessage": f"{instance.profile} updated."
+                    })
+                })
+    else:
+        form = TravelUserRoleForm(program=program)
+    return render(request, 'partial/travel_user_role.html', {
+        'form': form,
+        
+    })
+
+@login_required(login_url='login')
+def user_travel_list(request, id):
+    program = get_object_or_404(Program, pk=id)
+    travel_user_list = TravelUserRoles.objects.filter(program=program)
+    return render(request, 'partial/travel_user_list_program.html', {
+        'travel_user_list': travel_user_list,
+    })
+
+
+@login_required(login_url='login')
+@permission_required("program.can_change_userroles", raise_exception=True)
+def update_travel_user_roles(request, id):
+    tuser_role = TravelUserRoles.objects.get(pk=id)
+    profile = get_object_or_404(Profile, pk=tuser_role.profile_id)
+    program = get_object_or_404(Program, pk=tuser_role.program_id)
+
+    if request.method == "POST":
+       
+        form = TravelUserRoleFormE(request.POST, instance=tuser_role, profile=profile)
+     
+        if form.is_valid():
+            instance = form.save()
+           
+            return HttpResponse(
+                status=204,
+                headers={
+                    'HX-Trigger': json.dumps({
+                        "TravelUserListChanged": None,
+                        "showMessage": f"{instance.profile} updated."
+                    })
+                })
+    
+    form = TravelUserRoleFormE(instance=tuser_role, profile=profile)
+    return render(request, 'partial/travel_user_role.html', {
+        'form': form,'tuser_role':tuser_role
+        
+    })
+
+@login_required(login_url='login')
+@permission_required("program.can_delete_userroles", raise_exception=True)
+def remove_travel_user_role(request, pk):
+    tuser_role = get_object_or_404(TravelUserRoles, pk=pk)
+    tuser_role.delete()
+    return HttpResponse(
+        status=204,
+        headers={
+            'HX-Trigger': json.dumps({
+                "TravelUserListChanged": None,
+                "showMessage": f"{tuser_role.profile} deleted."
+            })
+        })

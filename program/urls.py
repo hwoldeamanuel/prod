@@ -22,7 +22,9 @@ htmxpatterns = [
     
 
     path('users/<int:id>/', views.user_list, name='user_list'),
+    path('tusers/<int:id>/', views.user_travel_list, name='user_travel_list'),
     path('user_add/<int:id>/', views.add_user, name='add_user'),
+    path('add_travel_user/<int:id>/', views.add_travel_user, name='add_travel_user'),
     path('edit_user_roles/<int:uid>/', views.edit_user_role, name='edit_user_role'),
 
 
@@ -48,8 +50,11 @@ htmxpatterns = [
     path('area_list/<int:id>/', views.area_list, name='area_list'),
     path('region/edit_area/<int:pk>/', views.area_edit_form, name='area_edit_form'),
     path('update_user_roles/<int:id>/', views.update_user_roles, name='update_user_roles'),
+    path('update_travel_user_roles/<int:id>/', views.update_travel_user_roles, name='update_travel_user_roles'),
+   
     path('remove_user_role/<int:pk>/', views.remove_user_role, name='remove_user_role'),
     path('newportfolio/', views.newportfolio, name='newportfolio'),
+     path('remove_travel_user_role/<int:pk>/', views.remove_travel_user_role, name='remove_travel_user_role'),
    
 
    

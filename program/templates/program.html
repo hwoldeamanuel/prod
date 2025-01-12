@@ -129,13 +129,15 @@
                 
                 <div class="" role="tabpanel" data-example-id="togglable-tabs">
                   <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
-                    <li role="presentation" class="active"><a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">Recent Concept Notes</a>
+                    <li role="presentation" class="active"><a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">Recent Concept N.</a>
                     </li>
-                    <li role="presentation" class=""><a href="#tab_content2" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">Implementation Areas</a>
+                    <li role="presentation" class=""><a href="#tab_content2" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">Imp. Areas</a>
                     </li>
-                    <li role="presentation" class=""><a href="#tab_content3" role="tab" id="profile-tab2" data-toggle="tab" aria-expanded="false">Concept Note Team</a>
+                    <li role="presentation" class=""><a href="#tab_content3" role="tab" id="profile-tab2" data-toggle="tab" aria-expanded="false">Concept N. Team</a>
                     </li>
                     <li role="presentation" class=""><a href="#tab_content4" role="tab" id="profile-tab3" data-toggle="tab" aria-expanded="false">Program Indicator</a>
+                    </li>
+                     <li role="presentation" class=""><a href="#tab_content5" role="tab" id="profile-tab4" data-toggle="tab" aria-expanded="false">Travel Approval Team</a>
                     </li>
                   </ul>
                   <div id="myTabContent" class="tab-content">
@@ -242,6 +244,18 @@
                           Add Indicator
                         </button>
                       </div>
+                      </div>
+                      <div role="tabpanel" class="tab-pane fade" id="tab_content5" aria-labelledby="profile-tab4">
+                        
+                      <div id="userlist" hx-trigger="load, TravelUserListChanged from:body" hx-get="{% url 'user_travel_list' program.id %}" hx-target="this">
+                          
+                      </div>
+                     
+                        <button class="btn btn-primary btn-sm" hx-get="/program/add_travel_user/{{program.id}}/" hx-target="#dialog" class="btn btn-primary">
+                          Add User Roles
+                        </button>
+                      
+                    </div>
                     </div>
                   </div>
                 </div>

@@ -75,3 +75,23 @@ class Submission_Status(models.Model):
     
     def __int__(self):
         return self.id
+    
+class Travel_Cost(models.Model):
+    name = models.CharField(max_length=255)
+    
+    def __int__(self):
+        return self.name
+    
+
+class Fund(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+class Lin_Code(models.Model):
+    fund = models.ForeignKey(Fund, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    
+    def __str__(self):
+        return self.name

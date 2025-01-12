@@ -2,8 +2,9 @@ from django import forms
 
 from program.models import Indicator, UserRoles
 from django import forms
-from .models import Program, ImplementationArea, UserRoles
+from .models import Program, ImplementationArea, UserRoles, TravelUserRoles
 from django.contrib.auth.models import User
+from user.models import Profile
 from django_select2 import forms as s2forms
 
 
@@ -416,3 +417,40 @@ class UserRoleFormP(forms.ModelForm):
                 ,'approval_budget_min_usd', 'approval_budget_max_usd'
                 ]
         readonly_fields = ('user',)
+
+
+class TravelUserRoleForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        program = kwargs.pop('program', None)
+        super().__init__(*args, **kwargs)
+        
+        if program:
+            
+            self.fields['profile'].queryset = Profile.objects.filter(user__is_active=True).exclude(program=program)
+        else:
+           
+            self.fields['profile'].queryset = Profile.objects.filter(user__is_active=True)
+        
+        self.fields['profile'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
+
+    class Meta:
+        model = TravelUserRoles
+        fields=['profile','is_initiator', 'is_budget_holder','is_finance_reviewer', 'is_security_reviewer']
+
+class TravelUserRoleFormE(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        profile = kwargs.pop('profile', None)
+        super().__init__(*args, **kwargs)
+        
+        if profile:
+            
+            self.fields['profile'].queryset = Profile.objects.filter(user_id=profile.user_id)
+            self.fields['profile'].initial = Profile.objects.filter(user_id=profile.user_id).first()
+        
+       
+        self.fields['profile'].widget.attrs.update({'class': 'form-control m-input form-control-sm','required':'True'})
+        
+    class Meta:
+        model = TravelUserRoles
+        fields=['profile','is_initiator', 'is_budget_holder','is_finance_reviewer', 'is_security_reviewer',]
+        exclude= ['program',]

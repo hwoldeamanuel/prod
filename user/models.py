@@ -18,6 +18,6 @@ class Profile(models.Model):
     
 
     def __str__(self):
-        return self.user.username
+        return str(self.first_name) + " " + str(self.last_name)
     def full_name(self):
         return str(self.first_name) + " " + str(self.last_name)

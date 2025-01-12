@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block content_page_css %}
+
+{% load static %}
+
+
+<link href="{% static 'vendors/pnotify/dist/pnotify.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/pnotify/dist/pnotify.buttons.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/pnotify/dist/pnotify.nonblock.css' %}" rel="stylesheet">
+
+
+
+   
+
+
+  
+<style>
+.nav-tabs.wizard {
+  background-color: transparent;
+  padding: 0;
+  width: 100%;
+  margin: 0em auto;
+  border-radius: .25em;
+  clear: both;
+  border-bottom: none;
+}
+
+.nav-tabs.wizard li {
+  width: 100%;
+  float: none;
+  margin-bottom: 3px;
+}
+
+.nav-tabs.wizard li>* {
+  position: relative;
+  padding: 1em .8em .8em 2.5em;
+  color: #999999;
+  background-color: #dedede;
+  border-color: #dedede;
+}
+
+.nav-tabs.wizard li.completed>* {
+  color: #fff !important;
+  background-color: #88b153 !important;
+  border-color: #88b153 !important;
+  border-bottom: none !important;
+}
+
+.nav-tabs.wizard li.active>* {
+  color: #fff !important;
+  background-color: #34495E !important;
+  border-color: #34495E !important;
+  border-bottom: none !important;
+}
+
+.nav-tabs.wizard li::after:last-child {
+  border: none;
+}
+
+.nav-tabs.wizard > li > a {
+  opacity: 1;
+  font-size: 14px;
+}
+
+.nav-tabs.wizard a:hover {
+  color: #fff;
+  background-color: #34495E;
+  border-color: #34495E
+}
+
+span.nmbr {
+  display: inline-block;
+  padding: 5px 0 0 0;
+  background: #ffffff;
+  width: 20px;
+  line-height: 100%;
+  height: 20px;
+  margin: auto;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 10px;
+  color: #555;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+@media(min-width:992px) {
+  .nav-tabs.wizard li {
+    position: relative;
+    padding: 0;
+    margin: 0px 4px 4px 0;
+    width: 24%;
+    float: left;
+    text-align: center;
+  }
+  .nav-tabs.wizard li.active a {
+    padding-top: 15px;
+  }
+  .nav-tabs.wizard li::after,
+  .nav-tabs.wizard li>*::after {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 100%;
+    height: 0;
+    width: 0;
+    border: 22px solid transparent;
+    border-right-width: 0;
+    /*border-left-width: 38px*/
+  }
+  .nav-tabs.wizard li::after {
+    z-index: 1;
+    -webkit-transform: translateX(4px);
+    -moz-transform: translateX(4px);
+    -ms-transform: translateX(4px);
+    -o-transform: translateX(4px);
+    transform: translateX(4px);
+    border-left-color: #fff;
+    margin: 0
+  }
+  .nav-tabs.wizard li>*::after {
+    z-index: 2;
+    border-left-color: inherit
+  }
+  .nav-tabs.wizard > li:nth-of-type(1) > a {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+  }
+  .nav-tabs.wizard li:last-child a {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+  .nav-tabs.wizard li:last-child {
+    margin-right: 0;
+  }
+  .nav-tabs.wizard li:last-child a:after,
+  .nav-tabs.wizard li:last-child:after {
+    content: "";
+    border: none;
+  }
+ 
+}
+</style>
+
+{% endblock %}
+
+{% block content %}
+{% load static %}
+
+ <!-- page content -->
+	        <!-- page content -->
+        <div class="right_col" role="main">
+          <div class="">
+            
+
+            <div class="clearfix"></div>
+
+            <div class="row">
+              <div class="col-md-3 col-sm-3 ">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>Travel Requests</h2>
+                    
+                    <div class="clearfix"></div>
+ 
+                  </div>
+<a href="/travel/request/new/"  class="btn btn-sm btn-primary btn-block" ><i class="fa fa-plus"></i> New Request</a>
+
+                     <div class="input-group form-group pull-right top_search">
+                    <input type="text" class="form-control" placeholder="Search for...">
+                    <span class="input-group-btn">
+                      <button class="btn btn-default" type="button">Go!</button>
+                    </span>
+                  </div>
+                  </br>
+                  <div class="x_content overflow-auto menu_fixed ">
+                     <div style="height:800px;">
+                     
+                         {% if trequest  %}
+                               <a href="/travel/request/{{trequest.id}}/detail/">
+                          <div class="mail_list">
+                            <div class="left">
+                              <i class="fa fa-circle"></i> <i class="fa fa-edit"></i>
+                            </div>
+                            <div class="right">
+                              <h3 class="text-truncate">{{trequest.user.profile.first_name}} <small>{{trequest.departure_date|date:"M d"}}</small></h3>
+                             <p><span class="badge">Purpose</span> {{trequest.purpose}}</p>
+                             <p><span class="badge">Place</span> {{trequest.destination}}</p>
+                            </div>
+                          </div>
+                        </a>
+                        {% endif %}
+                        {% for list in trequests %}
+                        {% if list.id != trequest.id %}
+                        <a href="/travel/request/{{list.id}}/detail/">
+                          <div class="mail_list">
+                            <div class="left">
+                              <i class="fa fa-circle-o"></i>
+                              
+                            </div>
+                            <div class="right">
+                              <h3>{{list.user.profile.first_name}} <small>{{list.created_at|date:"M d"}}</small></h3>
+                              <p><span class="badge">Purpose</span> {{list.purpose}}</p>
+                                                         <p><span class="badge">Place</span> {{list.destination}}</p>
+                            </div>
+                          </div>
+                        </a>
+                        {% endif %}
+                        {% endfor %}
+                       
+                      </div>
+                  </div>               </div>
+</div>
+<div class="col-md-9 col-sm-9 ">
+
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>Travel Information <small>Reqest | Approval</small></h2>
+                 
+                    <div class="clearfix"></div>
+                  </div>
+                 <div class="x_content">
+                     <ul class="nav nav-tabs wizard">
+              <li  class="{% if 'request' in request.path and 'new' in request.path %}active{% elif 'trequest' %}completed{% endif %}"><a href="{% if trequest %}/travel/request/{{trequest.id}}/detail/{% else %}/travel/request/new/{% endif %}">Travel <small>Information</small></a></li>
+              <li class="{% if 'cost' in request.path %}active{% elif trequest.estimated_cost_set.count > 2 and trequest.get_finance_total == 100.00 %}completed{% elif not trequest %}nav-link disabled{% endif %}"><a href="/travel/request/{{trequest.id}}/cost/" >Estimated Cost</a></li></a></li>
+              <li class="{% if 'review' in request.path  %}active{% elif trequest.estimated_cost_set.count < 3 or trequest.get_finance_total != 100.00 %}nav-link disabled{% elif trequest.requestsubmit.status_id == 2 %}completed{%endif %}"><a href="/travel/request/{{trequest.id}}/review/">Review & Submit</a></li>
+              <li class="{% if 'approval' in request.path  %}active{% elif trequest.requestsubmit.status_id != 2 %}nav-link disabled{% elif trequest.requestsubmit.submitapproval_b.approval_status_id == 3 and trequest.requestsubmit.submitapproval_f.approval_status_id == 3 and trequest.requestsubmit.submitapproval_s.approval_status_id == 3%}completed{%endif %}"><a href="/travel/request/{{trequest.id}}/approval/"> Approval</a></li>
+             
+
+            </ul>
+
+                   	{% block content_travel_step %}
+					{% endblock %}
+</div>
+
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+        <!-- /page content -->
+			<!-- /page content -->
+
+{% endblock %}
+{% block content_page_js %}
+
+
+  <!-- PNotify -->
+    <script src="{% static 'vendors/pnotify/dist/pnotify.js' %}"></script>
+    <script src="{% static 'vendors/pnotify/dist/pnotify.buttons.js' %}"></script>
+    <script src="{% static 'vendors/pnotify/dist/pnotify.nonblock.js' %}"></script>
+
+{% endblock %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>

@@ -37,26 +37,20 @@
                       <small>{{ icn.title }}</small>
                      
                     </td>
-                    <td>
-                      <ul class="list-inline">
+                         <td>
+                      <ul class="list-inline text-center">
                         
-                            <li>
-                          <img src="{% static 'images/user.png' %}" class="avatar" title="{{ icn.user.profile.full_name }} (Initiator)">
-                        </li>
-                      
-                        <li>
-                          <img src="{% static 'images/user.png' %}" class="avatar" title="{{ icn.technical_lead.user.profile.full_name }} (Technical Lead)">
-                        </li>
-                         <li>
-                          <img src="{% static 'images/user.png' %}" class="avatar" title="{{ icn.mel_lead.user.profile.full_name }} (MEL Lead)">
-                        </li>
-                           <li>
-                         <img src="{% static 'images/user.png' %}" class="avatar" title="{{ icn.finance_lead.user.profile.full_name }} (Finance Lead)">
-                        </li>
-                          <li>
-                          
-                           <img src="{% static 'images/user.png' %}" class="avatar" title="{{ icn.program_lead.user.profile.full_name }} (Program Lead)">
-                        </li>
+                            
+                          <img class="img-responsive img-circle profile_img" src="{% static 'images/user.png' %}" alt="avatar" title="{{ icn.user.profile.full_name}} - Initiator" style="width: 30px; height:30px; margin-top: 0px; margin-bottom:2px; margin-left: 0px;margin-right: 0px;">
+                            
+                           <div class="ln_solid" style="margin-top: 0px; margin-bottom:0px; margin-left: 0px;margin-right: 0px;"></div>
+                            <img class="img-responsive  img-circle profile_img" src="{% static 'images/user.png' %}" alt="avatar" title="{{ icn.technical_lead.user.profile.full_name}} - Technical Lead" style="width: 30px; height:30px; margin-top: 4px; margin-bottom:1px; margin-left: 0px;margin-right: 0px;">
+                              <img class="img-responsive  img-circle profile_img" src="{% static 'images/user.png' %}" alt="avatar" title="{{ icn.mel_lead.user.profile.full_name}} - MEL Lead" style="width: 30px; height:30px; margin-top: 4px; margin-bottom:1px; margin-left: 0px;margin-right: 0px;">
+                                <img class="img-responsive  img-circle profile_img" src="{% static 'images/user.png' %}" alt="avatar" title="{{ icn.finance_lead.user.profile.full_name}} - Finance Lead" style="width: 30px; height:30px; margin-top: 4px; margin-bottom:1px; margin-left: 0px;margin-right: 0px;">
+                                  <img class="img-responsive  img-circle profile_img" src="{% static 'images/user.png' %}" alt="avatar" title="{{ icn.program_lead.user.profile.full_name}} - Program Lead" style="width: 30px; height:30px; margin-top: 4px; margin-bottom:1px; margin-left: 0px;margin-right: 0px;">
+                       
+        
+                        
                         
                       </ul>
                     </td>
