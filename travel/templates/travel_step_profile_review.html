@@ -349,9 +349,9 @@
                     {% if trequest.requestsubmit.status %} {{trequest.requestsubmit.status.name }} {% else %} Pending {% endif %}
                     </button>
                     <div class="dropdown-menu">
-                      <a class="dropdown-item   {% if trequest.requestsubmit %}disabled{% endif %}" hx-get="{% url 'submit_request' trequest.id 2 %}" hx-target="#submit">Submit</a>
+                      {% if not trequest.requestsubmit %}<a class="dropdown-item " hx-get="{% url 'submit_request' trequest.id 2 %}" hx-target="#submit">Submit</a>{% endif %} 
                       <a class="dropdown-item {% if not trequest.requestsubmit or trequest.requestsubmit.status_id == 1 %}disabled{% endif %}"  hx-get="{% url 'edit_request' trequest.id 1 %}" hx-target="#submit">Cancel</a>
-                      <a class="dropdown-item   {% if not trequest.requestsubmit or trequest.requestsubmit.status_id == 2 %}disabled{% endif %}" hx-get="{% url 'edit_request' trequest.id 2 %}" hx-target="#submit">Re-Submit</a>
+                       {% if trequest.requestsubmit %}<a class="dropdown-item   {% if not trequest.requestsubmit or trequest.requestsubmit.status_id == 2 %}disabled{% endif %}" hx-get="{% url 'edit_request' trequest.id 2 %}" hx-target="#submit">Re-Submit</a>{%endif%}
                   
                      
                   </div> </td>

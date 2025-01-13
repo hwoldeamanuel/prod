@@ -54,6 +54,7 @@ def trequest_new(request):
            
             return redirect('trequest_detail',instance.pk) 
         
+        
     context = {'trequests':trequests,'form':form}
     return render(request, 'travel_step_profile_new.html', context)
     
@@ -313,14 +314,7 @@ def submit_request(request, id, sid):
                 SubmitApproval_S.objects.create(user = requestsubmit.security_reviewer,submitrequest_id = instance.id, approval_status=Approvalf_Status.objects.get(id=1))
                
                 send_notify(requestsubmit.id)
-            return HttpResponse(
-                status=204,
-                headers={
-                    'HX-Trigger': json.dumps({
-                        "RequestChanged": None,
-                        "showMessage": f"{instance.id} added."
-                    })
-                })
+                return HttpResponseClientRedirect('/travel/request/'+str(trequest.id)+'/review/')
 
     context = {'trequest':trequest, 'form':form}
     return render(request, 'partial/submit.html', context)
@@ -355,15 +349,8 @@ def edit_request(request, id, sid):
                 SubmitApproval_F.objects.create(user = requestsubmit.finance_reviewer,submitrequest_id = instance.id, approval_status=Approvalf_Status.objects.get(id=1))
                 SubmitApproval_S.objects.create(user = requestsubmit.security_reviewer,submitrequest_id = instance.id, approval_status=Approvalf_Status.objects.get(id=1))
                
-                send_notify(requestsubmit.id)
-            return HttpResponse(
-                status=204,
-                headers={
-                    'HX-Trigger': json.dumps({
-                        "RequestChanged": None,
-                        "showMessage": f"{instance.id} added."
-                    })
-                })
+                send_notify(requestsubmit.id, 1)
+            return HttpResponseClientRedirect('/travel/request/'+str(trequest.id)+'/review/')
 
     context = {'trequest':trequest, 'form':form}
     return render(request, 'partial/submit.html', context)
@@ -389,6 +376,9 @@ def approve_requestb(request, id, aid):
         form = ApprovalForm_B(request.POST,instance= submitapprovalb, aid=aid)
         if form.is_valid():
             instance = form.save()
+           
+            requstsubmit = RequestSubmit.objects.get(id =  submitapprovalb.submitrequest_id)
+            send_notify(requstsubmit.id, 2)
             return HttpResponse(
                 status=204,
                 headers={
@@ -410,6 +400,8 @@ def approve_requestf(request, id, aid):
         form = ApprovalForm_F(request.POST,instance= submitapprovalf, aid=aid)
         if form.is_valid():
             instance = form.save()
+            requstsubmit = RequestSubmit.objects.get(id =  submitapprovalf.submitrequest_id)
+            send_notify(requstsubmit.id, 3)
             return HttpResponse(
                 status=204,
                 headers={
@@ -432,6 +424,8 @@ def approve_requests(request, id, aid):
         form = ApprovalForm_S(request.POST,instance= submitapprovals, aid=aid)
         if form.is_valid():
             instance = form.save()
+            requstsubmit = RequestSubmit.objects.get(id =  submitapprovals.submitrequest_id)
+            send_notify(requstsubmit.id, 4)
             return HttpResponse(
                 status=204,
                 headers={
@@ -446,25 +440,42 @@ def approve_requests(request, id, aid):
     return render(request, 'partial/approval_forms.html', context)
 
 
-def send_notify(id):
+def send_notify(id, pid):
+    
     requstsubmit = get_object_or_404(RequestSubmit, id=id)
-    if requstsubmit.status_id == 2:
+
+    if pid == 1 and requstsubmit.status_id == 2:
         subject = 'Request for Travel Approval'
         initiator = requstsubmit.travel_request.user.profile.full_name
         user_role = 'Initiator'
-    elif requstsubmit.status_id == 1:
+    elif pid==1 and requstsubmit.status_id == 1:
         subject = 'Travel Request temporarily withdrawn'
         initiator = requstsubmit.travel_request.user.profile.full_name
         user_role = 'Initiator'
+    elif pid == 2 :
+        subject = 'Travel Request Status Changed'
+        initiator = requstsubmit.budget_holder.profile.full_name
+        user_role = 'Budget Holder'
+    elif pid == 3 :
+        subject = 'Travel Request Status Changed'
+        initiator = requstsubmit.finance_reviewer.profile.full_name
+        user_role = 'Financial Reviewer'
+    elif pid == 4 :
+        subject = 'Travel Request Status Changed'
+        initiator = requstsubmit.security_reviewer.profile.full_name
+        user_role = 'Security Clearance Focal'
         
   
         
 
     subject = subject
     context = {
-                "program": requstsubmit.travel_request.user.profile,
+                "program": requstsubmit.travel_request.destination ,
                 "title": requstsubmit.travel_request.purpose,
-                "id": requstsubmit.id,
+                "id": requstsubmit.travel_request_id,
+                "duration1": requstsubmit.travel_request.departure_date,
+                "duration2": requstsubmit.travel_request.return_date,
+        
                 
                 "creator": requstsubmit.travel_request.user.profile,
                 "initiator": initiator,
@@ -472,7 +483,7 @@ def send_notify(id):
             
                 
                 }
-    html_message = render_to_string("partial/intervention_mail.html", context=context)
+    html_message = render_to_string("partial/approval_mail.html", context=context)
     plain_message = strip_tags(html_message)
     recipient_list = [requstsubmit.budget_holder.profile.user.email, requstsubmit.finance_reviewer.profile.user.email, requstsubmit.security_reviewer.profile.user.email,requstsubmit.travel_request.user.email]
         

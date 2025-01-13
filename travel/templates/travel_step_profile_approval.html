@@ -337,7 +337,7 @@
                                     <tbody>
                                     <tr>
                                     <td>Name:</td>
-                                    <td> {{trequest.user.profile.full_name}} </td>
+                                    <td> {{trequest.user.profile.full_name}} </td> 
                                      <td>{{trequest.requestsubmit.budget_holder.profile.full_name}} </td>
                                       <td>{{trequest.requestsubmit.finance_reviewer.profile.full_name}} </td>
                                         <td>{{trequest.requestsubmit.security_reviewer.profile.full_name}} </td>
@@ -350,7 +350,7 @@
                                      <td >  
                                      {% if trequest.requestsubmit.submitapproval_b.approval_status_id == 1 %}
                                        <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-info dropdown-toggle py-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="btn btn-sm btn-info dropdown-toggle py-0 {% if request.user.id != trequest.requestsubmit.budget_holder.profile.user.id %} disabled {% endif %}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 
                     {% if trequest.requestsubmit.submitapproval_b %} {{trequest.requestsubmit.submitapproval_b.approval_status.name }} {% else %} Pending {% endif %}
                     </button>
@@ -365,7 +365,7 @@
                                                                   <td >  
                                      {% if trequest.requestsubmit.submitapproval_f.approval_status_id == 1 %}
                                        <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-info dropdown-toggle py-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="btn btn-sm btn-info dropdown-toggle py-0 {% if request.user.id != trequest.requestsubmit.finance_reviewer.profile.user.id %} disabled {% endif %} " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 
                     {% if trequest.requestsubmit.submitapproval_f %} {{trequest.requestsubmit.submitapproval_f.approval_status.name }} {% else %} Pending {% endif %}
                     </button>
@@ -380,7 +380,7 @@
                                                                     <td >  
                                      {% if trequest.requestsubmit.submitapproval_s.approval_status_id == 1 %}
                                        <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-info dropdown-toggle py-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="btn btn-sm btn-info dropdown-toggle py-0 {% if request.user.id != trequest.requestsubmit.security_reviewer.profile.user.id %} disabled {% endif %}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 
                     {% if trequest.requestsubmit.submitapproval_s %} {{trequest.requestsubmit.submitapproval_s.approval_status.name }} {% else %} Pending {% endif %}
                     </button>

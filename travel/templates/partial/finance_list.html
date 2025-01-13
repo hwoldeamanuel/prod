@@ -21,7 +21,7 @@
                                    <td><u><strong>{{total_code}}</strong></u></td>
                                    <td>
                                    
-                                   <a href="#" class="btn btn-sm btn-primary py-0  {% if trequest.get_finance_total == 100.00 %} disabled {% endif %}" style="font-size: 0.8em;" hx-get="/travel/add_finance_code/{{ trequest.id }}/" hx-target="closest tr" hx-swap="outerHTML"><i class="fa fa-plus-square"></i></a>
+                                   <a href="#" class="btn btn-sm btn-primary py-0  {% if trequest.get_finance_total == 100.00 or trequest.requestsubmit.status_id == 2  %} disabled {% endif %}" style="font-size: 0.8em;" hx-get="/travel/add_finance_code/{{ trequest.id }}/" hx-target="closest tr" hx-swap="outerHTML"><i class="fa fa-plus-square"></i></a>
                                   
                                    </td>
                                 </tr>  

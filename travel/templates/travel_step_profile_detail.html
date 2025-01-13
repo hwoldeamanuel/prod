@@ -1,77 +1,137 @@
 {% extends "travel_step.html" %}
 
 {% block content_travel_step %}
-
+{% load static %}
 {% load humanize%}
+<style>
+        table,
+       td {
+           
+            text-align: left;
+            padding: 0px;
+        }
 
-<section class="panel">
+        tr {
+            height: 10px;
+            padding: 0px;
+        }
+        th {
+            height: 10px;
+            padding: 0px;
+            font-size: 11px;
+            color:#5A738E;
+        }
+          td {
+            height: 10px;
+            padding: 0px;
+            font-size: 12px;
+            color:#5A738E;
+        }
+    </style>
 
-                     
-                        <div class="panel-body">
-                        </br>
-                         
-                      <span class="section">Travel Info</span>
-                       
-                            <div class="row">
-                         <div class="col-md-1 col-sm-1"></div>
-                            <label class="col-form-label col-md-5 col-sm-5 label-left" for="{{ form.title.id_for_label }}">Full Name: <span class="required"></span>{{ trequest.user.profile.full_name }}
-                            </label> 
-                            <label class="col-form-label col-md-3 col-sm-3 label-left" for="{{ form.title.id_for_label }}">Employee ID: <span class="required"></span>{{ trequest.user.id }}
-                            </label> 
-                              <label class="col-form-label col-md-3 col-sm-3 label-left" for="{{ form.title.id_for_label }}">Field Office: <span class="required"></span>{{ trequest.user.profile.portfolio }}
-                            </label> 
+    <div class="col-md-7 col-sm-7  profile_left">
+              <div class="profile_img">
+                        <div id="crop-avatar">
+                          <!-- Current avatar -->
+                          <img class="img-responsive avatar-view" src="{% static 'images/logo.png' %}" alt="Avatar" title="Change the avatar" style="width: 100px; height: auto;" >
                         </div>
-                         <div class="row">
-                         <div class="col-md-1 col-sm-1"></div>
-                            <label class="col-form-label col-md-6 col-sm-6 label-left" for="{{ form.title.id_for_label }}">Destination(s): <span class="required"></span>{{ trequest.destination }}
-                            </label> 
-                            
-                             
-                            
-                              
+              </div>
+                     
+                      <!-- end of skills -->
 
-                                    
-                          </div>
-                           <div class="row">
-                         <div class="col-md-1 col-sm-1"></div>
-                            <label class="col-form-label col-md-10 col-sm-10 label-left" for="{{ form.title.id_for_label }}">Purpose: <span class="required"></span>{{ trequest.purpose }}
-                            </label> 
-                            
-                             
-                            
-                              
+    </div>
+  <div class="col-md-5 col-sm-5 ">
 
-                                    
-                          </div>
-                                                      <div class="row">
-                         <div class="col-md-1 col-sm-1"></div>
-                            <label class="col-form-label col-md-5 col-sm-5 label-left" for="{{ form.title.id_for_label }}">Departure Date: <span class="required"></span>{{ trequest.departure_date }}
-                            </label> 
-                           <label class="col-form-label col-md-5 col-sm-5 label-left" for="{{ form.title.id_for_label }}">Return Date: <span class="required"></span>{{ trequest.return_date }}
-                            </label> 
-                            </div>
-                           <div class="row">
-                            <div class="col-md-1 col-sm-1"></div>
-                             <label class="col-form-label col-md-1 col-sm-1 label-left" for="{{ form.title.id_for_label }}">Travel:
-                            </label> 
-                            <label class="col-form-label col-md-2 col-sm-2 label-left" for="{{ form.title.id_for_label }}"> Business:<div class="icheckbox_flat-green {% if trequest.business %}checked{% endif %}" style="position: relative;"><input type="" class="flat" style="position: absolute; opacity: 0;"><ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 80%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins></div>
-                            </label>
-                                        <label class="col-form-label col-md-2 col-sm-2 label-left" for="{{ form.title.id_for_label }}"> R and R:<div class="icheckbox_flat-green {% if trequest.randr %}checked{% endif %}" style="position: relative;"><input type="" class="flat" style="position: absolute; opacity: 0;"><ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 80%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins></div>
-                            </label>               
-                                 <label class="col-form-label col-md-2 col-sm-2 label-left" for="{{ form.title.id_for_label }}">Relocation: <div class="icheckbox_flat-green {% if trequest.relocation %}checked{% endif %}" style="position: relative;"><input type="" class="flat" style="position: absolute; opacity: 0;"><ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 80%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins></div>
-                            </label>   
-                             <label class="col-form-label col-md-2 col-sm-2 label-left" >Other: <div class="icheckbox_flat-green {% if trequest.other %}checked{% endif %}" style="position: relative;"><input type="" class="flat" style="position: absolute; opacity: 0;"><ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 80%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins></div>
-                            </label>   
-                          </div>
+              <div class="title">
+                        <div class="col-md-12">
+                          <h6>Travel Approval Request</h6>
+                        </div>
+ <div class="col-md-12">
+                          <h6> Field Finance Manual - Form 6.5A</h5>
+                        </div>
                          
+                        
+                      </div>
+                      <!-- start of user-activity-graph -->
+                     
+                       
+                  </div>
+
+                 
+                  
+    <div class="container">
+      <div class="card">
+          <div class="card-header py-0" style="margin-top:0px; margin-bottom:0px">
+
+           <strong>A. Travel Information</strong> 
+ 
+
+          </div>
+ 
+<div class="col-sm-12 col-md-12" >
+
+
+
+<table class="table table-sm  " style="margin-top:0px; margin-bottom:0px">
+                      <thead>
+                       
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <th>Name</th>
+                          <td class="text-left" colspan="3">{{trequest.user.profile.full_name}}</td>
+                          
+                        </tr>
+                        <tr>
+                          <th >Emply ID Code:
+</th>
+                          <td>00000{{trequest.user.id}}</td>
+                          <th>Office</th>
+                          <td>{{trequest.user.profile.portfolio}}</td>
+                        </tr>
+                        <tr>
+                          <th>Destination(s):
+</th>
+                          <td class="text-left" colspan="3">{{trequest.destination}}</td>
+                        </tr>
+                          <tr>
+                          <th>Purpose:
+</th>
+                          <td class="text-left" colspan="3">{{trequest.purpose}}</td>
+                        </tr>
+                        <tr>
+                          <th >Departure Date:
+</th>
+                          <td>{{trequest.departure_date}}</td>
+                          <th>Return Date</th>
+                          <td>{{trequest.return_date}}</td>
+                        </tr>
+                        <tr>
+                          <td ><div class="icheckbox_flat-green {% if trequest.business %}checked{% endif %}" style="position: relative;"><input type="" class="flat" style="position: absolute; opacity: 0;"><ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 80%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins></div>
+                          Business</td>
+                          <td ><div class="icheckbox_flat-green {% if trequest.relocation %}checked{% endif %}" style="position: relative;"><input type="" class="flat" style="position: absolute; opacity: 0;"><ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 80%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins></div>
+                          Relocation</td>
+                           <td ><div class="icheckbox_flat-green {% if trequest.randr %}checked{% endif %}" style="position: relative;"><input type="" class="flat" style="position: absolute; opacity: 0;"><ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 80%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins></div>
+                          R and R</td>
+                           <td ><div class="icheckbox_flat-green {% if trequest.other %}checked{% endif %}" style="position: relative;"><input type="" class="flat" style="position: absolute; opacity: 0;"><ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 80%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins></div>
+                          Other</td>
+                        </tr>
+                        <tr>
+                      </tbody>
+                    </table>
+</div>
+                                    
+                          </div>
+                           
    
                           <div class="ln_solid"></div>
                           <div class="row">
                            <div class="col-5 col-sm-5"></div>
-											 <a class="btn btn-sm btn-success" href="{% url 'trequest_edit' trequest.id %}" ><i class="fa fa-edit m-right-xs"></i>Edit Travel</a>
+
+											 <a class="btn btn-success  {% if trequest.requestsubmit.status_id == 2 %} disabled {% endif %}" href="{% url 'trequest_edit' trequest.id %}" ><i class="fa fa-edit m-right-xs"></i>Edit T. Info</a>
                           
                         </div>
 
                       </section>
-
+</div>
 {% endblock content_travel_step %}
