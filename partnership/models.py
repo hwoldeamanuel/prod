@@ -2,8 +2,7 @@ from django.db import models
 from app_admin.models import Portfolio_Type, Portfolio_Category, Region, Zone, Woreda
 from portfolio.models import Portfolio
 from program.models import Program
-# Create your models here.
-#jdkfljdlkereddddd
+# Create your models hedfd
 import datetime
 from django.contrib.auth.models import User
     
