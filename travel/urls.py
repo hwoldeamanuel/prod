@@ -38,8 +38,9 @@ htmxpatterns = [
    path('approve_requestb/<int:id>/<int:aid>/', views.approve_requestb, name='approve_requestb'), 
    path('approve_requestf/<int:id>/<int:aid>/', views.approve_requestf, name='approve_requestf'), 
    path('approve_requests/<int:id>/<int:aid>/', views.approve_requests, name='approve_requests'), 
-
- 
+   path('request_filter/', views.request_filter, name='request_filter'), 
+   path('add_travel_costp/<int:id>/', views.add_travel_costp, name='add_travel_costp'),  
+   path('edit_travel_costp/<int:id>/', views.edit_travel_costp, name='edit_travel_costp'),
 ]
 
 urlpatterns += htmxpatterns

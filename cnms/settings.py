@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'django_select2',
     'django.contrib.humanize',
     'travel',
+    'partnership',
     'django_migrate_or_rollback',
     
     

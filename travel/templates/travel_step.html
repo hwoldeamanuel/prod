@@ -139,7 +139,35 @@ span.nmbr {
     content: "";
     border: none;
   }
- 
+ .input-xs {
+        height: 22px;
+        padding: 2px 2px;
+        font-size: 12px;
+        line-height: 1.5;
+        border-radius: 3px;
+        }
+  .iCheck-helper {
+        position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;
+        
+       
+  
+  }
+  .icheckbox_flat-green1, .iradio_flat-green1 {
+    position: relative;
+    display: inline-block;
+    border: 1px solid #a9a9a9;
+    border-radius: .25em;
+    width: 1.3em;
+    height: 1.3em;
+    float: left;
+    margin-right: .5em;
+    accent-color: #169F85;
+    
+   
+    
+   
+    
+}
 }
 </style>
 
@@ -165,51 +193,59 @@ span.nmbr {
                     <div class="clearfix"></div>
  
                   </div>
+                   <div class="x_content">
+                  <div  class="row">
+                 
 <a href="/travel/request/new/"  class="btn btn-sm btn-primary btn-block" ><i class="fa fa-plus"></i> New Request</a>
-
-                     <div class="input-group form-group pull-right top_search">
-                    <input type="text" class="form-control" placeholder="Search for...">
+ <form hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'>
+            {% csrf_token %}  
+             <div class="input-group form-group pull-right top_search">
+           
+                  <input name="search" type="text" class="form-control" placeholder="Search for..." 
+                  hx-get="/travel/request_filter/"
+                  hx-trigger="keyup changed, search"
+                  hx-target="#travel_list">
+                 
+                    
                     <span class="input-group-btn">
-                      <button class="btn btn-default" type="button">Go!</button>
+                      <button class="btn btn-default " type="button">Go!</button>
                     </span>
                   </div>
-                  </br>
-                  <div class="x_content overflow-auto menu_fixed ">
-                     <div style="height:800px;">
+                  </div>
+                 </form>
+                
+                     <div class="row" id="travel_list">
                      
-                         {% if trequest  %}
-                               <a href="/travel/request/{{trequest.id}}/detail/">
-                          <div class="mail_list">
-                            <div class="left">
-                              <i class="fa fa-circle"></i> <i class="fa fa-edit"></i>
-                            </div>
-                            <div class="right">
-                              <h3 class="text-truncate">{{trequest.user.profile.first_name}} <small>{{trequest.departure_date|date:"M d"}}</small></h3>
-                             <p><span class="badge">Purpose</span> {{trequest.purpose}}</p>
-                             <p><span class="badge">Place</span> {{trequest.destination}}</p>
-                            </div>
-                          </div>
-                        </a>
-                        {% endif %}
-                        {% for list in trequests %}
-                        {% if list.id != trequest.id %}
-                        <a href="/travel/request/{{list.id}}/detail/">
-                          <div class="mail_list">
-                            <div class="left">
-                              <i class="fa fa-circle-o"></i>
-                              
-                            </div>
-                            <div class="right">
-                              <h3>{{list.user.profile.first_name}} <small>{{list.created_at|date:"M d"}}</small></h3>
-                              <p><span class="badge">Purpose</span> {{list.purpose}}</p>
-                                                         <p><span class="badge">Place</span> {{list.destination}}</p>
-                            </div>
-                          </div>
-                        </a>
-                        {% endif %}
-                        {% endfor %}
+             <ul class="nav nav-tabs  list-unstyled msg_list" >
+             {% for list in trequests %}
+           
+                    <li "nav-item" style="width:100%" class="{% if list.id|stringformat:"i" in  request.path %}nav-link active {% endif %}"aria-selected="{% if list.id|stringformat:"i" in  request.path %}true {% else %}false {% endif %}">
+                      <a style="width:100%" class="nav-link" href = "/travel/request/{{list.id}}/detail/" >
+                        <span >
+                                                       <img class="img-responsive  img-circle profile_img" src="{% static 'images/user.png' %}" alt="avatar" title="{{ list.user.profile.full_name}}" style="width: 30px; height:30px; margin-top: 0px; margin-bottom:1px; margin-left: 0px;margin-right: 0px;">
+                        </span>
+                        <span>
+                          <span style="{% if list.id|stringformat:"i" in  request.path %} color:#245594;{% endif %}">{{list.user.profile.first_name}} {{list.user.profile.last_name|make_list|first}}</span>
+                          <span class="pull-right"><small>{{list.created_at|date:"M d"}}</small></span>
+                        </span>
+                        <span class="message" style="{% if list.id|stringformat:"i" in  request.path %} color:#245594;{% endif %}">
+                         <i class="fa fa-map-marker"></i> {{list.destination}}
+                        </span>
+                        <span class="message" style="{% if list.id|stringformat:"i" in  request.path %} color:#245594;{% endif %}">
+                          <i class="fa fa-ellipsis-v"></i> {{list.purpose}}
+                        </span>
+                        <span class="message" style="{% if list.id|stringformat:"i" in  request.path %} color:#245594;{% endif %}">
+                          <i class="fa fa-calendar"></i> {{list.departure_date}} -  {{list.return_date}}
+                        </span>
+                      </a>
+                    </li>
+                
+                    {% endfor %}
+                   
+                  </ul>
                        
                       </div>
+                      
                   </div>               </div>
 </div>
 <div class="col-md-9 col-sm-9 ">
@@ -222,9 +258,9 @@ span.nmbr {
                   </div>
                  <div class="x_content">
                      <ul class="nav nav-tabs wizard">
-              <li  class="{% if 'detail' in request.path or 'new' in request.path %}active{% elif trequest  %}completed{% endif %}"><a href="{% if trequest %}/travel/request/{{trequest.id}}/detail/{% else %}/travel/request/new/{% endif %}">Travel <small>Information</small></a></li>
-              <li class="{% if 'cost' in request.path %}active{% elif trequest.estimated_cost_set.count > 2 and trequest.get_finance_total == 100.00 %}completed{% elif not trequest %}nav-link disabled{% endif %}"><a href="/travel/request/{{trequest.id}}/cost/" >Estimated Cost</a></li></a></li>
-              <li class="{% if 'review' in request.path  %}active{% elif trequest.estimated_cost_set.count < 3 or trequest.get_finance_total != 100.00 %}nav-link disabled{% elif trequest.requestsubmit.status_id == 2 %}completed{%endif %}"><a href="/travel/request/{{trequest.id}}/review/">Review & Submit</a></li>
+              <li  class="{% if 'detail' in request.path or 'new' in request.path %}active{% elif trequest.get_finance_total == 100.00   %}completed{% endif %}"><a href="{% if trequest %}/travel/request/{{trequest.id}}/detail/{% else %}/travel/request/new/{% endif %}">Travel <small>Information</small></a></li>
+              <li class="{% if 'cost' in request.path %}active{% elif not trequest or trequest.get_finance_total != 100.00  %}nav-link disabled{% elif trequest.travel_days == trequest.acc_days and trequest.travel_days2 == trequest.pd_days %}completed{% endif %}"><a href="/travel/request/{{trequest.id}}/cost/" >Estimated Cost</a></li></a></li>
+              <li class="{% if 'review' in request.path  %}active{% elif trequest.travel_days != trequest.acc_days and trequest.travel_days2 != trequest.pd_days %}nav-link disabled{% elif trequest.requestsubmit.status_id == 2 %}completed{%endif %}"><a href="/travel/request/{{trequest.id}}/review/">Review & Submit</a></li>
               <li class="{% if 'approval' in request.path  %}active{% elif trequest.requestsubmit.status_id != 2 %}nav-link disabled{% elif trequest.requestsubmit.submitapproval_b.approval_status_id == 3 and trequest.requestsubmit.submitapproval_f.approval_status_id == 3 and trequest.requestsubmit.submitapproval_s.approval_status_id == 3%}completed{%endif %}"><a href="/travel/request/{{trequest.id}}/approval/"> Approval</a></li>
              
 

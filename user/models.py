@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from portfolio.models import Portfolio
+from app_admin.models import FieldOffice
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True,related_name='profile')
@@ -9,6 +10,8 @@ class Profile(models.Model):
     job_title =  models.CharField(max_length=100,null=True, blank=True)
     portfolio = models.ForeignKey(Portfolio, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='portfolio')
     contact_number = models.CharField(max_length=12, null=True, blank=True)
+    field_office = models.ForeignKey(FieldOffice, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='ff')
+    emp_id =  models.PositiveIntegerField(null=True, blank=True)
     reports_to = models.ForeignKey(
         User,
         related_name='inferiors',

@@ -4,7 +4,7 @@ from program.models import TravelUserRoles
 from app_admin.models import Travel_Cost, Fund, Lin_Code, Approvalf_Status, Submission_Status
 from django.db.models import Sum
 from django.db.models import Q
-
+from django.db.models.functions import ExtractDay
 
 # Create your models here.
  
@@ -34,7 +34,14 @@ class Travel_Request(models.Model):
         return Estimated_Cost.objects.filter(Q(travel_request=self)  & ~Q(type=6)).aggregate(Sum('total_cost'))['total_cost__sum']
     def get_tcostp_total(self):
         return Estimated_Cost.objects.filter(Q(travel_request=self)  & Q(type=6)).aggregate(Sum('total_cost'))['total_cost__sum']
-  
+    def travel_days(self):
+        return  (self.return_date - self.departure_date).days
+    def travel_days2(self):
+        return  ((self.return_date - self.departure_date).days + 1)
+    def pd_days(self):
+        return  Estimated_Cost.objects.filter(Q(travel_request=self)  & Q(type=6)).aggregate(Sum('number_unit_day'))['number_unit_day__sum']
+    def acc_days(self):
+        return  Estimated_Cost.objects.filter(Q(travel_request=self)  & Q(type=3)).aggregate(Sum('number_unit_day'))['number_unit_day__sum']
 class Estimated_Cost(models.Model):
   
     travel_request =  models.ForeignKey(

@@ -43,6 +43,23 @@
                             </div>
                         
                         </div>
+                          <div class="item form-group">
+                            <label class="col-form-label col-md-2 col-sm-2 label-align" for="first-name">Field Office:<span class="required"></span>
+                            </label>
+                            <div class="col-md-3 col-sm-3 ">
+                                
+                                    {% render_field profile_form.field_office class+="form-control form-control-sm" %}
+                                    <div class="invalid-feedback">{{ profile_form.field_office.errors|first }}</div>
+                            </div>
+                               <label class="col-form-label col-md-2 col-sm-2 label-align" for="first-name">Emp ID:<span class="required"></span>
+                            </label>
+                            <div class="col-md-3 col-sm-3 ">
+                                
+                                     {% render_field profile_form.emp_id class="form-control form-control-sm" %}
+                                <div class="invalid-feedback">{{ profile_form.emp_id.errors|first }}</div>
+                            </div>
+                        
+                        </div>
            <div class="item form-group">
                 <label class="col-form-label col-md-2 col-sm-2 label-align" for="first-name">Email:<span class="required"></span>
                                                 </label>

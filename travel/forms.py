@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django_select2 import forms as s2forms
 from program.models import TravelUserRoles, Program
 from user.models import Profile
-
+from django.db.models import Q
 
 
 
@@ -19,7 +19,7 @@ class TravelRequestForm(forms.ModelForm):
           
             attrs={
                'type': 'date',
-                'class': 'form-control'
+                'class': 'form-control input-xs'
               
                 
                 
@@ -29,12 +29,15 @@ class TravelRequestForm(forms.ModelForm):
         self.fields['return_date'].widget = forms.widgets.DateInput(
             attrs={
                 'type': 'date', 
-                'class': 'form-control'
+                'class': 'form-control input-xs'
                 }
             )
-        self.fields['destination'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'1'  }    )
-        self.fields['purpose'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control', 'rows':'2'  }    )
-        self.fields['business'].widget = forms.widgets.CheckboxInput(attrs={'type':'checkbox', 'class': 'form-control-sm', 'rows':'2' })
+        self.fields['destination'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control input-xs', 'rows':'1'  }    )
+        self.fields['purpose'].widget = forms.widgets.Textarea(attrs={'type':'textarea', 'class': 'form-control input-xs', 'rows':'2'  }    )
+        self.fields['business'].widget = forms.widgets.CheckboxInput(attrs={'type':'checkbox', 'class': 'form-control-sm icheckbox_flat-green1 iradio_flat-green1' })
+        self.fields['relocation'].widget = forms.widgets.CheckboxInput(attrs={'type':'checkbox', 'class': 'form-control-sm icheckbox_flat-green1 iradio_flat-green1' })
+        self.fields['randr'].widget = forms.widgets.CheckboxInput(attrs={'type':'checkbox', 'class': 'form-control-sm icheckbox_flat-green1 iradio_flat-green1' })
+        self.fields['other'].widget = forms.widgets.CheckboxInput(attrs={'type':'checkbox', 'class': 'form-control-sm icheckbox_flat-green1 iradio_flat-green1' })
         myfield=['destination',
             'purpose',
             'departure_date',
@@ -66,23 +69,23 @@ class TravelCostForm(forms.ModelForm):
              ty = Estimated_Cost.objects.filter(travel_request_id=trequest.id).values('type')
             
 
-         self.fields['type'].widget =  forms.widgets.Select(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
+         self.fields['type'].widget =  forms.widgets.Select(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select input-xs',  'data-width': '100%'})
          if self.instance is not None and self.instance.pk is not None:
                self.fields['type'].choices = [
                         (travel_cost.id, travel_cost.name) for travel_cost in Travel_Cost.objects.filter(id=self.instance.type_id)
                     ]
          elif ty:
                self.fields['type'].choices = [
-                        (travel_cost.id, travel_cost.name) for travel_cost in Travel_Cost.objects.all().exclude(id__in=ty)
+                        (travel_cost.id, travel_cost.name) for travel_cost in Travel_Cost.objects.filter(id__lt=6).exclude(id__in=ty)
                     ]
              
          else:
                self.fields['type'].choices = [
-                        (travel_cost.id, travel_cost.name) for travel_cost in Travel_Cost.objects.all()
+                        (travel_cost.id, travel_cost.name) for travel_cost in Travel_Cost.objects.all().exclude(id = 6)
                     ]
-         self.fields['description'].widget = forms.widgets.TextInput(attrs={'type':'text', 'class': 'form-control form-control-sm' }    )
-         self.fields['number_unit_day'].widget = forms.widgets.NumberInput(attrs={'type':'number', 'class': 'form-control form-control-sm' }    )
-         self.fields['unit_cost'].widget = forms.widgets.NumberInput(attrs={'type':'number', 'class': 'form-control form-control-sm', 'rows':'1'  }    )
+         self.fields['description'].widget = forms.widgets.TextInput(attrs={'type':'text', 'class': 'form-control form-control-sm input-xs' }    )
+         self.fields['number_unit_day'].widget = forms.widgets.NumberInput(attrs={'type':'number', 'class': 'form-control form-control-sm input-xs' }    )
+         self.fields['unit_cost'].widget = forms.widgets.NumberInput(attrs={'type':'number', 'class': 'form-control form-control-sm input-xs'  }    )
          myfield=['type',
             'description',
             'number_unit_day',
@@ -102,16 +105,61 @@ class TravelCostForm(forms.ModelForm):
             ]
 
          exclude = ['travel_request',]
+
+class TravelCostFormp(forms.ModelForm):
+     def __init__(self, *args, **kwargs):
+         trequest = kwargs.pop('trequest', None)
+         super(TravelCostFormp, self).__init__(*args, **kwargs)
+        
+         if trequest:
+             ty = Estimated_Cost.objects.filter(travel_request_id=trequest.id).values('type')
+            
+
+         self.fields['type'].widget =  forms.widgets.Select(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select input-xs',  'data-width': '100%'})
+         if self.instance is not None and self.instance.pk is not None:
+               self.fields['type'].choices = [
+                        (travel_cost.id, travel_cost.name) for travel_cost in Travel_Cost.objects.filter(id=self.instance.type_id)
+                    ]
+         elif ty:
+               self.fields['type'].choices = [
+                        (travel_cost.id, travel_cost.name) for travel_cost in Travel_Cost.objects.filter(id=6).exclude(id__in=ty)
+                    ]
+             
+         else:
+               self.fields['type'].choices = [
+                        (travel_cost.id, travel_cost.name) for travel_cost in Travel_Cost.objects.filter(id=6)
+                    ]
+         self.fields['description'].widget = forms.widgets.TextInput(attrs={'type':'text', 'class': 'form-control form-control-sm input-xs' }    )
+         self.fields['number_unit_day'].widget = forms.widgets.NumberInput(attrs={'type':'number', 'class': 'form-control form-control-sm input-xs' }    )
+         self.fields['unit_cost'].widget = forms.widgets.NumberInput(attrs={'type':'number', 'class': 'form-control form-control-sm input-xs'  }    )
+         myfield=['type',
+            'description',
+            'number_unit_day',
+            'unit_cost', 
+            
+            ]
+         for field in myfield:
+             self.fields[field].required = True 
     
-   
+     class Meta:
+         model = Estimated_Cost
+         fields=['type',
+            'description',
+            'number_unit_day',
+            'unit_cost', 
+            
+            ]
+
+         exclude = ['travel_request',]
+
 class FinanceCodeForm(forms.ModelForm):
      def __init__(self, *args, **kwargs):
          super().__init__(*args, **kwargs)
  
-         self.fields['dept'].widget = forms.widgets.NumberInput(attrs={'type':'number', 'class': 'form-control form-control-sm',  }    )
-         self.fields['fund'].widget =  forms.widgets.Select(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
-         self.fields['lin_code'].widget =  forms.widgets.Select(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select',  'data-width': '100%'})
-         self.fields['value'].widget = forms.widgets.NumberInput(attrs={'type':'number', 'class': 'form-control form-control-sm', 'rows':'1'  }    )
+         self.fields['dept'].widget = forms.widgets.NumberInput(attrs={'type':'number', 'class': 'form-control  input-xs', 'data-width': '100%' }    )
+         self.fields['fund'].widget =  forms.widgets.Select(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select input-xs',  'data-width': '100%'})
+         self.fields['lin_code'].widget =  forms.widgets.Select(attrs={ 'type': 'checkbox', 'class':'form-control form-control-sm select input-xs',  'data-width': '100%'})
+         self.fields['value'].widget = forms.widgets.NumberInput(attrs={'type':'number', 'class': 'form-control form-control-sm input-xs'}    )
          myfield=['fund',
             'lin_code',
             'value',

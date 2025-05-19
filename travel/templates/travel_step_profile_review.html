@@ -345,7 +345,7 @@
                                       <tr>
                                     <td>Status:</td>
                                    <td >                         <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-info dropdown-toggle py-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="btn btn-sm btn-info dropdown-toggle py-0  {% if request.user.id != trequest.user.id %} disabled {% endif %}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     {% if trequest.requestsubmit.status %} {{trequest.requestsubmit.status.name }} {% else %} Pending {% endif %}
                     </button>
                     <div class="dropdown-menu">

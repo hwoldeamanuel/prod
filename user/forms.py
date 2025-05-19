@@ -7,6 +7,7 @@ from django.forms import EmailField
 
 
 from django.contrib.auth.models import User
+from app_admin.models import FieldOffice
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(max_length=254, help_text='Required. Inform a valid email address.')
@@ -41,7 +42,7 @@ class ProfileForm(forms.ModelForm):
         if user:
             self.fields['reports_to'].queryset = User.objects.all().exclude(id=user.id)
             self.fields['reports_to'].initial=User.objects.all().exclude(id=user.id).first()
-        
+            self.fields['field_office'].queryset=FieldOffice.objects.all()
         self.fields['first_name'].required = True 
         self.fields['last_name'].required = True
         self.fields['portfolio'].required = True
@@ -56,6 +57,8 @@ class ProfileForm(forms.ModelForm):
             'job_title',
             'portfolio',
             'reports_to',
+            'field_office',
+            'emp_id',
             ]
 
 class ProfileFormAdd(forms.ModelForm):
@@ -66,7 +69,7 @@ class ProfileFormAdd(forms.ModelForm):
         if user:
             self.fields['reports_to'].queryset = User.objects.all().exclude(id=user.id)
             self.fields['reports_to'].initial=User.objects.all().exclude(id=user.id).first()
-        
+            self.fields['field_office'].queryset=FieldOffice.objects.all()
         self.fields['first_name'].required = True 
         self.fields['last_name'].required = True
         self.fields['portfolio'].required = True
@@ -81,6 +84,8 @@ class ProfileFormAdd(forms.ModelForm):
             'job_title',
             'portfolio',
             'reports_to',
+            'field_office',
+            'emp_id',
             ]
         
 class LoginForm(AuthenticationForm):
@@ -105,7 +110,7 @@ class UserForm(forms.ModelForm):
         if user:
             self.fields['reports_to'].queryset = User.objects.all().exclude(id=user.id)
             self.fields['reports_to'].initial=User.objects.all().exclude(id=user.id).first()
-        
+        self.fields['field_office'].queryset = FieldOffice.objects.all()
         
         self.fields['first_name'].required = True 
         self.fields['last_name'].required = True

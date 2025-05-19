@@ -5,7 +5,7 @@ from django_htmx.http import HttpResponseClientRefresh
 # Create your views here.
 import json
 from django.contrib.auth.decorators import login_required
-from .forms import TravelRequestForm, TravelCostForm, FinanceCodeForm, RequestSubmitForm, RequestCancelForm, ApprovalForm_B, ApprovalForm_F, ApprovalForm_S
+from .forms import TravelRequestForm, TravelCostForm, FinanceCodeForm, RequestSubmitForm, RequestCancelForm, ApprovalForm_B, ApprovalForm_F, ApprovalForm_S, TravelCostFormp
 from .models import Travel_Request, Estimated_Cost, Finance_Code,RequestSubmit, SubmitApproval_B, SubmitApproval_F, SubmitApproval_S
 from program.models import TravelUserRoles, Program
 from app_admin.models import Submission_Status, Approvalf_Status
@@ -15,12 +15,19 @@ from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.mail import send_mail, EmailMultiAlternatives
-
+from user.models import Profile
+from program.models import TravelUserRoles
+from django.db.models import Q
 
 
 @login_required(login_url='login') 
 def travel(request):
-    trequests = Travel_Request.objects.all()
+   
+    user = request.user
+    profile = Profile.objects.filter(user=user)
+   
+    userroles = TravelUserRoles.objects.filter(profile__in=profile)
+    trequests =  Travel_Request.objects.filter(Q(user=user) | Q(requestsubmit__budget_holder__in=userroles) | Q(requestsubmit__finance_reviewer__in=userroles)| Q(requestsubmit__security_reviewer__in=userroles))
     context = {'trequests':trequests}
    
  
@@ -29,6 +36,31 @@ def travel(request):
    
 
     return render(request, 'travel_step.html', context)
+
+@login_required(login_url='login')       
+def request_filter(request):
+    user = request.user
+    profile = Profile.objects.filter(user=user)
+   
+    userroles = TravelUserRoles.objects.filter(profile__in=profile)
+    trequests =  Travel_Request.objects.filter(Q(user=user) | Q(requestsubmit__budget_holder__in=userroles) | Q(requestsubmit__finance_reviewer__in=userroles)| Q(requestsubmit__security_reviewer__in=userroles))
+    query = request.GET.get('search', '')
+   
+
+    
+    if query:
+        ul = Profile.objects.filter(Q(first_name__icontains=query))
+        trequests = trequests.filter(Q(destination__icontains=query)|Q(purpose__icontains=query)|Q(departure_date__icontains=query)|Q(return_date__icontains=query)|Q(requestsubmit__budget_holder__profile__in=ul)|Q(requestsubmit__security_reviewer__profile__in=ul)|Q(requestsubmit__finance_reviewer__profile__in=ul))
+      
+        
+        
+        
+       
+    else:
+        trequests = trequests.all()
+
+    context = {'trequests': trequests}
+    return render(request, 'partial/request_list.html', context)  
 
 @login_required(login_url='login') 
 def trequest_detail(request, id):
@@ -56,7 +88,7 @@ def trequest_new(request):
         
         
     context = {'trequests':trequests,'form':form}
-    return render(request, 'travel_step_profile_new.html', context)
+    return render(request, 'travel_step_profile_1.html', context)
     
 @login_required(login_url='login') 
 def trequest_edit(request, id):
@@ -76,7 +108,7 @@ def trequest_edit(request, id):
 
     form = TravelRequestForm(instance=trequest) 
     context = {'form':form, 'trequests':trequests,'trequest':trequest}
-    return render(request, 'travel_step_profile_new.html', context)
+    return render(request, 'travel_step_profile_1.html', context)
 
 
 
@@ -93,7 +125,7 @@ def trequest_cost(request, id):
     else:
         context = {'trequest':trequest, 'trequests':trequests}
     
-    return render(request, 'travel_step_profile_cost.html', context)
+    return render(request, 'travel_step_profile_costs.html', context)
 
 @login_required(login_url='login') 
 def add_travel_cost(request, id):
@@ -106,17 +138,9 @@ def add_travel_cost(request, id):
             instance.travel_request = trequest
             instance.save()
             trequest = Travel_Request.objects.get(id=instance.travel_request_id)
-            if Estimated_Cost.objects.filter(travel_request_id=trequest.id).count() == 2 or Estimated_Cost.objects.filter(travel_request_id=trequest.id).count() < 2:
-                return HttpResponseClientRedirect('/travel/request/'+str(trequest.id)+'/cost/')
-            else:
-                return HttpResponse(
-                    status=204,
-                    headers={
-                        'HX-Trigger': json.dumps({
-                            "CostChanged": None,
-                            "showMessage": f"{instance.id} added."
-                        })
-                    })         
+            
+            return HttpResponseClientRedirect('/travel/request/'+str(trequest.id)+'/cost/')
+                 
        
     context = {'form':form, 'trequest':trequest}
     return render(request, 'partial/add_cost.html', context)
@@ -136,14 +160,9 @@ def edit_travel_cost(request, id):
         form = TravelCostForm(request.POST, instance=travel_cost)
         if form.is_valid():
             instance = form.save()
-            return HttpResponse(
-                status=204,
-                headers={
-                    'HX-Trigger': json.dumps({
-                        "CostChanged": None,
-                        "showMessage": f"{instance.id} added."
-                    })
-                })          
+            trequest = Travel_Request.objects.get(id=instance.travel_request_id)
+            
+            return HttpResponseClientRedirect('/travel/request/'+str(trequest.id)+'/cost/')       
           
 
     form = TravelCostForm(instance=travel_cost) 
@@ -153,15 +172,11 @@ def edit_travel_cost(request, id):
 @login_required(login_url='login') 
 def delete_travel_cost(request, id):
     travel_cost = Estimated_Cost.objects.get(pk=id)
+    trequest = Travel_Request.objects.get(id=travel_cost.travel_request_id)
     travel_cost.delete()
-    return HttpResponse(
-                status=204,
-                headers={
-                    'HX-Trigger': json.dumps({
-                        "CostChanged": None,
-                        "showMessage": f"{travel_cost.id} deleted."
-                    })
-                })    
+    
+            
+    return HttpResponseClientRedirect('/travel/request/'+str(trequest.id)+'/cost/')   
 
 
 @login_required(login_url='login') 
@@ -175,18 +190,9 @@ def add_finance_code(request, id):
             instance.travel_request = trequest
             instance.save()
             trequest = Travel_Request.objects.get(id=instance.travel_request_id)
-            print(trequest.get_finance_total())
-            if trequest.get_finance_total() == 100.00 :
-                return HttpResponseClientRedirect('/travel/request/'+str(trequest.id)+'/cost/')
-            else:
-                return HttpResponse(
-                    status=204,
-                    headers={
-                        'HX-Trigger': json.dumps({
-                            "FinanceChanged": None,
-                            "showMessage": f"{instance.id} added."
-                        })
-                    })
+           
+            return HttpResponseClientRedirect('/travel/request/'+str(trequest.id)+'/detail/')
+          
 
             
            
@@ -210,14 +216,13 @@ def edit_finance_code(request, id):
         if form.is_valid():
             instance = form.save()
 
-            return HttpResponse(
-                status=204,
-                headers={
-                    'HX-Trigger': json.dumps({
-                        "FinanceChanged": None,
-                        "showMessage": f"{instance.id} added."
-                    })
-                })
+            trequest = Travel_Request.objects.get(id=instance.travel_request_id)
+            print(trequest.get_finance_total())
+            
+            return HttpResponseClientRedirect('/travel/request/'+str(trequest.id)+'/detail/')
+            
+
+            
             
           
 
@@ -313,7 +318,7 @@ def submit_request(request, id, sid):
                 SubmitApproval_F.objects.create(user = requestsubmit.finance_reviewer,submitrequest_id = instance.id, approval_status=Approvalf_Status.objects.get(id=1))
                 SubmitApproval_S.objects.create(user = requestsubmit.security_reviewer,submitrequest_id = instance.id, approval_status=Approvalf_Status.objects.get(id=1))
                
-                send_notify(requestsubmit.id)
+                send_notify(requestsubmit.id, 1)
                 return HttpResponseClientRedirect('/travel/request/'+str(trequest.id)+'/review/')
 
     context = {'trequest':trequest, 'form':form}
@@ -349,7 +354,7 @@ def edit_request(request, id, sid):
                 SubmitApproval_F.objects.create(user = requestsubmit.finance_reviewer,submitrequest_id = instance.id, approval_status=Approvalf_Status.objects.get(id=1))
                 SubmitApproval_S.objects.create(user = requestsubmit.security_reviewer,submitrequest_id = instance.id, approval_status=Approvalf_Status.objects.get(id=1))
                
-                send_notify(requestsubmit.id, 1)
+            send_notify(requestsubmit.id, 1)
             return HttpResponseClientRedirect('/travel/request/'+str(trequest.id)+'/review/')
 
     context = {'trequest':trequest, 'form':form}
@@ -497,4 +502,53 @@ def send_notify(id, pid):
     message.attach_alternative(html_message, "text/html")
     message.send()
 
+
+@login_required(login_url='login') 
+def add_travel_costp(request, id):
+    trequest = Travel_Request.objects.get(pk=id)
+    form = TravelCostFormp(trequest=trequest)
+    if request.method == 'POST':
+        form = TravelCostFormp(request.POST, trequest=trequest)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.travel_request = trequest
+            instance.save()
+            trequest = Travel_Request.objects.get(id=instance.travel_request_id)
+            if Estimated_Cost.objects.filter(travel_request_id=trequest.id).count() == 2 or Estimated_Cost.objects.filter(travel_request_id=trequest.id).count() < 2:
+                return HttpResponseClientRedirect('/travel/request/'+str(trequest.id)+'/cost/')
+            else:
+                return HttpResponse(
+                    status=204,
+                    headers={
+                        'HX-Trigger': json.dumps({
+                            "CostChanged": None,
+                            "showMessage": f"{instance.id} added."
+                        })
+                    })         
+       
+    context = {'form':form, 'trequest':trequest}
+    return render(request, 'partial/add_cost.html', context)
+
+
+
+@login_required(login_url='login') 
+def edit_travel_costp(request, id):
+    travel_cost = Estimated_Cost.objects.get(pk=id)
+    if request.method == "POST":
+        form = TravelCostFormp(request.POST, instance=travel_cost)
+        if form.is_valid():
+            instance = form.save()
+            return HttpResponse(
+                status=204,
+                headers={
+                    'HX-Trigger': json.dumps({
+                        "CostChanged": None,
+                        "showMessage": f"{instance.id} added."
+                    })
+                })          
+          
+
+    form = TravelCostFormp(instance=travel_cost) 
+    context = {'form':form, 'travel_cost':travel_cost}
+    return render(request, 'partial/edit_cost.html', context)
 

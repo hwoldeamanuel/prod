@@ -1,4 +1,4 @@
-<tr><td>*</td>
+<tr>
 
     <td  style="width:15%">{{ form.type }}
         {{ form.type.errors}}
@@ -14,8 +14,8 @@
         {{ form.unit_cost }}
         {{ form.unit_cost.errors }}
     </td>
-    <td ></td>
-    <td >
+   
+    <td class="text-right" colspan="2">
    
     <a hx-post="/travel/add_travel_cost/{{ trequest.id }}/" class="btn btn-sm btn-success py-1" style="font-size: 0.8em;"  hx-target="closest tr" hx-swap="outerHTML" hx-include="closest tr"><i class="fa fa-save"> </i> </a>
    <button type="button" class="btn btn-sm btn-secondary py-1" style="font-size: 0.8em;" value="Previous Page" onClick="javascript:history.go(0);"><i class="fa fa-remove"></i></button>
