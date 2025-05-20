@@ -193,39 +193,34 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
-STATIC_URL = "/static/"
+AZURE_ACCOUNT_NAME = "paqcnmsblob"
+AZURE_ACCOUNT_KEY = os.environ.get('AZURE_ACCOUNT_KEY')
+AZURE_CONNECTION_STRING =  os.environ.get('AZURE_STORAGEBLOB_CONNECTIONSTRING')
+AZURE_CONTAINER_STATIC = "static"
+AZURE_CONTAINER_MEDIA = "media"
 
-#Location of static files
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'), ]
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-# This production code might break development mode, so we check whether we're in DEBUG mode
-#if not DEBUG:
-    # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
-#   STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-    # Enable the WhiteNoise storage backend, which compresses static files to reduce disk use
-    # and renames the files with unique names for each version to support long-term caching
-    #STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT = f"https://{AZURE_ACCOUNT_NAME}.blob.core.windows.net/{AZURE_CONTAINER_STATIC}/"
+MEDIA_URL = f"https://{AZURE_ACCOUNT_NAME}.blob.core.windows.net/{AZURE_CONTAINER_MEDIA}/"
 
 STORAGES = {
     "default": {
         "BACKEND": "storages.backends.azure_storage.AzureStorage",
         "OPTIONS": {
-            "connection_string": env('AZURE_STORAGEBLOB_CONNECTIONSTRING'),
-            "azure_container": "media",
+            "azure_container": AZURE_CONTAINER_MEDIA,
+            "account_name": AZURE_ACCOUNT_NAME,
+            "account_key": AZURE_ACCOUNT_KEY,
+            "connection_string": AZURE_CONNECTION_STRING,
         },
     },
-     "staticfiles": {
+    "staticfiles": {
         "BACKEND": "storages.backends.azure_storage.AzureStorage",
         "OPTIONS": {
-            "connection_string": env('AZURE_STORAGEBLOB_CONNECTIONSTRING'),
-            "azure_container": "static",
-        },
-    },
+            "azure_container": AZURE_CONTAINER_STATIC,
+            "account_name": AZURE_ACCOUNT_NAME,
+            "account_key": AZURE_ACCOUNT_KEY,
+            "connection_string": AZURE_CONNECTION_STRING,
+        }
+    }
 }
 
 # AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.azureedge.net'  # CDN URL
