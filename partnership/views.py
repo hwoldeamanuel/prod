@@ -10,7 +10,7 @@ from .models import Partnership
 
 def convertmonth(created):
     #template = '%(function)s(MONTH from %(expressions)s)'
-    #output_field = models.IntegerField()
+    #output_field = models.IntegerField()fdfd
     return created.strftime("%m-%Y")
 
 @login_required(login_url='login')
