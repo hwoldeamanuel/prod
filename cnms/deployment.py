@@ -51,14 +51,14 @@ STORAGES = {
     "default": {
         "BACKEND": "storages.backends.azure_storage.AzureStorage",
         "OPTIONS": {
-            "connection_string": os.environ.get('AZURE_STORAGEBLOB_CONNECTIONSTRING'),
+            "connection_string": os.environ['AZURE_STORAGEBLOB_CONNECTIONSTRING'],
             "azure_container": "media",
         },
     },
      "staticfiles": {
         "BACKEND": "storages.backends.azure_storage.AzureStorage",
         "OPTIONS": {
-            "connection_string": os.environ.get('AZURE_STORAGEBLOB_CONNECTIONSTRING'),
+            "connection_string": os.environ['AZURE_STORAGEBLOB_CONNECTIONSTRING'],
             "azure_container": "static",
         },
     },
