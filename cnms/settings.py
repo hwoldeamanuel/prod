@@ -194,8 +194,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 AZURE_ACCOUNT_NAME = "paqcnmsblob"
-AZURE_ACCOUNT_KEY = os.environ.get('AZURE_ACCOUNT_KEY')
-AZURE_CONNECTION_STRING =  os.environ.get('AZURE_STORAGEBLOB_CONNECTIONSTRING')
+AZURE_ACCOUNT_KEY = os.environ['AZURE_ACCOUNT_KEY']
+AZURE_CONNECTION_STRING =  os.environ['AZURE_STORAGEBLOB_CONNECTIONSTRING']
 AZURE_CONTAINER_STATIC = "static"
 AZURE_CONTAINER_MEDIA = "media"
 
