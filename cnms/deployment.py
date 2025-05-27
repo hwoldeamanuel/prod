@@ -47,34 +47,23 @@ DATABASES = {
 EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
 EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
 
-
-
-AZURE_ACCOUNT_NAME = "paqcnmsblob"
-AZURE_ACCOUNT_KEY = os.environ['AZURE_ACCOUNT_KEY']
-AZURE_CONNECTION_STRING =  os.environ['AZURE_STORAGEBLOB_CONNECTIONSTRING']
-AZURE_CONTAINER_STATIC = "static"
-AZURE_CONTAINER_MEDIA = "media"
-
-STATIC_ROOT = f"https://{AZURE_ACCOUNT_NAME}.blob.core.windows.net/{AZURE_CONTAINER_STATIC}/"
-MEDIA_URL = f"https://{AZURE_ACCOUNT_NAME}.blob.core.windows.net/{AZURE_CONTAINER_MEDIA}/"
-
 STORAGES = {
     "default": {
         "BACKEND": "storages.backends.azure_storage.AzureStorage",
         "OPTIONS": {
-            "azure_container": AZURE_CONTAINER_MEDIA,
-            "account_name": AZURE_ACCOUNT_NAME,
-            "account_key": AZURE_ACCOUNT_KEY,
-            "connection_string": AZURE_CONNECTION_STRING,
+            "connection_string": os.environ.get('AZURE_STORAGEBLOB_CONNECTIONSTRING'),
+            "azure_container": "media",
         },
     },
-    "staticfiles": {
+     "staticfiles": {
         "BACKEND": "storages.backends.azure_storage.AzureStorage",
         "OPTIONS": {
-            "azure_container": AZURE_CONTAINER_STATIC,
-            "account_name": AZURE_ACCOUNT_NAME,
-            "account_key": AZURE_ACCOUNT_KEY,
-            "connection_string": AZURE_CONNECTION_STRING,
-        }
-    }
+            "connection_string": os.environ.get('AZURE_STORAGEBLOB_CONNECTIONSTRING'),
+            "azure_container": "static",
+        },
+    },
 }
+
+EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+

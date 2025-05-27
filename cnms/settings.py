@@ -193,34 +193,32 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
-AZURE_ACCOUNT_NAME = "paqcnmsblob"
-AZURE_ACCOUNT_KEY = os.environ['AZURE_ACCOUNT_KEY']
-AZURE_CONNECTION_STRING =  os.environ['AZURE_STORAGEBLOB_CONNECTIONSTRING']
-AZURE_CONTAINER_STATIC = "static"
-AZURE_CONTAINER_MEDIA = "media"
+STATIC_URL = "/static/"
 
-STATIC_ROOT = f"https://{AZURE_ACCOUNT_NAME}.blob.core.windows.net/{AZURE_CONTAINER_STATIC}/"
-MEDIA_URL = f"https://{AZURE_ACCOUNT_NAME}.blob.core.windows.net/{AZURE_CONTAINER_MEDIA}/"
+#Location of static files
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'), ]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STORAGES = {
     "default": {
         "BACKEND": "storages.backends.azure_storage.AzureStorage",
         "OPTIONS": {
-            "azure_container": AZURE_CONTAINER_MEDIA,
-            "account_name": AZURE_ACCOUNT_NAME,
-            "account_key": AZURE_ACCOUNT_KEY,
-            "connection_string": AZURE_CONNECTION_STRING,
+            "connection_string": env('AZURE_STORAGEBLOB_CONNECTIONSTRING'),
+            "azure_container": "media",
         },
     },
-    "staticfiles": {
+     "staticfiles": {
         "BACKEND": "storages.backends.azure_storage.AzureStorage",
         "OPTIONS": {
-            "azure_container": AZURE_CONTAINER_STATIC,
-            "account_name": AZURE_ACCOUNT_NAME,
-            "account_key": AZURE_ACCOUNT_KEY,
-            "connection_string": AZURE_CONNECTION_STRING,
-        }
-    }
+            "connection_string": env('AZURE_STORAGEBLOB_CONNECTIONSTRING'),
+            "azure_container": "static",
+        },
+    },
 }
 
 # AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.azureedge.net'  # CDN URL
