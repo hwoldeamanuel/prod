@@ -31,9 +31,6 @@ jobs:
       
       - name: Install dependencies
         run: pip install -r requirements.txt
-
-  
-  
         
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
@@ -71,9 +68,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_FEC8777271C24D918C5CB44FCAA92717 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_64A45A367EDC48D798897BF8CD940304 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_CE6A41B79CEA4D45A1495B8B1CC0F34B }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_2A0C8696F32A4471A3EF1F6EB8A8D13C }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E7D9ABAB27B4416CB18D61DC6951C708 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_7E6E3FBA2BA84C42B7FB5B0E626BA0A1 }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
