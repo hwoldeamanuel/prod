@@ -127,7 +127,7 @@ WSGI_APPLICATION = 'cnms.wsgi.application'
 conn_str = env('AZURE_POSTGRESQL_CONNECTIONSTRING')
 conn_str_params = {pair.split('=')[0]: pair.split('=')[1] for pair in conn_str.split(' ')}
 
-"""
+
 DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -157,7 +157,7 @@ DATABASES = {
  #   "default" : dj_database_url.parse(database_url)
    
 #}
-
+"""                                 
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
